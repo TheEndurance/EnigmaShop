@@ -1977,6 +1977,9 @@ STYLE SWITCHER FOR DEMO
   color: rgba(255, 255, 255, 0.5);
 }
 
+.navbar-holder {
+    width: 100%;
+}
 /*
  * 2. BUTTONS
  */

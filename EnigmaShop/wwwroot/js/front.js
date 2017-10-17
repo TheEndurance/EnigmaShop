@@ -37,27 +37,6 @@ $(document).ready(function () {
 
 
     // ------------------------------------------------------- //
-    // Login  form validation
-    // ------------------------------------------------------ //
-    $('#login-form').validate({
-        messages: {
-            loginUsername: 'please enter your username',
-            loginPassword: 'please enter your password'
-        }
-    });
-
-    // ------------------------------------------------------- //
-    // Register form validation
-    // ------------------------------------------------------ //
-    $('#register-form').validate({
-        messages: {
-            registerUsername: 'please enter your first name',
-            registerEmail: 'please enter a vaild Email Address',
-            registerPassword: 'please enter your password'
-        }
-    });
-
-    // ------------------------------------------------------- //
     // Sidebar Functionality
     // ------------------------------------------------------ //
     $('#toggle-btn').on('click', function (e) {
