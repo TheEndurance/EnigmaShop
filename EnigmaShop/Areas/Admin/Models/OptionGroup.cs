@@ -14,6 +14,7 @@ namespace EnigmaShop.Areas.Admin.Models
         [Required]
         [StringLength(50)]
         public string Name { get; set; }
+
         public ICollection<Option> Options { get; set; }
 
         public OptionGroup()

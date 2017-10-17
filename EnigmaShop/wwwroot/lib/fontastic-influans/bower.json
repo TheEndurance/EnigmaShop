@@ -1,0 +1,16 @@
+{
+  "name": "fontastic-influans",
+  "description": "fontastic-influans icons",
+  "main": "",
+  "authors": [
+    "Beligh HAMDI <beligh.hamdi@influans.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "fontastic",
+    "influans",
+    "icons"
+  ],
+  "homepage": "https://github.com/beligh-hamdi/fontastic-influans",
+  "moduleType": []
+}

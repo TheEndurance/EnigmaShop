@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171017133521_OptionGroup_CreateTable")]
+    partial class OptionGroup_CreateTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,23 +133,6 @@ namespace EnigmaShop.Data.Migrations
                     b.HasIndex("SKUId");
 
                     b.ToTable("SKUOptions");
-                });
-
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUPicture", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired();
-
-                    b.Property<int>("SKUId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SKUId");
-
-                    b.ToTable("SKUPictures");
                 });
 
             modelBuilder.Entity("EnigmaShop.Models.ApplicationUser", b =>
@@ -350,14 +334,6 @@ namespace EnigmaShop.Data.Migrations
                         .WithMany("SKUOptions")
                         .HasForeignKey("SKUId")
                         .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUPicture", b =>
-                {
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.SKU", "SKU")
-                        .WithMany()
-                        .HasForeignKey("SKUId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

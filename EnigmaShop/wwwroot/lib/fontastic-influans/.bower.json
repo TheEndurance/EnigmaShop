@@ -1,0 +1,26 @@
+{
+  "name": "fontastic-influans",
+  "description": "fontastic-influans icons",
+  "main": "",
+  "authors": [
+    "Beligh HAMDI <beligh.hamdi@influans.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "fontastic",
+    "influans",
+    "icons"
+  ],
+  "homepage": "https://github.com/beligh-hamdi/fontastic-influans",
+  "moduleType": [],
+  "_release": "8a470cd387",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "8a470cd387fdd036bbe8f5e48decd9499a5e7785"
+  },
+  "_source": "https://github.com/beligh-hamdi/fontastic-influans.git",
+  "_target": "*",
+  "_originalSource": "fontastic-influans",
+  "_direct": true
+}

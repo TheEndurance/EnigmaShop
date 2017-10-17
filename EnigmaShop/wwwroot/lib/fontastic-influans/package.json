@@ -1,0 +1,21 @@
+{
+  "name": "fontastic-influans",
+  "description": "fontastic-influans icons",
+  "keywords": [
+    "fontastic",
+    "influans",
+    "icons"
+  ],
+  "authors": [
+    "Beligh HAMDI"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "private": true
+}
