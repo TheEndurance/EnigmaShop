@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace EnigmaShop.TagHelpers
 {
-    [HtmlTargetElement(Attributes = "is-active-route")]
+    [HtmlTargetElement("li",Attributes = "is-active-route")]
+
     public class ActiveRouteTagHelper : TagHelper
     {
         private IDictionary<string, string> _routeValues;
