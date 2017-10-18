@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EnigmaShop.Areas.Admin.Models;
+using EnigmaShop.Areas.Admin.ViewModels;
 using EnigmaShop.Data;
 
 namespace EnigmaShop.Areas.Admin.Controllers
@@ -24,6 +25,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Products.Include(p => p.Category);
+            ViewData["Header"] = "Product Listing";
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -49,8 +51,13 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // GET: Admin/Product/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Set<Category>(), "Id", "Id");
-            return View();
+            var productForm = new ProductFormViewModel
+            {
+                CategoryList = new SelectList(_context.Categories,"Id","Type")
+            };
+            ViewData["Header"] = "Product Form";
+
+            return View(productForm);
         }
 
         // POST: Admin/Product/Create
@@ -58,16 +65,17 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description,Name,CategoryId")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Description,Name,CategoryId")] ProductFormViewModel productFormViewModel)
         {
             if (ModelState.IsValid)
             {
+                var product = new Product(productFormViewModel);
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Set<Category>(), "Id", "Id", product.CategoryId);
-            return View(product);
+           productFormViewModel.CategoryList = new SelectList(_context.Categories, "Id", "Type");
+            return View(productFormViewModel);
         }
 
         // GET: Admin/Product/Edit/5

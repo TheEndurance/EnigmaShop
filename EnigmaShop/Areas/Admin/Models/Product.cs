@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using EnigmaShop.Areas.Admin.ViewModels;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EnigmaShop.Areas.Admin.Models
@@ -29,6 +30,14 @@ namespace EnigmaShop.Areas.Admin.Models
         public Product()
         {
             SKUs = new Collection<SKU>();
+        }
+        public Product(ProductFormViewModel productFormViewModel)
+        {
+            SKUs = new Collection<SKU>();
+            Id = productFormViewModel.Id;
+            Name = productFormViewModel.Name;
+            Description = productFormViewModel.Description;
+            CategoryId = productFormViewModel.CategoryId;
         }
     }
 }

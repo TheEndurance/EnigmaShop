@@ -17,6 +17,7 @@ namespace EnigmaShop.Data
         public DbSet<Option> Options { get; set; }
         public DbSet<OptionGroup> OptionGroups { get; set; }
         public DbSet<SKUPicture> SKUPictures { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
 
 
