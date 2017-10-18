@@ -39,5 +39,12 @@ namespace EnigmaShop.Areas.Admin.Models
             Description = productFormViewModel.Description;
             CategoryId = productFormViewModel.CategoryId;
         }
+
+        public void EditProduct(ProductFormViewModel productFormViewModel)
+        {
+            Name = productFormViewModel.Name;
+            Description = productFormViewModel.Description;
+            CategoryId = productFormViewModel.CategoryId;
+        }
     }
 }

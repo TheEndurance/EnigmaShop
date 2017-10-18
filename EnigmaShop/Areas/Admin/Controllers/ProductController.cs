@@ -25,7 +25,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Products.Include(p => p.Category);
-            ViewData["Header"] = "Product Listing";
+            ViewData["Header"] = "Product";
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -49,13 +49,13 @@ namespace EnigmaShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/Product/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var productForm = new ProductFormViewModel
             {
-                CategoryList = new SelectList(_context.Categories,"Id","Type")
+                CategoryList = new SelectList(await _context.Categories.ToListAsync(),"Id","Type")
             };
-            ViewData["Header"] = "Product Form";
+            ViewData["Header"] = "Product";
 
             return View(productForm);
         }
@@ -74,7 +74,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-           productFormViewModel.CategoryList = new SelectList(_context.Categories, "Id", "Type");
+            productFormViewModel.CategoryList = new SelectList(await _context.Categories.ToListAsync(), "Id", "Type");
+            ViewData["Header"] = "Product";
             return View(productFormViewModel);
         }
 
@@ -91,8 +92,10 @@ namespace EnigmaShop.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Set<Category>(), "Id", "Id", product.CategoryId);
-            return View(product);
+            var productFormViewModel = new ProductFormViewModel(product);
+            productFormViewModel.CategoryList = new SelectList(await _context.Categories.ToListAsync(),"Id","Type");
+            ViewData["Header"] = "Product";
+            return View(productFormViewModel);
         }
 
         // POST: Admin/Product/Edit/5
@@ -100,23 +103,27 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Name,CategoryId")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Name,CategoryId")] ProductFormViewModel productFormViewModel)
         {
-            if (id != product.Id)
+            if (id != productFormViewModel.Id)
             {
                 return NotFound();
             }
 
+            var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productFormViewModel.Id);
+            if (product == null) return NotFound();
+               
             if (ModelState.IsValid)
             {
                 try
                 {
+                    product.EditProduct(productFormViewModel);
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!ProductExists(productFormViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -127,9 +134,12 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Set<Category>(), "Id", "Id", product.CategoryId);
-            return View(product);
+            productFormViewModel.CategoryList = new SelectList(await _context.Categories.ToListAsync(),"Id","Type");
+            ViewData["Header"] = "Product";
+            return View(productFormViewModel);
         }
+
+     
 
         // GET: Admin/Product/Delete/5
         public async Task<IActionResult> Delete(int? id)
