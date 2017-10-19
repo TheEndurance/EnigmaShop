@@ -15,19 +15,25 @@
                             <div asp-validation-summary="All" class="text-danger"></div>
                             <div class="form-group row">
                                 <label asp-for="Name" class="control-label col-sm-3"></label>
-                                <input asp-for="Name" class="form-control col-sm-9" />
-                                <span asp-validation-for="Name" class="text-danger"></span>
+                                <div class="col-sm-9">
+                                <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
                                 <label asp-for="Description" class="control-label col-sm-3"></label>
-                                <input asp-for="Description" class="form-control col-sm-9" />
-                                <span asp-validation-for="Description" class="text-danger"></span>
+                                <div class="col-sm-9">
+                                <input asp-for="Description" class="form-control" />
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
                                 <label asp-for="CategoryId" class="control-label col-sm-3"></label>
-                                <select asp-for="CategoryId" class="form-control col-sm-9" asp-items="Model.CategoryList"></select>
+                                <div class="col-sm-9">
+                                    <select asp-for="CategoryId" class="form-control" asp-items="Model.CategoryList"></select>
+                                </div>
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
@@ -42,7 +48,7 @@
             </div>
         </div>
         <div class="row">
-            <a class="btn btn-secondary" asp-action="Index">Back to List</a>
+            <a asp-action="Index">Back to List</a>
         </div>
     </div>
    

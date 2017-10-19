@@ -19,8 +19,6 @@ namespace EnigmaShop.Data
         public DbSet<SKUPicture> SKUPictures { get; set; }
         public DbSet<Category> Categories { get; set; }
 
-
-
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -51,6 +49,12 @@ namespace EnigmaShop.Data
                 .Property(x => x.IsAvailable)
                 .HasDefaultValue(true);
             base.OnModelCreating(builder);
+
+            //Set the DiscountedPrice on SKU Table default value to 0.00m
+
+            builder.Entity<SKU>()
+                .Property(x => x.DiscountedPrice)
+                .HasDefaultValue(0.00m);
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);

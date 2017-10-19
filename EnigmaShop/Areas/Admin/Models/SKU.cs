@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using EnigmaShop.Areas.Admin.ViewModels;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EnigmaShop.Areas.Admin.Models
@@ -13,6 +14,7 @@ namespace EnigmaShop.Areas.Admin.Models
     {
         public int Id { get; set; }
 
+        [Required]
         public int ProductId { get; set; }
 
         [ForeignKey(nameof(ProductId))]
@@ -20,6 +22,7 @@ namespace EnigmaShop.Areas.Admin.Models
 
         [Required]
         public decimal Price { get; set; }
+
 
         public decimal DiscountedPrice { get; set; }
 
@@ -39,6 +42,19 @@ namespace EnigmaShop.Areas.Admin.Models
         public SKU()
         {
             SKUOptions = new Collection<SKUOption>();
+        }
+
+        public SKU(SKUFormViewModel skuFormViewModel)
+        {
+            Id = skuFormViewModel.Id;
+            ProductId = skuFormViewModel.ProductId;
+            Product = skuFormViewModel.Product;
+            Price = skuFormViewModel.Price;
+            DiscountedPrice = skuFormViewModel.DiscountedPrice;
+            IsAvailable = skuFormViewModel.IsAvailable;
+            IsDiscounted = skuFormViewModel.IsDiscounted;
+            Stock = skuFormViewModel.Stock;
+            ImageUrl = skuFormViewModel.ImageUrl;
         }
     }
 }

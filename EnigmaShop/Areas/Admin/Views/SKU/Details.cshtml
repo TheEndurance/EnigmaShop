@@ -1,0 +1,60 @@
+﻿@model EnigmaShop.Areas.Admin.Models.SKU
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>SKU</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DiscountedPrice)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DiscountedPrice)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsAvailable)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsAvailable)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsDiscounted)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsDiscounted)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Stock)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Stock)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ImageUrl)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ImageUrl)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Name)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
