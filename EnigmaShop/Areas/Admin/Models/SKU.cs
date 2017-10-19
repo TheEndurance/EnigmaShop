@@ -55,6 +55,28 @@ namespace EnigmaShop.Areas.Admin.Models
             IsDiscounted = skuFormViewModel.IsDiscounted;
             Stock = skuFormViewModel.Stock;
             ImageUrl = skuFormViewModel.ImageUrl;
+            SKUOptions = new Collection<SKUOption>();
+        }
+
+        public void EditSKU(SKUFormViewModel skuFormViewModel)
+        {
+            ProductId = skuFormViewModel.ProductId;
+            Price = skuFormViewModel.Price;
+            DiscountedPrice = skuFormViewModel.DiscountedPrice;
+            IsAvailable = skuFormViewModel.IsAvailable;
+            IsDiscounted = skuFormViewModel.IsDiscounted;
+            Stock = skuFormViewModel.Stock;
+            ImageUrl = skuFormViewModel.ImageUrl;
+        }
+
+        public void AddSKUOption(int optionGroupId,int optionId)
+        {
+            SKUOptions.Add(new SKUOption
+            {
+                SKUId = this.Id,
+                OptionGroupId = optionGroupId,
+                OptionId = optionId
+            });
         }
     }
 }

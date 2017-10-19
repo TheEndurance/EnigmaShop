@@ -38,6 +38,14 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         public string ImageUrl { get; set; }
 
         public SelectList ProductList { get; set; }
+        public SelectList ColourOptionsList { get; set; }
+        public SelectList SizeOptionsList { get; set; }
+
+        public int ColourOptionId { get; set; }
+        public int SizeOptionId { get; set; }
+        public int ColourOptionGroupId { get; set; }
+        public int SizeOptionGroupId { get; set; }
+
 
         public SKUFormViewModel(SKU sku)
         {
@@ -50,6 +58,8 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             IsDiscounted = sku.IsDiscounted;
             Stock = sku.Stock;
             ImageUrl = sku.ImageUrl;
+            ColourOptionId = sku.SKUOptions.Single(x => x.OptionGroup.Name == "Colour").Id;
+            SizeOptionId = sku.SKUOptions.Single(x => x.OptionGroup.Name == "Size").Id;
         }
 
         public SKUFormViewModel()

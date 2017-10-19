@@ -19,5 +19,7 @@ namespace EnigmaShop.Areas.Admin.Models
 
         [Required]
         public string ImageUrl { get; set; }
+
+        public int Sorting { get; set; }
     }
 }
