@@ -38,13 +38,11 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         public string ImageUrl { get; set; }
 
         public SelectList ProductList { get; set; }
-        public SelectList ColourOptionsList { get; set; }
-        public SelectList SizeOptionsList { get; set; }
 
-        public int ColourOptionId { get; set; }
-        public int SizeOptionId { get; set; }
-        public int ColourOptionGroupId { get; set; }
-        public int SizeOptionGroupId { get; set; }
+        public IEnumerable<OptionGroup> OptionGroups { get; set; }
+        public int[] OptionIds { get; set; }
+
+        public HashSet<SKUOption> SKUOptions { get; set; }
 
 
         public SKUFormViewModel(SKU sku)
@@ -58,13 +56,19 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             IsDiscounted = sku.IsDiscounted;
             Stock = sku.Stock;
             ImageUrl = sku.ImageUrl;
-            ColourOptionId = sku.SKUOptions.Single(x => x.OptionGroup.Name == "Colour").Id;
-            SizeOptionId = sku.SKUOptions.Single(x => x.OptionGroup.Name == "Size").Id;
+            SKUOptions = sku.SKUOptions;
+            //if (sku.SKUOptions.Count > 0)
+            //{
+            //    foreach (var skuOpt in sku.SKUOptions)
+            //    {
+            //        SelectedOption[skuOpt.OptionGroupId] = skuOpt.OptionId;
+            //    }
+            //}
         }
 
         public SKUFormViewModel()
         {
-            
+            SKUOptions = new HashSet<SKUOption>();
         }
     }
 }

@@ -36,12 +36,12 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public string ImageUrl { get; set; }
 
-        public ICollection<SKUOption> SKUOptions { get; set; }
+        public HashSet<SKUOption> SKUOptions { get; set; }
 
 
         public SKU()
         {
-            SKUOptions = new Collection<SKUOption>();
+            SKUOptions = new HashSet<SKUOption>();
         }
 
         public SKU(SKUFormViewModel skuFormViewModel)
@@ -55,10 +55,10 @@ namespace EnigmaShop.Areas.Admin.Models
             IsDiscounted = skuFormViewModel.IsDiscounted;
             Stock = skuFormViewModel.Stock;
             ImageUrl = skuFormViewModel.ImageUrl;
-            SKUOptions = new Collection<SKUOption>();
+            SKUOptions = new HashSet<SKUOption>();
         }
 
-        public void EditSKU(SKUFormViewModel skuFormViewModel)
+        public void EditSKU(SKUFormViewModel skuFormViewModel,int colourOptionId,int sizeOptionId)
         {
             ProductId = skuFormViewModel.ProductId;
             Price = skuFormViewModel.Price;
@@ -67,15 +67,18 @@ namespace EnigmaShop.Areas.Admin.Models
             IsDiscounted = skuFormViewModel.IsDiscounted;
             Stock = skuFormViewModel.Stock;
             ImageUrl = skuFormViewModel.ImageUrl;
+            SKUOptions.Single(x => x.OptionGroup.Name == "Colour").OptionId = colourOptionId;
+            SKUOptions.Single(x => x.OptionGroup.Name == "Size").OptionId = sizeOptionId;
         }
 
-        public void AddSKUOption(int optionGroupId,int optionId)
+        public void AddSKUOption(Option option)
         {
             SKUOptions.Add(new SKUOption
             {
-                SKUId = this.Id,
-                OptionGroupId = optionGroupId,
-                OptionId = optionId
+                SKU = this,
+                OptionGroup = option.OptionGroup,
+                Option = option
+
             });
         }
     }

@@ -42,7 +42,7 @@ namespace EnigmaShop.Data
             builder.Entity<SKUOption>()
                 .HasOne(x => x.SKU)
                 .WithMany(x => x.SKUOptions)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             //Set the IsAvaiable bool on SKU table default value to true
             builder.Entity<SKU>()
