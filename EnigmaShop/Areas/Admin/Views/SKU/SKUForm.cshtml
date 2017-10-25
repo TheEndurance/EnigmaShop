@@ -1,6 +1,6 @@
 ﻿@model EnigmaShop.Areas.Admin.ViewModels.SKUFormViewModel
 @{
-    ViewData["Title"] = "Create SKU";
+    ViewData["Title"] = $"{Model.Action} SKU";
 }
 <section class="forms">
     <div class="container-fluid">
@@ -9,7 +9,7 @@
                 <div class="card">
                     <div class="card-header d-flex align-items-center">SKUs</div>
                     <div class="card-body">
-                        <form asp-action="Create">
+                        <form asp-action="@Model.Action">
                             <div asp-validation-summary="All" class="text-danger"></div>
                             <div class="form-group row">
                                 <label asp-for="ProductId" class="form-control-label col-md-3"></label>
@@ -64,12 +64,17 @@
                                     <div class="col-md-9">
                                         @if (Model.SKUOptions.Any(x => x.OptionGroupId == optGroup.Id))
                                         {
-                                            <select name="OptionIds" class="form-control" asp-items="@(new SelectList(optGroup.Options, "Id", "Name",Model.SKUOptions.Single(x=>x.OptionGroupId==optGroup.Id).OptionId))"></select>
+                                            <select name="OptionIds" class="form-control" asp-items="@(new SelectList(optGroup.Options, "Id", "Name", Model.SKUOptions.Single(x => x.OptionGroupId == optGroup.Id).OptionId))">
+                                                <option value="-1">Select an option</option>
+                                            </select>
 
                                         }
                                         else
                                         {
-                                            <select name="OptionIds" class="form-control" asp-items="@(new SelectList(optGroup.Options, "Id", "Name"))"></select>
+                                            <select name="OptionIds" class="form-control" asp-items="@(new SelectList(optGroup.Options, "Id", "Name"))">
+                                                <option value="-1">Select an option</option>
+                                            </select>
+
                                         }
                                     </div>
                                 </div>
@@ -85,7 +90,7 @@
                             <div class="form-group row">
                                 <div class="col-md-3"></div>
                                 <div class="col-md-9">
-                                    <input type="submit" value="Create" class="btn btn-primary" />
+                                    <input type="submit" value="@Model.Action" class="btn btn-primary" />
                                 </div>
                             </div>
                         </form>

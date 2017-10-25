@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using EnigmaShop.Areas.Admin.Controllers;
 using EnigmaShop.Areas.Admin.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EnigmaShop.Areas.Admin.ViewModels
@@ -40,7 +44,9 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         public SelectList ProductList { get; set; }
 
         public IEnumerable<OptionGroup> OptionGroups { get; set; }
-        public int[] OptionIds { get; set; }
+
+        
+        public int?[] OptionIds { get; set; }
 
         public HashSet<SKUOption> SKUOptions { get; set; }
 
@@ -57,18 +63,23 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             Stock = sku.Stock;
             ImageUrl = sku.ImageUrl;
             SKUOptions = sku.SKUOptions;
-            //if (sku.SKUOptions.Count > 0)
-            //{
-            //    foreach (var skuOpt in sku.SKUOptions)
-            //    {
-            //        SelectedOption[skuOpt.OptionGroupId] = skuOpt.OptionId;
-            //    }
-            //}
         }
 
         public SKUFormViewModel()
         {
             SKUOptions = new HashSet<SKUOption>();
+        }
+
+        public string Action
+        {
+            get
+            {
+                Expression<Func<SKUController, Task<IActionResult>>> create = gc => gc.Create(null);
+                Expression<Func<SKUController,Task<IActionResult>>> edit = gc => gc.Edit(null);
+                var action = (Id == 0) ? create : edit;
+                string methodName = (action.Body as MethodCallExpression)?.Method.Name;
+                return methodName;
+            }
         }
     }
 }

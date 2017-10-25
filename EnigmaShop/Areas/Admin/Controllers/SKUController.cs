@@ -57,7 +57,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         };
 
             ViewData["Header"] = "SKUs";
-            return View(skuFormViewModel);
+            return View("SKUForm",skuFormViewModel);
         }
 
         // POST: Admin/SKU/Create
@@ -72,14 +72,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
             {
                 var sku = new SKU(skuFormViewModel);
 
-                if (skuFormViewModel.OptionIds.Length > 0)
-                {
-                    foreach (int optionId in skuFormViewModel.OptionIds)
-                    {
-                        var option = await _context.Options.Include(x=>x.OptionGroup).SingleOrDefaultAsync(x => x.Id == optionId);
-                        sku.AddSKUOption(option);
-                    }
-                }
+                await sku.AddSKUOptions(skuFormViewModel,_context);
+
                 _context.Add(sku);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -88,7 +82,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
             skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
             skuFormViewModel.OptionGroups = await _context.OptionGroups.Include(x => x.Options).ToListAsync();
             ViewData["Header"] = "SKUs";
-            return View(skuFormViewModel);
+            return View("SKUForm",skuFormViewModel);
         }
 
         // GET: Admin/SKU/Edit/5
@@ -105,8 +99,10 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return NotFound();
             }
             var skuFormViewModel = new SKUFormViewModel(sku);
+            skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
+            skuFormViewModel.OptionGroups = await _context.OptionGroups.Include(x => x.Options).ToListAsync();
             ViewData["Header"] = "SKUs";
-            return View(skuFormViewModel);
+            return View("SKUForm",skuFormViewModel);
         }
 
         // POST: Admin/SKU/Edit/5
@@ -114,7 +110,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,ColourOptionId,SizeOptionId,ColourOptionGroupId,SizeOptionGroupId")] SKUFormViewModel skuFormViewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,OptionIds")] SKUFormViewModel skuFormViewModel)
         {
             if (id != skuFormViewModel.Id)
             {
@@ -127,8 +123,11 @@ namespace EnigmaShop.Areas.Admin.Controllers
             {
                 try
                 {
-                    //sku.EditSKU(skuFormViewModel,skuFormViewModel.ColourOptionId,skuFormViewModel.SizeOptionId);
+
+                   await sku.EditSKU(skuFormViewModel,_context);
+
                     _context.Update(sku);
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -146,7 +145,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
             }
             skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
             ViewData["Header"] = "SKUs";
-            return View(skuFormViewModel);
+            return View("SKUForm",skuFormViewModel);
         }
 
         // GET: Admin/SKU/Delete/5
