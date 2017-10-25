@@ -67,7 +67,11 @@ namespace EnigmaShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,OptionIds")] SKUFormViewModel skuFormViewModel)
         {
-            
+            if (skuFormViewModel.OptionIds.Any(optId => optId == null))
+            {
+                ModelState.AddModelError("OptionIds", "Option select fields are required.");
+            }
+
             if (ModelState.IsValid)
             {
                 var sku = new SKU(skuFormViewModel);
@@ -112,6 +116,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,OptionIds")] SKUFormViewModel skuFormViewModel)
         {
+
             if (id != skuFormViewModel.Id)
             {
                 return NotFound();
@@ -119,6 +124,12 @@ namespace EnigmaShop.Areas.Admin.Controllers
 
             var sku =  await _context.SKUs.Include(x=>x.SKUOptions).ThenInclude(x=>x.OptionGroup).SingleOrDefaultAsync(x => x.Id == skuFormViewModel.Id);
             if (sku == null) return NotFound();
+
+            if (skuFormViewModel.OptionIds.Any(optId => optId == null))
+            {
+                ModelState.AddModelError("OptionIds", "Option select fields are required.");
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -144,6 +155,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
+            skuFormViewModel.OptionGroups = await _context.OptionGroups.Include(x => x.Options).ToListAsync();
             ViewData["Header"] = "SKUs";
             return View("SKUForm",skuFormViewModel);
         }

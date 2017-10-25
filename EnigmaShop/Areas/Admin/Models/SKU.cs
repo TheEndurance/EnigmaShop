@@ -92,19 +92,10 @@ namespace EnigmaShop.Areas.Admin.Models
                     //check if this sku has this sku option
                     if (skuOpt != null) // this sku has this sku option (so we just need to edit it)
                     {
-                        if (optId == -1) // -1 indicates no value selected in the drop down list
-                        {
-                            SKUOptions.Remove(skuOpt);
-                        }
-                        else
-                        {
-                            skuOpt.OptionId = optId;
-                        }
+                            skuOpt.OptionId = optId;   
                     }
                     else // this sku does not have this sku option (so we must add it)
                     {
-                        if (optId == -1) continue; // -1 indicates no value selected in the drop down list
-
                         if (option == null) continue; //some error occured and this option could not be found
 
                         AddSKUOption(option);

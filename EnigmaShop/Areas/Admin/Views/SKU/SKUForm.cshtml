@@ -11,6 +11,7 @@
                     <div class="card-body">
                         <form asp-action="@Model.Action">
                             <div asp-validation-summary="All" class="text-danger"></div>
+                            <br />
                             <div class="form-group row">
                                 <label asp-for="ProductId" class="form-control-label col-md-3"></label>
                                 <div class="col-md-9">
@@ -64,17 +65,16 @@
                                     <div class="col-md-9">
                                         @if (Model.SKUOptions.Any(x => x.OptionGroupId == optGroup.Id))
                                         {
-                                            <select name="OptionIds" class="form-control" asp-items="@(new SelectList(optGroup.Options, "Id", "Name", Model.SKUOptions.Single(x => x.OptionGroupId == optGroup.Id).OptionId))">
-                                                <option value="-1">Select an option</option>
+                                            <select name="OptionIds" id="OptionIds" class="form-control" asp-items="@(new SelectList(optGroup.Options, "Id", "Name", Model.SKUOptions.Single(x => x.OptionGroupId == optGroup.Id).OptionId))">
+                                                <option value="">Select an option</option>
                                             </select>
 
                                         }
                                         else
                                         {
-                                            <select name="OptionIds" class="form-control" asp-items="@(new SelectList(optGroup.Options, "Id", "Name"))">
-                                                <option value="-1">Select an option</option>
+                                            <select name="OptionIds" id="OptionIds" class="form-control" asp-items="@(new SelectList(optGroup.Options, "Id", "Name"))">
+                                                <option value="">Select an option</option>
                                             </select>
-
                                         }
                                     </div>
                                 </div>

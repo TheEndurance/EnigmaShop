@@ -45,7 +45,6 @@ namespace EnigmaShop.Areas.Admin.ViewModels
 
         public IEnumerable<OptionGroup> OptionGroups { get; set; }
 
-        
         public int?[] OptionIds { get; set; }
 
         public HashSet<SKUOption> SKUOptions { get; set; }
