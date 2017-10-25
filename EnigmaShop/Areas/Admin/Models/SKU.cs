@@ -56,7 +56,6 @@ namespace EnigmaShop.Areas.Admin.Models
             IsAvailable = skuFormViewModel.IsAvailable;
             IsDiscounted = skuFormViewModel.IsDiscounted;
             Stock = skuFormViewModel.Stock;
-            ImageUrl = skuFormViewModel.ImageUrl;
             SKUOptions = new HashSet<SKUOption>();
         }
 
@@ -68,7 +67,6 @@ namespace EnigmaShop.Areas.Admin.Models
             IsAvailable = skuFormViewModel.IsAvailable;
             IsDiscounted = skuFormViewModel.IsDiscounted;
             Stock = skuFormViewModel.Stock;
-            ImageUrl = skuFormViewModel.ImageUrl;
             await AddSKUOptions(skuFormViewModel, applicationDbContext);
 
         }

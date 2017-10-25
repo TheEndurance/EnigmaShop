@@ -54,10 +54,10 @@ namespace EnigmaShop.Areas.Admin.Controllers
             {
                 ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name"),
                 OptionGroups = await _context.OptionGroups.Include(x => x.Options).ToListAsync()
-        };
+            };
 
             ViewData["Header"] = "SKUs";
-            return View("SKUForm",skuFormViewModel);
+            return View("SKUForm", skuFormViewModel);
         }
 
         // POST: Admin/SKU/Create
@@ -65,18 +65,20 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,OptionIds")] SKUFormViewModel skuFormViewModel)
+        public async Task<IActionResult> Create([Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,OptionIds,file")] SKUFormViewModel skuFormViewModel)
         {
+
+            var theFiles = Request.Form.Files;
             if (skuFormViewModel.OptionIds.Any(optId => optId == null))
             {
-                ModelState.AddModelError("OptionIds", "Option select fields are required.");
+                ModelState.AddModelError("OptionIds", "Option select fields are required");
             }
 
             if (ModelState.IsValid)
             {
                 var sku = new SKU(skuFormViewModel);
 
-                await sku.AddSKUOptions(skuFormViewModel,_context);
+                await sku.AddSKUOptions(skuFormViewModel, _context);
 
                 _context.Add(sku);
                 await _context.SaveChangesAsync();
@@ -86,7 +88,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
             skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
             skuFormViewModel.OptionGroups = await _context.OptionGroups.Include(x => x.Options).ToListAsync();
             ViewData["Header"] = "SKUs";
-            return View("SKUForm",skuFormViewModel);
+            return View("SKUForm", skuFormViewModel);
         }
 
         // GET: Admin/SKU/Edit/5
@@ -106,7 +108,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
             skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
             skuFormViewModel.OptionGroups = await _context.OptionGroups.Include(x => x.Options).ToListAsync();
             ViewData["Header"] = "SKUs";
-            return View("SKUForm",skuFormViewModel);
+            return View("SKUForm", skuFormViewModel);
         }
 
         // POST: Admin/SKU/Edit/5
@@ -122,7 +124,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var sku =  await _context.SKUs.Include(x=>x.SKUOptions).ThenInclude(x=>x.OptionGroup).SingleOrDefaultAsync(x => x.Id == skuFormViewModel.Id);
+            var sku = await _context.SKUs.Include(x => x.SKUOptions).ThenInclude(x => x.OptionGroup).SingleOrDefaultAsync(x => x.Id == skuFormViewModel.Id);
             if (sku == null) return NotFound();
 
             if (skuFormViewModel.OptionIds.Any(optId => optId == null))
@@ -135,7 +137,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 try
                 {
 
-                   await sku.EditSKU(skuFormViewModel,_context);
+                    await sku.EditSKU(skuFormViewModel, _context);
 
                     _context.Update(sku);
 
@@ -157,7 +159,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
             skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
             skuFormViewModel.OptionGroups = await _context.OptionGroups.Include(x => x.Options).ToListAsync();
             ViewData["Header"] = "SKUs";
-            return View("SKUForm",skuFormViewModel);
+            return View("SKUForm", skuFormViewModel);
         }
 
         // GET: Admin/SKU/Delete/5

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using EnigmaShop.Areas.Admin.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EnigmaShop.Areas.Admin.ViewModels
@@ -24,6 +25,7 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         public int CategoryId { get; set; }
 
         public SelectList CategoryList { get; set; }
+
 
         public ProductFormViewModel(Product product)
         {

@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using EnigmaShop.Areas.Admin.Controllers;
 using EnigmaShop.Areas.Admin.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -38,14 +39,15 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         [Required]
         public int Stock { get; set; }
 
-        [DisplayName("Image Url")]
-        public string ImageUrl { get; set; }
 
         public SelectList ProductList { get; set; }
 
         public IEnumerable<OptionGroup> OptionGroups { get; set; }
 
         public int?[] OptionIds { get; set; }
+
+        [DisplayName("SKU Images")]
+        public List<IFormFile> Files { get; set; }
 
         public HashSet<SKUOption> SKUOptions { get; set; }
 
@@ -60,7 +62,6 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             IsAvailable = sku.IsAvailable;
             IsDiscounted = sku.IsDiscounted;
             Stock = sku.Stock;
-            ImageUrl = sku.ImageUrl;
             SKUOptions = sku.SKUOptions;
         }
 

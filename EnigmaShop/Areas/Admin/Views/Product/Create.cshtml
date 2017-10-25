@@ -11,26 +11,26 @@
                         <h3 class="h4">Create Product</h3>
                     </div>
                     <div class="card-body">
-                        <form class="form-horizontal" asp-action="Create">
+                        <form class="form-horizontal" asp-action="Create" enctype="multipart/form-data">
                             <div asp-validation-summary="All" class="text-danger"></div>
                             <div class="form-group row">
-                                <label asp-for="Name" class="control-label col-sm-3"></label>
+                                <label asp-for="Name" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
-                                <input asp-for="Name" class="form-control" />
+                                    <input asp-for="Name" class="form-control" />
                                     <span asp-validation-for="Name" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
-                                <label asp-for="Description" class="control-label col-sm-3"></label>
+                                <label asp-for="Description" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
-                                <input asp-for="Description" class="form-control" />
+                                    <input asp-for="Description" class="form-control" />
                                     <span asp-validation-for="Description" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
-                                <label asp-for="CategoryId" class="control-label col-sm-3"></label>
+                                <label asp-for="CategoryId" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
                                     <select asp-for="CategoryId" class="form-control" asp-items="Model.CategoryList"></select>
                                 </div>
@@ -39,7 +39,7 @@
                             <div class="form-group row">
                                 <div class="col-sm-3"></div>
                                 <div class="col-sm-9">
-                                    <input type="submit" value="Create" class="btn btn-primary"/>
+                                    <input type="submit" value="Create" class="btn btn-primary" />
                                 </div>
                             </div>
                         </form>
@@ -51,10 +51,10 @@
             <a asp-action="Index">Back to List</a>
         </div>
     </div>
-   
+
 </section>
 
- 
+
 
 
 @section Scripts {
