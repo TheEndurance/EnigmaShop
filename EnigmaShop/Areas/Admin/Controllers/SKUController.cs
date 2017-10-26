@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using EnigmaShop.Areas.Admin.Models;
 using EnigmaShop.Areas.Admin.ViewModels;
 using EnigmaShop.Data;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 namespace EnigmaShop.Areas.Admin.Controllers
 {
@@ -15,10 +18,12 @@ namespace EnigmaShop.Areas.Admin.Controllers
     public class SKUController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHostingEnvironment _environment;
 
-        public SKUController(ApplicationDbContext context)
+        public SKUController(ApplicationDbContext context, IHostingEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // GET: Admin/SKU
@@ -65,19 +70,40 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,OptionIds,file")] SKUFormViewModel skuFormViewModel)
+        public async Task<IActionResult> Create([Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,OptionIds,Files")] SKUFormViewModel skuFormViewModel)
         {
 
-            var theFiles = Request.Form.Files;
             if (skuFormViewModel.OptionIds.Any(optId => optId == null))
             {
                 ModelState.AddModelError("OptionIds", "Option select fields are required");
             }
 
+            
+
             if (ModelState.IsValid)
             {
                 var sku = new SKU(skuFormViewModel);
 
+                // Add Pictures to server directory and create SKUPictures
+                var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+
+                if (skuFormViewModel.Files.Count > 0)
+                {
+                    foreach (var formFile in skuFormViewModel.Files)
+                    {
+                        if (formFile.Length > 0)
+                        {
+                            var imageUrl = Path.Combine("~/uploads/", formFile.FileName);
+                            using (var fileStream = new FileStream(Path.Combine(uploads, formFile.FileName), FileMode.Create))
+                            {
+                                await formFile.CopyToAsync(fileStream);
+                            }
+                            sku.AddSKUPicture(imageUrl, 100);
+                        }
+                    }
+                }
+                
+                //Add SKU Options
                 await sku.AddSKUOptions(skuFormViewModel, _context);
 
                 _context.Add(sku);

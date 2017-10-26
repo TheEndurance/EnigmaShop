@@ -85,9 +85,13 @@
                             <div class="form-group row">
                                 <label asp-for="Files" class="form-control-label col-sm-3">SKU Images</label>
                                 <div class="col-sm-9">
-                                    <input type="file" asp-for="Files" multiple />
+                                    <label class="custom-file">
+                                        <input type="file" asp-for="Files" class="custom-file-input" multiple />    
+                                        <span class="custom-file-control"></span>
+                                    </label>
+                                    
                                     <div id="preview">
-                                        
+
                                     </div>
                                 </div>
                             </div>

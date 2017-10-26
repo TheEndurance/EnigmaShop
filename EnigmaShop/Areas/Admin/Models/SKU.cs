@@ -40,6 +40,8 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public HashSet<SKUOption> SKUOptions { get; set; }
 
+        public ICollection<SKUPicture> SKUPictures { get; set; }
+
 
         public SKU()
         {
@@ -57,6 +59,7 @@ namespace EnigmaShop.Areas.Admin.Models
             IsDiscounted = skuFormViewModel.IsDiscounted;
             Stock = skuFormViewModel.Stock;
             SKUOptions = new HashSet<SKUOption>();
+            SKUPictures = new Collection<SKUPicture>();
         }
 
         public async Task EditSKU(SKUFormViewModel skuFormViewModel,ApplicationDbContext applicationDbContext)
@@ -111,6 +114,16 @@ namespace EnigmaShop.Areas.Admin.Models
                 OptionGroup = option.OptionGroup,
                 Option = option
 
+            });
+        }
+
+        public void AddSKUPicture(string imageUrl,int sorting)
+        {
+            SKUPictures.Add(new SKUPicture
+            {
+                SKU = this,
+                ImageUrl = imageUrl,
+                Sorting = sorting
             });
         }
     }

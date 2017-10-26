@@ -12,18 +12,21 @@ using Microsoft.Extensions.DependencyInjection;
 using EnigmaShop.Data;
 using EnigmaShop.Models;
 using EnigmaShop.Services;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.FileProviders;
 
 namespace EnigmaShop
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration,IHostingEnvironment _env)
         {
             Configuration = configuration;
+            env = _env;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment env { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -37,10 +40,7 @@ namespace EnigmaShop
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
-
-            services.AddSingleton<IFileProvider>(
-                new PhysicalFileProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
+            services.AddSingleton<IHostingEnvironment>(env);
 
             services.AddMvc();
         }
