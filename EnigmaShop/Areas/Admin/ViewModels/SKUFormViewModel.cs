@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -46,10 +47,13 @@ namespace EnigmaShop.Areas.Admin.ViewModels
 
         public int?[] OptionIds { get; set; }
 
-        [DisplayName("SKU Images")]
+        [DisplayName("Add new SKU Images")]
         public List<IFormFile> Files { get; set; }
 
         public HashSet<SKUOption> SKUOptions { get; set; }
+
+        public ICollection<SKUPicture> SKUPictures { get; set; }
+
 
 
         public SKUFormViewModel(SKU sku)
@@ -63,11 +67,13 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             IsDiscounted = sku.IsDiscounted;
             Stock = sku.Stock;
             SKUOptions = sku.SKUOptions;
+            SKUPictures = sku.SKUPictures;
         }
 
         public SKUFormViewModel()
         {
             SKUOptions = new HashSet<SKUOption>();
+            SKUPictures = new Collection<SKUPicture>();
         }
 
         public string Action

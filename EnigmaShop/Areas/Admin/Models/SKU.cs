@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using EnigmaShop.Areas.Admin.ViewModels;
 using EnigmaShop.Data;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -42,7 +45,6 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public ICollection<SKUPicture> SKUPictures { get; set; }
 
-
         public SKU()
         {
             SKUOptions = new HashSet<SKUOption>();
@@ -70,26 +72,25 @@ namespace EnigmaShop.Areas.Admin.Models
             IsAvailable = skuFormViewModel.IsAvailable;
             IsDiscounted = skuFormViewModel.IsDiscounted;
             Stock = skuFormViewModel.Stock;
-            await AddSKUOptions(skuFormViewModel, applicationDbContext);
-
         }
 
-        public async Task AddSKUOptions(SKUFormViewModel skuFormViewModel, ApplicationDbContext applicationDbContext)
+        public async Task UpdateSKUOptions(SKUFormViewModel skuFormViewModel, ApplicationDbContext applicationDbContext)
         {
             if (skuFormViewModel.OptionIds.Length > 0)
             {
                 foreach (var optionId in skuFormViewModel.OptionIds)
                 {
-                    if (optionId == null) continue;
+                    if (optionId == null) continue; // if no option was selected
 
                     int optId = (int)optionId;
 
                     var option = await applicationDbContext.Options.Include(x => x.OptionGroup)
-                        .SingleOrDefaultAsync(x => x.Id == optId);
+                        .SingleOrDefaultAsync(x => x.Id == optId); // get the option from database using optId
 
-                    var optionGroupId = option?.OptionGroupId ?? -1;
+                    var optionGroupId = option?.OptionGroupId ?? -1; //check the option's OptionGroupId
 
-                    var skuOpt = SKUOptions.FirstOrDefault(x => x.OptionGroupId== optionGroupId);
+                    var skuOpt = SKUOptions.FirstOrDefault(x => x.OptionGroupId== optionGroupId); //use the OptionGroupId to see if this sku has any SKUOptions with that OptionGroupId
+
                     //check if this sku has this sku option
                     if (skuOpt != null) // this sku has this sku option (so we just need to edit it)
                     {
@@ -104,7 +105,31 @@ namespace EnigmaShop.Areas.Admin.Models
                 }
             }
         }
-         
+
+        public async Task UpdateSKUPictures(IList<IFormFile> files, IHostingEnvironment environment)
+        {
+
+            // Add Pictures to server directory and create SKUPictures
+            var uploads = Path.Combine(environment.WebRootPath, "uploads");
+
+            if (files?.Count > 0)
+            {
+                foreach (var formFile in files)
+                {
+                    if (formFile.Length <= 0) continue;
+
+                    var imageUrl = Path.Combine("/uploads/", formFile.FileName);
+
+                    if (SKUPictures.Any(x => x.ImageUrl == imageUrl)) continue; //if this image is already saved
+                    
+                    using (var fileStream = new FileStream(Path.Combine(uploads, formFile.FileName), FileMode.Create))
+                    {
+                        await formFile.CopyToAsync(fileStream);
+                    }
+                    AddSKUPicture(imageUrl, 100);
+                }
+            }
+        }
 
         public void AddSKUOption(Option option)
         {

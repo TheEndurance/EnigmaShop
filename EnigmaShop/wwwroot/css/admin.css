@@ -1,4 +1,22 @@
 ﻿.image-preview {
     padding:1rem;
     height:150px;
+    -ms-transition: height 1s;
+    -o-transition: height 1s;
+    -webkit-transition: height 1s;
+    transition: height 1s;
+}
+
+.image-preview:hover {
+    height:200px;
+}
+
+.delete-picture-box:hover > img {
+    -ms-opacity:0.8;
+    opacity:0.8;
+}
+
+.delete-picture-icon:hover {
+    color:darkred;
+    cursor:pointer;
 }

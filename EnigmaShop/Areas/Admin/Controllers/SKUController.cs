@@ -77,36 +77,22 @@ namespace EnigmaShop.Areas.Admin.Controllers
             {
                 ModelState.AddModelError("OptionIds", "Option select fields are required");
             }
-
-            
+   
 
             if (ModelState.IsValid)
             {
+                //create new SKU
                 var sku = new SKU(skuFormViewModel);
 
-                // Add Pictures to server directory and create SKUPictures
-                var uploads = Path.Combine(_environment.WebRootPath, "uploads");
-
-                if (skuFormViewModel.Files.Count > 0)
-                {
-                    foreach (var formFile in skuFormViewModel.Files)
-                    {
-                        if (formFile.Length > 0)
-                        {
-                            var imageUrl = Path.Combine("~/uploads/", formFile.FileName);
-                            using (var fileStream = new FileStream(Path.Combine(uploads, formFile.FileName), FileMode.Create))
-                            {
-                                await formFile.CopyToAsync(fileStream);
-                            }
-                            sku.AddSKUPicture(imageUrl, 100);
-                        }
-                    }
-                }
-                
                 //Add SKU Options
-                await sku.AddSKUOptions(skuFormViewModel, _context);
+                await sku.UpdateSKUOptions(skuFormViewModel, _context);
 
+                //Add SKU Pictures
+                await sku.UpdateSKUPictures(skuFormViewModel.Files, _environment);
+
+                //Add SKU to DB
                 _context.Add(sku);
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -125,11 +111,13 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var sku = await _context.SKUs.Include(x => x.SKUOptions).ThenInclude(x => x.OptionGroup).SingleOrDefaultAsync(m => m.Id == id);
+            var sku = await _context.SKUs.Include(x=>x.SKUPictures).Include(x => x.SKUOptions).ThenInclude(x => x.OptionGroup).SingleOrDefaultAsync(m => m.Id == id);
+
             if (sku == null)
             {
                 return NotFound();
             }
+
             var skuFormViewModel = new SKUFormViewModel(sku);
             skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
             skuFormViewModel.OptionGroups = await _context.OptionGroups.Include(x => x.Options).ToListAsync();
@@ -142,7 +130,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,OptionIds")] SKUFormViewModel skuFormViewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,OptionIds,Files")] SKUFormViewModel skuFormViewModel)
         {
 
             if (id != skuFormViewModel.Id)
@@ -150,7 +138,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var sku = await _context.SKUs.Include(x => x.SKUOptions).ThenInclude(x => x.OptionGroup).SingleOrDefaultAsync(x => x.Id == skuFormViewModel.Id);
+            var sku = await _context.SKUs.Include(x=>x.SKUPictures).Include(x => x.SKUOptions).ThenInclude(x => x.OptionGroup).SingleOrDefaultAsync(x => x.Id == skuFormViewModel.Id);
+
             if (sku == null) return NotFound();
 
             if (skuFormViewModel.OptionIds.Any(optId => optId == null))
@@ -162,9 +151,16 @@ namespace EnigmaShop.Areas.Admin.Controllers
             {
                 try
                 {
-
+                    //edit SKU properties
                     await sku.EditSKU(skuFormViewModel, _context);
+                    
+                    //Update sku options
+                    await sku.UpdateSKUOptions(skuFormViewModel, _context);
 
+                    //Update sku pictures
+                    await sku.UpdateSKUPictures(skuFormViewModel.Files, _environment);
+
+                    //update sku
                     _context.Update(sku);
 
                     await _context.SaveChangesAsync();

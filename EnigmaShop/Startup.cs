@@ -66,6 +66,10 @@ namespace EnigmaShop
 
             app.UseMvc(routes =>
             {
+                //routes.MapRoute(
+                //    name: "api-areas",
+                //    template: "{area:exists}/api/{controller}/{action}/{id?}"
+                //);
                 routes.MapRoute(
                     name: "areas",
                     template: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
