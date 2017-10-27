@@ -28,7 +28,6 @@ namespace EnigmaShop.Areas.Admin.Models
         [Required]
         public decimal Price { get; set; }
 
-
         public decimal DiscountedPrice { get; set; }
 
         [Required]
@@ -38,8 +37,6 @@ namespace EnigmaShop.Areas.Admin.Models
 
         [Required]
         public int Stock { get; set; }
-
-        public string ImageUrl { get; set; }
 
         public HashSet<SKUOption> SKUOptions { get; set; }
 

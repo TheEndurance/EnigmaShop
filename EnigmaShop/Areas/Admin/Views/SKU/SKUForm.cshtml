@@ -92,7 +92,7 @@
                                             @foreach (var skuPicture in Model.SKUPictures)
                                             {
                                                 <div id="@skuPicture.Id" class="col-sm-2 delete-picture-box">
-                                                    <img src="@skuPicture.ImageUrl" class="img-fluid img-thumbnail" />
+                                                    <img src="@skuPicture.ImageUrl" class="img-fluid img-thumbnail" title="@skuPicture.ImageUrl" />
                                                     <a class="js-delete-picture" data-sku-picture-id="@skuPicture.Id"><i class="fa fa-times delete-picture-icon" aria-hidden="true"></i></a>
                                                 </div>
 
