@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EnigmaShop.Areas.Admin.Models
 {
@@ -13,6 +15,11 @@ namespace EnigmaShop.Areas.Admin.Models
         [Required]
         [StringLength(50)]
         public string Type { get; set; }
+
+        [ForeignKey("CategoryGroupId")]
+        public CategoryGroup CategoryGroup { get; set; }
+
+        public int CategoryGroupId { get; set; }
 
     }
 }

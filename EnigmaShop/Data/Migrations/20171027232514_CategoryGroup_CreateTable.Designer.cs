@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171027232514_CategoryGroup_CreateTable")]
+    partial class CategoryGroup_CreateTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +26,7 @@ namespace EnigmaShop.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("CategoryGroupId");
+                    b.Property<int?>("CategoryGroupId");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -334,10 +335,9 @@ namespace EnigmaShop.Data.Migrations
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.Category", b =>
                 {
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.CategoryGroup", "CategoryGroup")
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.CategoryGroup")
                         .WithMany("Categories")
-                        .HasForeignKey("CategoryGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CategoryGroupId");
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.Option", b =>

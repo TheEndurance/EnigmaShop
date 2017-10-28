@@ -18,6 +18,7 @@ namespace EnigmaShop.Data
         public DbSet<OptionGroup> OptionGroups { get; set; }
         public DbSet<SKUPicture> SKUPictures { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<CategoryGroup> CategoryGroups { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
