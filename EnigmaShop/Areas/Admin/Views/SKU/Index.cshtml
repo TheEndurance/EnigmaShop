@@ -35,9 +35,8 @@
                             <th>
                                 @Html.DisplayNameFor(model => model.Stock)
                             </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.ImageUrl)
-                            </th>
+                            <th>Images</th>
+
                             <th></th>
                         </tr>
                         </thead>
@@ -64,7 +63,18 @@
                                     @Html.DisplayFor(modelItem => item.Stock)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.ImageUrl)
+                                    @foreach (var option in item.SKUOptions)
+                                    {
+                                        <ul class="list-unstyled">
+                                            @option.OptionGroup.Name
+                                        </ul>
+                                    }
+                                </td>
+                                <td>
+                                    @foreach (var picture in item.SKUPictures)
+                                    {
+                                        <img class="sku-list-picture" src="@picture.ImageUrl"/>
+                                    }
                                 </td>
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

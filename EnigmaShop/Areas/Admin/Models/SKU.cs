@@ -61,7 +61,7 @@ namespace EnigmaShop.Areas.Admin.Models
             SKUPictures = new Collection<SKUPicture>();
         }
 
-        public async Task EditSKU(SKUFormViewModel skuFormViewModel,ApplicationDbContext applicationDbContext)
+        public void EditSKU(SKUFormViewModel skuFormViewModel,ApplicationDbContext applicationDbContext)
         {
             ProductId = skuFormViewModel.ProductId;
             Price = skuFormViewModel.Price;

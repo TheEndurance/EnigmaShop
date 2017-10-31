@@ -29,7 +29,12 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // GET: Admin/SKU
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.SKUs.Include(s => s.Product);
+            var applicationDbContext = _context.SKUs
+                .Include(s => s.Product)
+                .Include(x => x.SKUOptions)
+                .Include(x => x.SKUOptions)
+                .ThenInclude(x => x.OptionGroup);
+
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -152,7 +157,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 try
                 {
                     //edit SKU properties
-                    await sku.EditSKU(skuFormViewModel, _context);
+                    sku.EditSKU(skuFormViewModel, _context);
                     
                     //Update sku options
                     await sku.UpdateSKUOptions(skuFormViewModel, _context);

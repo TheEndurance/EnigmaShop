@@ -30,9 +30,20 @@
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
+                                <label asp-for="CategoryGroupId" class="form-control-label col-sm-3"></label>
+                                <div class="col-sm-9">
+                                    <select asp-for="CategoryGroupId" class="form-control" asp-items="Model.CategoryGroupList">
+                                        <option>Select a category group</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
                                 <label asp-for="CategoryId" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
-                                    <select asp-for="CategoryId" class="form-control" asp-items="Model.CategoryList"></select>
+                                    <select name="CategoryId" class="form-control" id="CategoryId">
+                                        
+                                    </select>
                                 </div>
                             </div>
                             <div class="line"></div>
@@ -55,8 +66,29 @@
 </section>
 
 
-
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            $("form #CategoryGroupId").change(function() {
+                var selectedGroupId = $(this).val();
+                if (isNaN(selectedGroupId)) {
+                    return;
+                }
+                var url = "/admin/api/CategoryData/GetCategoryByGroupId/" + selectedGroupId;
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (categories) {
+                        var markup = `${categories.map(category => `<option value="${category.id}">${category.type}</option>`)}`;
+                        $("form #CategoryId").html(markup);
+                    },
+                    error: function() {
+                        alert("An error occured retrieving categories for the selected category group.");
+                    }
+                });
+            });
+
+        });
+    </script>
 }

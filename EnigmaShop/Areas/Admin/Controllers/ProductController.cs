@@ -53,7 +53,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         {
             var productForm = new ProductFormViewModel
             {
-                CategoryList = new SelectList(await _context.Categories.ToListAsync(),"Id","Type")
+                CategoryGroupList = new SelectList(await _context.CategoryGroups.ToListAsync(),"Id","Type")
             };
             ViewData["Header"] = "Product";
 
@@ -65,7 +65,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description,Name,CategoryId")] ProductFormViewModel productFormViewModel)
+        public async Task<IActionResult> Create([Bind("Id,Description,Name,CategoryGroupId,CategoryId")] ProductFormViewModel productFormViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -74,7 +74,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            productFormViewModel.CategoryList = new SelectList(await _context.Categories.ToListAsync(), "Id", "Type");
+            productFormViewModel.CategoryGroupList =
+                new SelectList(await _context.CategoryGroups.ToListAsync(), "Id", "Type");
             ViewData["Header"] = "Product";
             return View(productFormViewModel);
         }
@@ -93,7 +94,12 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return NotFound();
             }
             var productFormViewModel = new ProductFormViewModel(product);
-            productFormViewModel.CategoryList = new SelectList(await _context.Categories.ToListAsync(),"Id","Type");
+            productFormViewModel.CategoryGroupList =
+                new SelectList(await _context.CategoryGroups.ToListAsync(), "Id", "Type");
+
+            productFormViewModel.CategoryList = new SelectList(await _context.Categories
+                .Where(x => x.CategoryGroupId == product.CategoryGroupId)
+                .ToListAsync(),"Id","Type",product.CategoryId);
             ViewData["Header"] = "Product";
             return View(productFormViewModel);
         }
@@ -103,7 +109,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Name,CategoryId")] ProductFormViewModel productFormViewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Name,CategoryGroupId,CategoryId")] ProductFormViewModel productFormViewModel)
         {
             if (id != productFormViewModel.Id)
             {
@@ -134,7 +140,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            productFormViewModel.CategoryList = new SelectList(await _context.Categories.ToListAsync(),"Id","Type");
+            productFormViewModel.CategoryGroupList =
+                new SelectList(await _context.CategoryGroups.ToListAsync(), "Id", "Type");
             ViewData["Header"] = "Product";
             return View(productFormViewModel);
         }

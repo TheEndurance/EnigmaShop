@@ -25,6 +25,11 @@ namespace EnigmaShop.Areas.Admin.Models
         [ForeignKey("CategoryId")]
         public Category Category { get; set; }
 
+        public int CategoryGroupId { get; set; }
+
+        [ForeignKey("CategoryGroupId")]
+        public CategoryGroup CategoryGroup { get; set; }
+
         public ICollection<SKU> SKUs { get; set; }
 
         public Product()
@@ -38,6 +43,7 @@ namespace EnigmaShop.Areas.Admin.Models
             Name = productFormViewModel.Name;
             Description = productFormViewModel.Description;
             CategoryId = productFormViewModel.CategoryId;
+            CategoryGroupId = productFormViewModel.CategoryGroupId;
         }
 
         public void EditProduct(ProductFormViewModel productFormViewModel)
@@ -45,6 +51,7 @@ namespace EnigmaShop.Areas.Admin.Models
             Name = productFormViewModel.Name;
             Description = productFormViewModel.Description;
             CategoryId = productFormViewModel.CategoryId;
+            CategoryGroupId = productFormViewModel.CategoryGroupId;
         }
     }
 }
