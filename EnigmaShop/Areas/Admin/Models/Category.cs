@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -13,13 +14,27 @@ namespace EnigmaShop.Areas.Admin.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(50)]
-        public string Type { get; set; }
+        [StringLength(100)]
+        public string Name { get; set; }
 
-        [ForeignKey("CategoryGroupId")]
-        public CategoryGroup CategoryGroup { get; set; }
+        public int Order { get; set; }
 
-        public int CategoryGroupId { get; set; }
+        public int? ParentCategoryId { get; set; }
+
+        [ForeignKey("ParentCategoryId")]
+        public Category ParentCategory { get; set; }
+
+        public int RootCategoryId { get; set; }
+
+        [ForeignKey("RootCategoryId")]
+        public Category RootCategory { get; set; }
+
+        public ICollection<Category> Categories { get; set; }
+
+        public Category()
+        {
+            Categories = new Collection<Category>();
+        }
 
     }
 }

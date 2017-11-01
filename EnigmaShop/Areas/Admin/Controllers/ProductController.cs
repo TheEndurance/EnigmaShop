@@ -24,7 +24,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // GET: Admin/Product
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Products.Include(x=>x.CategoryGroup).Include(p => p.Category);
+            var applicationDbContext = _context.Products.Include(x => x.ProductCategories.Select(y => y.Category));
             ViewData["Header"] = "Product";
             return View(await applicationDbContext.ToListAsync());
         }
@@ -38,7 +38,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
             }
 
             var product = await _context.Products
-                .Include(p => p.Category)
+                .Include(p => p.ProductCategories)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -53,7 +53,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         {
             var productForm = new ProductFormViewModel
             {
-                CategoryGroupList = new SelectList(await _context.CategoryGroups.ToListAsync(),"Id","Type")
+                CategoryGroupList = new SelectList(await _context.ProductCategories.ToListAsync(),"Id","Type")
             };
             ViewData["Header"] = "Product";
 
@@ -75,7 +75,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             productFormViewModel.CategoryGroupList =
-                new SelectList(await _context.CategoryGroups.ToListAsync(), "Id", "Type");
+                new SelectList(await _context.ProductCategories.ToListAsync(), "Id", "Type");
             ViewData["Header"] = "Product";
             return View(productFormViewModel);
         }
@@ -95,11 +95,12 @@ namespace EnigmaShop.Areas.Admin.Controllers
             }
             var productFormViewModel = new ProductFormViewModel(product);
             productFormViewModel.CategoryGroupList =
-                new SelectList(await _context.CategoryGroups.ToListAsync(), "Id", "Type");
+                new SelectList(await _context.ProductCategories.ToListAsync(), "Id", "Type");
 
-            productFormViewModel.CategoryList = new SelectList(await _context.Categories
-                .Where(x => x.CategoryGroupId == product.CategoryGroupId)
-                .ToListAsync(),"Id","Type",product.CategoryId);
+            //TODO:
+            //productFormViewModel.CategoryList = new SelectList(await _context.Categories
+            //    .Where(x => x.CategoryGroupId == product.CategoryGroupId)
+            //    .ToListAsync(),"Id","Type",product.CategoryId);
             ViewData["Header"] = "Product";
             return View(productFormViewModel);
         }
@@ -141,7 +142,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             productFormViewModel.CategoryGroupList =
-                new SelectList(await _context.CategoryGroups.ToListAsync(), "Id", "Type");
+                new SelectList(await _context.ProductCategories.ToListAsync(), "Id", "Type");
             ViewData["Header"] = "Product";
             return View(productFormViewModel);
         }
@@ -157,7 +158,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
             }
 
             var product = await _context.Products
-                .Include(p => p.Category)
+                .Include(p => p.ProductCategories)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {

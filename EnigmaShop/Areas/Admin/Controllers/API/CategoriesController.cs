@@ -20,11 +20,12 @@ namespace EnigmaShop.Areas.Admin.Controllers.API
         [HttpGet("{id:int}")]
         public IActionResult GetCategoryByGroupId(int id)
         {
-            var categories = _context.Categories.Where(x => x.CategoryGroupId == id).ToList();
-            if (!categories.Any())
-                return NotFound();
+            //var categories = _context.Categories.Where(x => x.CategoryGroupId == id).ToList();
+            //if (!categories.Any())
+            //    return NotFound();
 
-            return Json(categories);
+            //return Json(categories);
+            return Ok();
         }
 
 

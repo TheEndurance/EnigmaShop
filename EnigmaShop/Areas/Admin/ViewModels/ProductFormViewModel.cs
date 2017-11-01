@@ -24,9 +24,6 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         [DisplayName("Category Type")]
         public int CategoryId { get; set; }
 
-        [DisplayName("Category Group Type")]
-        public int CategoryGroupId { get; set; }
-
         public SelectList CategoryGroupList { get; set; }
 
         public SelectList CategoryList { get; set; }
@@ -36,8 +33,6 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             Id = product.Id;
             Name = product.Name;
             Description = product.Description;
-            CategoryId = product.CategoryId;
-            CategoryGroupId = product.CategoryGroupId;
         }
 
         public ProductFormViewModel()

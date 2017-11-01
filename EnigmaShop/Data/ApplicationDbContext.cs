@@ -18,7 +18,7 @@ namespace EnigmaShop.Data
         public DbSet<OptionGroup> OptionGroups { get; set; }
         public DbSet<SKUPicture> SKUPictures { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<CategoryGroup> CategoryGroups { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -58,17 +58,20 @@ namespace EnigmaShop.Data
                 .HasDefaultValue(0.00m);
 
 
-            // on delete of the category, don't delete the product, let the cascade to category group handle deleting the product
-            builder.Entity<Product>()
+            // Don't delete product when deleting product category
+            builder.Entity<ProductCategory>()
+                .HasOne(x => x.Product)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Don't delete category when deleting product category
+            builder.Entity<ProductCategory>()
                 .HasOne(x => x.Category)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // on delete of the category group, delete the product
-            builder.Entity<Product>()
-                .HasOne(x => x.CategoryGroup)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Cascade);
+      
+
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);

@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171101144057_Category_ParentAndRootCategory_CreateColumns")]
+    partial class Category_ParentAndRootCategory_CreateColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,6 +78,10 @@ namespace EnigmaShop.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("CategoryGroupId");
+
+                    b.Property<int>("CategoryId");
+
                     b.Property<string>("Description");
 
                     b.Property<string>("Name")
@@ -84,6 +89,10 @@ namespace EnigmaShop.Data.Migrations
                         .HasMaxLength(80);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryGroupId");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
                 });
@@ -97,21 +106,13 @@ namespace EnigmaShop.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100);
+                        .HasMaxLength(50);
 
                     b.Property<int>("Order");
-
-                    b.Property<int>("ProductId");
-
-                    b.Property<int?>("ProductId1");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("ProductId1");
 
                     b.ToTable("ProductCategories");
                 });
@@ -352,21 +353,25 @@ namespace EnigmaShop.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.Product", b =>
+                {
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.ProductCategory", "ProductCategory")
+                        .WithMany()
+                        .HasForeignKey("CategoryGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.ProductCategory", b =>
                 {
                     b.HasOne("EnigmaShop.Areas.Admin.Models.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.Product")
-                        .WithMany("ProductCategories")
-                        .HasForeignKey("ProductId1");
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKU", b =>
