@@ -76,7 +76,7 @@
                 if (isNaN(selectedGroupId)) {
                     return;
                 }
-                var url = "/admin/api/CategoryData/GetCategoryByGroupId/" + selectedGroupId;
+                var url = "/admin/api/categories/" + selectedGroupId;
                 $.ajax({
                     url: url,
                     type: "GET",

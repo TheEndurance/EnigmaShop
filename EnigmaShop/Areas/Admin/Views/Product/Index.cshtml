@@ -18,12 +18,9 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.Name)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.Category)
-                                </th>
+                                <th>Name</th>
+                                <th>Category Group</th>
+                                <th>Category</th>
                                 <th>SKU Actions</th>
                                 <th>Product Actions</th>
                             </tr>
@@ -34,6 +31,9 @@
                                 <tr>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CategoryGroup.Type)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Category.Type)

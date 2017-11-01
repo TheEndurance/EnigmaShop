@@ -8,15 +8,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace EnigmaShop.Areas.Admin.Controllers.API
 {
     [Route("admin/api/[controller]")]
-    public class CategoryDataController : Controller
+    public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public CategoryDataController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context)
         {
             _context = context;
         }
-        [HttpGet("GetCategoryByGroupId/{id:int}")]
+
+        [HttpGet("{id:int}")]
         public IActionResult GetCategoryByGroupId(int id)
         {
             var categories = _context.Categories.Where(x => x.CategoryGroupId == id).ToList();
@@ -25,5 +26,7 @@ namespace EnigmaShop.Areas.Admin.Controllers.API
 
             return Json(categories);
         }
+
+
     }
 }

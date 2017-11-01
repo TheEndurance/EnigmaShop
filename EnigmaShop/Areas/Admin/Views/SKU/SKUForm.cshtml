@@ -159,7 +159,7 @@
 
                     reader.addEventListener("load", function () {
                         var image = new Image();
-                        image.className = "rounded image-preview";
+                        image.className = "sku-add-picture image-hover-enlarge";
                         image.title = file.name;
                         image.src = this.result;
                         preview.appendChild(image);
@@ -177,7 +177,7 @@
             // ** Delete Images ** //
             $(".js-delete-picture").click(function() {
                 var skuPictureId = $(this).attr('data-sku-picture-id');
-                var url = "/admin/api/SKUPictureData/DeleteById/" + skuPictureId;
+                var url = "/admin/api/SKUPictures/" + skuPictureId;
                 $.ajax({
                     url: url,
                     type: "DELETE",

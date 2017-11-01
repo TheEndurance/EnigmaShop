@@ -8,7 +8,7 @@ namespace EnigmaShop.Controllers
 {
     public class ShopController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Products(string categoryGroup,int[] categoryId)
         {
             return View();
         }

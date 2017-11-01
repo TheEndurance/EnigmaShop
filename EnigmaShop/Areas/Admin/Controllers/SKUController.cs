@@ -31,7 +31,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         {
             var applicationDbContext = _context.SKUs
                 .Include(s => s.Product)
-                .Include(x => x.SKUOptions)
+                .Include(x => x.SKUPictures)
                 .Include(x => x.SKUOptions)
                 .ThenInclude(x => x.OptionGroup);
 

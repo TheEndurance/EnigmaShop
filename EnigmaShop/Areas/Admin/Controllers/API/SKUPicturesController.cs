@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace EnigmaShop.Areas.Admin.Controllers.API
 {
     [Route("admin/api/[controller]")]
-    public class SKUPictureDataController : Controller
+    public class SKUPicturesController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public SKUPictureDataController(ApplicationDbContext applicationDbContext)
+        public SKUPicturesController(ApplicationDbContext applicationDbContext)
         {
             _context = applicationDbContext;
         }
 
-        [HttpDelete("DeleteById/{id:int}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteSKUPictureById(int id)
         {
             var skuPicture = Queryable.SingleOrDefault<SKUPicture>(_context.SKUPictures, x => x.Id == id);

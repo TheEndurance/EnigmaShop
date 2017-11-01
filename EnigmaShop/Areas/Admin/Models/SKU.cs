@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
@@ -28,11 +29,15 @@ namespace EnigmaShop.Areas.Admin.Models
         [Required]
         public decimal Price { get; set; }
 
+        [DisplayName("Discounted Price")]
         public decimal DiscountedPrice { get; set; }
 
+
         [Required]
+        [DisplayName("Available")]
         public bool IsAvailable { get; set; }
 
+        [DisplayName("Discounted")]
         public bool IsDiscounted { get; set; }
 
         [Required]

@@ -24,7 +24,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // GET: Admin/Product
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Products.Include(p => p.Category);
+            var applicationDbContext = _context.Products.Include(x=>x.CategoryGroup).Include(p => p.Category);
             ViewData["Header"] = "Product";
             return View(await applicationDbContext.ToListAsync());
         }

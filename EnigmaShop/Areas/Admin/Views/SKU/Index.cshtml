@@ -72,9 +72,10 @@
                                 </td>
                                 <td>
                                     @foreach (var picture in item.SKUPictures)
-                                    {
-                                        <img class="sku-list-picture" src="@picture.ImageUrl"/>
-                                    }
+                                         {
+                                             <img class="sku-list-picture image-hover-scale" src="@picture.ImageUrl"/>
+                                         }
+                                 
                                 </td>
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
