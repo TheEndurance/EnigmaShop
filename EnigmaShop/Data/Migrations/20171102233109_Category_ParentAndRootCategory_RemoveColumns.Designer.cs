@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171102233109_Category_ParentAndRootCategory_RemoveColumns")]
+    partial class Category_ParentAndRootCategory_RemoveColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,6 +25,8 @@ namespace EnigmaShop.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("CategoryId");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -37,7 +40,7 @@ namespace EnigmaShop.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentCategoryId");
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Categories");
                 });
@@ -340,9 +343,9 @@ namespace EnigmaShop.Data.Migrations
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.Category", b =>
                 {
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.Category", "ParentCategory")
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.Category")
                         .WithMany("Categories")
-                        .HasForeignKey("ParentCategoryId");
+                        .HasForeignKey("CategoryId");
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.Option", b =>

@@ -5,13 +5,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
-using EnigmaShop.Areas.Admin.ViewModels;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using EnigmaShop.Areas.Admin.Models;
 
-namespace EnigmaShop.Areas.Admin.Models
+namespace EnigmaShop.Areas.Admin.ViewModels
 {
-    public class Category
+    public class CategoryFormViewModel
     {
+
         public int Id { get; set; }
 
         [Required]
@@ -24,24 +24,21 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public int RootCategoryId { get; set; }
 
-        public Category ParentCategory { get; set; }
-
         public ICollection<Category> Categories { get; set; }
 
-        public Category(CategoryFormViewModel categoryFormViewModel)
+        public CategoryFormViewModel(Category category)
         {
-            Id = categoryFormViewModel.Id;
-            Name = categoryFormViewModel.Name;
-            Order = categoryFormViewModel.Order;
-            ParentCategoryId = categoryFormViewModel.ParentCategoryId;
-            RootCategoryId = categoryFormViewModel.RootCategoryId;
-            Categories = new Collection<Category>();
+            Id = category.Id;
+            Name = category.Name;
+            Order = category.Order;
+            ParentCategoryId = category.ParentCategoryId;
+            RootCategoryId = category.RootCategoryId;
+            Categories = category.Categories;
         }
 
-        public Category()
+        public CategoryFormViewModel()
         {
             Categories = new Collection<Category>();
         }
-
     }
 }

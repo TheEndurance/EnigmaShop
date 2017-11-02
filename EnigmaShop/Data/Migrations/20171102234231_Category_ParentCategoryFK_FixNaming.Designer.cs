@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171102234231_Category_ParentCategoryFK_FixNaming")]
+    partial class Category_ParentCategoryFK_FixNaming
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

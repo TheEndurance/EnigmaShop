@@ -1,0 +1,44 @@
+﻿@model EnigmaShop.Areas.Admin.ViewModels.CategoryFormViewModel
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+<section class="forms">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <h3 class="h4">Create Category</h3>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="Create">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <input type="hidden" asp-for="ParentCategoryId" />
+                            <input type="hidden" asp-for="RootCategoryId" />
+                            <input type="hidden" asp-for="Order" />
+                            <div class="form-group row">
+                                <label asp-for="Name" class="form-control-label col-sm-3"></label>
+                                <div class="col-sm-9">
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group">
+                                <input type="submit" value="Create" class="btn btn-default" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <a asp-action="Index">Back to List</a>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
