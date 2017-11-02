@@ -67,7 +67,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description,Name,CategoryGroupId,CategoryId")] ProductFormViewModel productFormViewModel)
+        public async Task<IActionResult> Create([Bind("Id,Description,Name,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId")] ProductFormViewModel productFormViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -90,14 +90,21 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.SingleOrDefaultAsync(m => m.Id == id);
+            var product = await _context.Products.Include(x=>x.ProductCategories).SingleOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
             var productFormViewModel = new ProductFormViewModel(product);
+
             productFormViewModel.PrimaryCategoryList =
                 new SelectList(await _context.Categories.Where(x => x.ParentCategoryId == null).ToListAsync(), "Id", "Name");
+            productFormViewModel.SecondaryCategoryList = new SelectList(
+                await _context.Categories.Where(x => x.ParentCategoryId == productFormViewModel.PrimaryCategoryId).ToListAsync(),
+                "Id", "Name");
+            productFormViewModel.TertiaryCategoryList = new SelectList(
+                await _context.Categories.Where(x => x.ParentCategoryId == productFormViewModel.SecondaryCategoryId)
+                    .ToListAsync(), "Id", "Name");
 
             //TODO:
             //productFormViewModel.CategoryList = new SelectList(await _context.Categories
@@ -112,14 +119,14 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Name,CategoryGroupId,CategoryId")] ProductFormViewModel productFormViewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Name,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId")] ProductFormViewModel productFormViewModel)
         {
             if (id != productFormViewModel.Id)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productFormViewModel.Id);
+            var product = await _context.Products.Include(x=>x.ProductCategories).SingleOrDefaultAsync(x => x.Id == productFormViewModel.Id);
             if (product == null) return NotFound();
                
             if (ModelState.IsValid)

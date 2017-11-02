@@ -30,17 +30,28 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         [DisplayName("Tertiary Category")]
         public int? TertiaryCategoryId { get; set; }
 
-
         public SelectList PrimaryCategoryList{ get; set; }
+
+        public SelectList SecondaryCategoryList { get; set; }
+
+        public SelectList TertiaryCategoryList { get; set; }
+
+        public ICollection<ProductCategory> ProductCategories { get; set; }
 
         public ProductFormViewModel(Product product)
         {
             Id = product.Id;
             Name = product.Name;
             Description = product.Description;
-            if (product.ProductCategories != null)
-                PrimaryCategoryId = product.ProductCategories.SingleOrDefault(x => x.Category.ParentCategoryId == null)?.CategoryId ?? 0;
+            ProductCategories = product.ProductCategories;
 
+            if (product.ProductCategories == null) return;
+
+            PrimaryCategoryId = product.ProductCategories.SingleOrDefault(x => x.Order == 1)?.CategoryId ?? 0;
+
+            SecondaryCategoryId = product.ProductCategories.SingleOrDefault(x => x.Order==2)?.CategoryId ?? 0;
+
+            TertiaryCategoryId = product.ProductCategories.SingleOrDefault(x => x.Order==3)?.CategoryId;
         }
 
         public ProductFormViewModel()

@@ -77,8 +77,6 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $(document).ready(function () {
-
-
             function GetCategorySelectList(selectedGroupId,targetSelectId) {
                 if (isNaN(selectedGroupId)) {
                     return;
@@ -88,7 +86,9 @@
                     url: url,
                     type: "GET",
                     success: function (categories) {
-                        var markup = `${categories.map(category => `<option value="${category.id}">${category.name}</option>`)}`;
+                        var markup = `<option>Select a category</option>
+                                        ${categories.map(category => `<option value="${category.id}">${category.name}</option>`)}
+                                      `;
                         document.querySelector("form #" + targetSelectId).innerHTML = markup;
                     },
                     error: function() {

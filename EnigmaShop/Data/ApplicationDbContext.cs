@@ -61,17 +61,18 @@ namespace EnigmaShop.Data
             // **
             // PRODUCT CATEGORY
             // **
+            builder.Entity<Product>()
+                .HasMany(x => x.ProductCategories)
+                .WithOne(x => x.Product)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Product Category composite key
-            builder.Entity<ProductCategory>()
-                .HasKey(c => new { c.ProductId, c.CategoryId });
-
+            
             // Don't delete product when deleting product category
             builder.Entity<ProductCategory>()
                 .HasOne(x => x.Product)
                 .WithMany(x=>x.ProductCategories)
                 .HasForeignKey(x=>x.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             //Don't delete category when deleting product category
             builder.Entity<ProductCategory>()
@@ -79,10 +80,6 @@ namespace EnigmaShop.Data
                 .WithMany()
                 .HasForeignKey(x=>x.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-          
-
-
 
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.

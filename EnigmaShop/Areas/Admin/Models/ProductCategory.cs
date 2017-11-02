@@ -10,6 +10,9 @@ namespace EnigmaShop.Areas.Admin.Models
 {
     public class ProductCategory
     {
+        [Key]
+        public int Id { get; set; }
+
         public int ProductId { get; set; }
 
         public int CategoryId { get; set; }
@@ -19,5 +22,18 @@ namespace EnigmaShop.Areas.Admin.Models
         public Product Product { get; set; }
 
         public int Order { get; set; }
+
+
+        public ProductCategory(int productId, int categoryId, int order)
+        {
+            ProductId = productId;
+            CategoryId = categoryId;
+            Order = order;
+        }
+
+        public ProductCategory()
+        {
+            
+        }
     }
 }
