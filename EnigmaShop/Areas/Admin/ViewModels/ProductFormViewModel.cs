@@ -21,18 +21,26 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         [StringLength(80)]
         public string Name { get; set; }
 
-        [DisplayName("Category Type")]
-        public int CategoryId { get; set; }
+        [DisplayName("Primary Category")]
+        public int PrimaryCategoryId { get; set; }
 
-        public SelectList CategoryGroupList { get; set; }
+        [DisplayName("Secondary Category")]
+        public int SecondaryCategoryId { get; set; }
 
-        public SelectList CategoryList { get; set; }
+        [DisplayName("Tertiary Category")]
+        public int? TertiaryCategoryId { get; set; }
+
+
+        public SelectList PrimaryCategoryList{ get; set; }
 
         public ProductFormViewModel(Product product)
         {
             Id = product.Id;
             Name = product.Name;
             Description = product.Description;
+            if (product.ProductCategories != null)
+                PrimaryCategoryId = product.ProductCategories.SingleOrDefault(x => x.Category.ParentCategoryId == null)?.CategoryId ?? 0;
+
         }
 
         public ProductFormViewModel()

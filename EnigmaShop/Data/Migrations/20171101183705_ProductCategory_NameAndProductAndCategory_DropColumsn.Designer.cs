@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171101183705_ProductCategory_NameAndProductAndCategory_DropColumsn")]
+    partial class ProductCategory_NameAndProductAndCategory_DropColumsn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,15 +91,16 @@ namespace EnigmaShop.Data.Migrations
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.ProductCategory", b =>
                 {
-                    b.Property<int>("ProductId");
-
-                    b.Property<int>("CategoryId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("Order");
 
-                    b.HasKey("ProductId", "CategoryId");
+                    b.Property<int?>("ProductId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductCategories");
                 });
@@ -341,15 +343,9 @@ namespace EnigmaShop.Data.Migrations
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.ProductCategory", b =>
                 {
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.Product", "Product")
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.Product")
                         .WithMany("ProductCategories")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ProductId");
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKU", b =>

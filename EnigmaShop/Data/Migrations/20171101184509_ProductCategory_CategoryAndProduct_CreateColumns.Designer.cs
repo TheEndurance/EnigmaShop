@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171101184509_ProductCategory_CategoryAndProduct_CreateColumns")]
+    partial class ProductCategory_CategoryAndProduct_CreateColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,15 +91,20 @@ namespace EnigmaShop.Data.Migrations
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.ProductCategory", b =>
                 {
-                    b.Property<int>("ProductId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("CategoryId");
 
                     b.Property<int>("Order");
 
-                    b.HasKey("ProductId", "CategoryId");
+                    b.Property<int>("ProductId");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductCategories");
                 });
@@ -347,7 +353,7 @@ namespace EnigmaShop.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EnigmaShop.Areas.Admin.Models.Product", "Product")
-                        .WithMany("ProductCategories")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });

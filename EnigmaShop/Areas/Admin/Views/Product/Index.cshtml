@@ -19,8 +19,8 @@
                             <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Category Group</th>
-                                <th>Category</th>
+                                <th>Primary Category</th>
+                                <th>Categories</th>
                                 <th>SKU Actions</th>
                                 <th>Product Actions</th>
                             </tr>
@@ -33,10 +33,13 @@
                                         @Html.DisplayFor(modelItem => item.Name)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.ProductCategory.Type)
+                                        @item.ProductCategories.Single(x=>x.Category.ParentCategoryId==null).Category.Name
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.Category.Type)
+                                        @foreach (var category in item.ProductCategories.OrderBy(y=>y.Order).Select(x => x.Category.Name))
+                                        {
+                                            <span>@category </span>
+                                        }
                                     </td>
                                     <td>
                                         <a asp-action="Create" asp-controller="SKU" asp-route-id="@item.Id">Create SKU</a> |
