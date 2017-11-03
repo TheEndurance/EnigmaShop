@@ -7,42 +7,65 @@
 <section>
     <div class="container-fluid">
         <p>
-            <a asp-action="Create">Create new primary category</a>
+            <a asp-action="Create" class="btn btn-dark">Create new primary category</a>
         </p>
         <div class="row">
             <div class="col-md-12">
-                @foreach (var item in Model)
-                {
-                    <ul class="category-ul">
+                <ul class="category-ul">
+                    @foreach (var item in Model)
+                    {
+
                         <li class="d-flex flex-row card p-4 my-2">
                             <div>@Html.DisplayFor(modelItem => item.Name)</div>
-                            <div class="ml-5"><a asp-action="CreateSubCategory" asp-controller="Category" asp-route-parentId="@item.Id">Create subcategory</a>
+                            <div class="ml-5">
+                                <a asp-action="CreateSubCategory" asp-controller="Category" asp-route-parentId="@item.Id" asp-route-rootId="@item.Id" class="hover-scale"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
                             </div>
+                            <div class="ml-4">
+                                <a asp-action="Edit" asp-controller="Category" asp-route-id="@item.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> | 
+                                <a asp-action="Delete" asp-controller="Category" asp-route-id="@item.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>
+                            </div>
+                            
                         </li>
                         <li>
-                            @foreach (var secondaryCat in item.Categories)
-                            {
-                                <ul class="category-ul">
+                            <ul class="category-ul">
+                                @foreach (var secondaryCat in item.Categories)
+                                {
+
                                     <li class="d-flex flex-row card p-4 my-2">
                                         <div>@Html.DisplayFor(modelItem => secondaryCat.Name)</div>
-                                        <div class="ml-5"><a asp-action="CreateSubCategory" asp-controller="Category" asp-route-parentId="@secondaryCat.Id" asp-route-rootId="@item.Id">Create subcategory</a></div>
+                                        <div class="ml-5">
+                                            <a asp-action="CreateSubCategory" asp-controller="Category" asp-route-parentId="@secondaryCat.Id" asp-route-rootId="@item.Id" class="hover-scale"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
+                                        </div>
+                                        <div class="ml-4">
+                                            <a asp-action="Edit" asp-controller="Category" asp-route-id="@secondaryCat.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> | 
+                                            <a asp-action="Delete" asp-controller="Category" asp-route-id="@secondaryCat.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>
+                                        </div>
                                     </li>
                                     <li>
-                                        @foreach (var tertiaryCat in secondaryCat.Categories)
-                                        {
-                                            <ul class="category-ul">
+                                        <ul class="category-ul">
+                                            @foreach (var tertiaryCat in secondaryCat.Categories)
+                                            {
+
                                                 <li class="d-flex flex-row card p-4 my-2">
-                                                    @Html.DisplayFor(modelItem => tertiaryCat.Name)
+                                                    <div>@Html.DisplayFor(modelItem => tertiaryCat.Name)</div>
+                                                    <div class="ml-4">
+                                                        <a asp-action="Edit" asp-controller="Category" asp-route-id="@tertiaryCat.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> | 
+                                                        <a asp-action="Delete" asp-controller="Category" asp-route-id="@tertiaryCat.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>
+                                                    </div>
                                                 </li>
-                                            </ul>
-                                        }
+                                                
+
+                                            }
+                                        </ul>
                                     </li>
-                                </ul>
-                            }
+
+                                }
+                            </ul>
 
                         </li>
-                    </ul>
-                }
+
+                    }
+                </ul>
             </div>
         </div>
     </div>

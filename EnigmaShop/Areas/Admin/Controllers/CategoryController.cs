@@ -80,6 +80,16 @@ namespace EnigmaShop.Areas.Admin.Controllers
             return View(categoryFormViewModel);
         }
 
+        public IActionResult CreateSubCategory(int parentId, int rootId)
+        {
+            var categoryFormViewModel = new CategoryFormViewModel();
+            categoryFormViewModel.ParentCategoryId = parentId;
+            categoryFormViewModel.RootCategoryId = rootId;
+            ViewData["Header"] = "Category";
+            return View("Create",categoryFormViewModel);
+        }
+
+
         // GET: Admin/Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
