@@ -28,8 +28,8 @@ a:hover, a:focus, i:hover, i:focus, span:hover, span:focus {
 }
 
 ul {
-  margin: 0;
-  padding: 0;
+    /*margin: 0;
+    padding: 0;*/
 }
 
 section {

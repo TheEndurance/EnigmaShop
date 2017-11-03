@@ -2,87 +2,49 @@
 @{
     ViewData["Title"] = "Index";
 }
-<h2>Index</h2>
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 
 
-@foreach (var item in Model)
-{
-    <ul>
-        Parent Categories
-        <li>
-            @Html.DisplayFor(modelItem => item.Name)
-        </li>
-        <li>
-            Secondary Categories
-            @foreach (var secondaryCat in item.Categories)
-            {
-                <ul>
-                    <li>
-                        @Html.DisplayFor(modelItem=>secondaryCat.Name)
-                    </li>
+<section>
+    <div class="container-fluid">
+        <p>
+            <a asp-action="Create">Create new primary category</a>
+        </p>
+        <div class="row">
+            <div class="col-md-12">
+                @foreach (var item in Model)
+                {
+                    <ul class="category-ul">
+                        <li class="d-flex flex-row card p-4 my-2">
+                            <div>@Html.DisplayFor(modelItem => item.Name)</div>
+                            <div class="ml-5"><a asp-action="CreateSubCategory" asp-controller="Category" asp-route-parentId="@item.Id">Create subcategory</a>
+                            </div>
+                        </li>
+                        <li>
+                            @foreach (var secondaryCat in item.Categories)
+                            {
+                                <ul class="category-ul">
+                                    <li class="d-flex flex-row card p-4 my-2">
+                                        <div>@Html.DisplayFor(modelItem => secondaryCat.Name)</div>
+                                        <div class="ml-5"><a asp-action="CreateSubCategory" asp-controller="Category" asp-route-parentId="@secondaryCat.Id" asp-route-rootId="@item.Id">Create subcategory</a></div>
+                                    </li>
+                                    <li>
+                                        @foreach (var tertiaryCat in secondaryCat.Categories)
+                                        {
+                                            <ul class="category-ul">
+                                                <li class="d-flex flex-row card p-4 my-2">
+                                                    @Html.DisplayFor(modelItem => tertiaryCat.Name)
+                                                </li>
+                                            </ul>
+                                        }
+                                    </li>
+                                </ul>
+                            }
 
-                    <li>
-                        Tertiary Categories
-                        @foreach (var tertiaryCat in secondaryCat.Categories)
-                        {
-                            <ul>
-                                <li>
-                                    @Html.DisplayFor(modelItem=>tertiaryCat.Name)
-                                </li>
-                            </ul>   
-                        }
-                    </li>
-                </ul>
-            }
-            
-        </li>
-    </ul>
-}
+                        </li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</section>
 
-@*<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Order)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ParentCategoryId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RootCategoryId)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Order)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ParentCategoryId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RootCategoryId)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>*@
