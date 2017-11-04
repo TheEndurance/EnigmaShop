@@ -7,7 +7,8 @@
     "jquery-validation": "1.14.0",
     "jquery-validation-unobtrusive": "3.2.6",
     "font-awesome": "Font-Awesome#v4.7.0",
-    "fontastic-influans": "*"
+    "fontastic-influans": "*",
+    "bootbox.js": "bootbox#v4.4.0"
   },
   "resolutions": {
     "bootstrap": "v4.0.0-beta"

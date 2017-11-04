@@ -67,36 +67,36 @@
         </div>
     </div>
 </section>
-
+<script src="~/lib/bootbox.js/bootbox.js"></script>
 @section scripts{
     <script>
-     
-            const categoryElements = document.getElementsByClassName("js-delete-category");
-            const categoryArray = Array.prototype.slice.call(categoryElements);
+        const categoryElements = document.getElementsByClassName("js-delete-category");
+        const categoryArray = Array.prototype.slice.call(categoryElements);
 
-            const DeleteCategoryById = function() {
-                const categoryId = this.getAttribute("data-category-id");
-                const categoryContainerUl = document.getElementById(categoryId);
-                const url = "/admin/api/categories/" + categoryId;
-                if (confirm("Are you sure you want to delete this category?")) {
-                    $.ajax({
-                        url: url,
-                        type: "DELETE",
-                        success: function() {
-                            $(categoryContainerUl).fadeOut("fast",
-                                function() {
-                                    this.remove();
-                                });
-                        },
-                        error: function() {
-                            alert("An error has occured while trying to delete the category");
-                        }
-                    });
-                }
-
-               
-            };
-            categoryArray.map(category => category.addEventListener("click", DeleteCategoryById, false));
+        const DeleteCategoryById = function() {
+            const categoryId = this.getAttribute("data-category-id");
+            const categoryContainerUl = document.getElementById(categoryId);
+            const url = "/admin/api/categories/" + categoryId;
+            bootbox.confirm("Are you sure you want to delete this category?",
+                function(result) {
+                    if (result === true) {
+                        $.ajax({
+                            url: url,
+                            type: "DELETE",
+                            success: function() {
+                                $(categoryContainerUl).fadeOut("fast",
+                                    function() {
+                                        this.remove();
+                                    });
+                            },
+                            error: function() {
+                                bootbox.alert("An error has occured while trying to delete the category");
+                            }
+                        });
+                    }
+                });
+        };
+        categoryArray.map(category => category.addEventListener("click", DeleteCategoryById, false));
 
     </script>
 }
