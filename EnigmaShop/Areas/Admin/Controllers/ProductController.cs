@@ -41,6 +41,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
 
             var product = await _context.Products
                 .Include(p => p.ProductCategories)
+                .ThenInclude(x=>x.Category)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {

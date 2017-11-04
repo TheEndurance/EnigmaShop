@@ -57,7 +57,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         {
             var categoryFormViewModel = new CategoryFormViewModel();
             ViewData["Header"] = "Category";
-            return View(categoryFormViewModel);
+            return View("CategoryForm",categoryFormViewModel);
         }
 
         // POST: Admin/Categories/Create
@@ -77,7 +77,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["Header"] = "Category";
-            return View(categoryFormViewModel);
+            return View("CategoryForm",categoryFormViewModel);
         }
 
         public IActionResult CreateSubCategory(int parentId, int rootId)
@@ -86,7 +86,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
             categoryFormViewModel.ParentCategoryId = parentId;
             categoryFormViewModel.RootCategoryId = rootId;
             ViewData["Header"] = "Category";
-            return View("Create",categoryFormViewModel);
+            return View("CategoryForm",categoryFormViewModel);
         }
 
 
@@ -103,7 +103,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(category);
+            var categoryFormViewModel = new CategoryFormViewModel(category);
+            return View("CategoryForm", categoryFormViewModel);
         }
 
         // POST: Admin/Categories/Edit/5
@@ -111,9 +112,9 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Order,ParentCategoryId,RootCategoryId")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Order,ParentCategoryId,RootCategoryId")] CategoryFormViewModel categoryFormViewModel)
         {
-            if (id != category.Id)
+            if (id != categoryFormViewModel.Id)
             {
                 return NotFound();
             }
@@ -122,12 +123,15 @@ namespace EnigmaShop.Areas.Admin.Controllers
             {
                 try
                 {
+                    var category = _context.Categories.Single(x => x.Id == categoryFormViewModel.Id);
+                    category.Name = categoryFormViewModel.Name;
+
                     _context.Update(category);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.Id))
+                    if (!CategoryExists(categoryFormViewModel.Id))
                     {
                         return NotFound();
                     }
@@ -138,7 +142,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return View("CategoryForm",categoryFormViewModel);
         }
 
         // GET: Admin/Categories/Delete/5

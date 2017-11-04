@@ -26,11 +26,13 @@
                             </dd>
 
                             <dt>
-                                @Html.DisplayNameFor(model => model.Category)
+                                Product Categories
                             </dt>
-                            <dd>
-                                @Html.DisplayFor(model => model.Category.Type)
-                            </dd>
+                            @foreach (var category in Model.ProductCategories.Select(x => x.Category))
+                            {
+                                <span>@category.Name | </span>
+                            }
+
                             <dt>
                                 @Html.DisplayNameFor(model => model.SKUs)
                             </dt>

@@ -7,7 +7,7 @@
     <div class="container-fluid">
         <div class="row">
             <p>
-                <a asp-action="Create">Create New</a>
+                <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
             </p>
         </div>
         <div class="row">
@@ -46,9 +46,9 @@
                                         <a asp-action="Index" asp-controller="SKU" asp-route-id="@item.Id">View SKU's</a>
                                     </td>
                                     <td>
-                                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a> |
-                                        <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info" aria-hidden="true"></i></a> |
-                                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> |
+                                        <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info hover-scale" aria-hidden="true"></i></a> |
+                                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>
                                     </td>
                                 </tr>
                             }
