@@ -11,63 +11,93 @@
         </p>
         <div class="row">
             <div class="col-md-12">
-                <ul class="category-ul">
-                    @foreach (var item in Model)
-                    {
 
+                @foreach (var item in Model)
+                {
+                    <ul id="@item.Id" class="category-ul">
                         <li class="d-flex flex-row card p-4 my-2">
                             <div>@Html.DisplayFor(modelItem => item.Name)</div>
                             <div class="ml-5">
                                 <a asp-action="CreateSubCategory" asp-controller="Category" asp-route-parentId="@item.Id" asp-route-rootId="@item.Id" class="hover-scale"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
                             </div>
                             <div class="ml-4">
-                                <a asp-action="Edit" asp-controller="Category" asp-route-id="@item.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> | 
-                                <a asp-action="Delete" asp-controller="Category" asp-route-id="@item.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>
+                                <a asp-action="Edit" asp-controller="Category" asp-route-id="@item.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> |
+                                <a href="#" class="js-delete-category" data-category-id="@item.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>    
                             </div>
-                            
+
                         </li>
                         <li>
-                            <ul class="category-ul">
-                                @foreach (var secondaryCat in item.Categories)
-                                {
 
+                            @foreach (var secondaryCat in item.Categories)
+                            {
+                                <ul id="@secondaryCat.Id" class="category-ul">
                                     <li class="d-flex flex-row card p-4 my-2">
                                         <div>@Html.DisplayFor(modelItem => secondaryCat.Name)</div>
                                         <div class="ml-5">
                                             <a asp-action="CreateSubCategory" asp-controller="Category" asp-route-parentId="@secondaryCat.Id" asp-route-rootId="@item.Id" class="hover-scale"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
                                         </div>
                                         <div class="ml-4">
-                                            <a asp-action="Edit" asp-controller="Category" asp-route-id="@secondaryCat.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> | 
-                                            <a asp-action="Delete" asp-controller="Category" asp-route-id="@secondaryCat.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>
+                                            <a asp-action="Edit" asp-controller="Category" asp-route-id="@secondaryCat.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> |
+                                            <a href="#" class="js-delete-category" data-category-id="@secondaryCat.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>    
                                         </div>
                                     </li>
                                     <li>
-                                        <ul class="category-ul">
-                                            @foreach (var tertiaryCat in secondaryCat.Categories)
-                                            {
 
+                                        @foreach (var tertiaryCat in secondaryCat.Categories)
+                                        {
+                                            <ul id="@tertiaryCat.Id" class="category-ul">
                                                 <li class="d-flex flex-row card p-4 my-2">
                                                     <div>@Html.DisplayFor(modelItem => tertiaryCat.Name)</div>
                                                     <div class="ml-4">
-                                                        <a asp-action="Edit" asp-controller="Category" asp-route-id="@tertiaryCat.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> | 
-                                                        <a asp-action="Delete" asp-controller="Category" asp-route-id="@tertiaryCat.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>
+                                                        <a asp-action="Edit" asp-controller="Category" asp-route-id="@tertiaryCat.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> |
+                                                        <a href="#" class="js-delete-category" data-category-id="@tertiaryCat.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>    
                                                     </div>
                                                 </li>
-                                                
+                                            </ul>
+                                        }
 
-                                            }
-                                        </ul>
                                     </li>
-
-                                }
-                            </ul>
-
+                                </ul>
+                            }
                         </li>
+                    </ul>
+                }
 
-                    }
-                </ul>
             </div>
         </div>
     </div>
 </section>
+
+@section scripts{
+    <script>
+     
+            const categoryElements = document.getElementsByClassName("js-delete-category");
+            const categoryArray = Array.prototype.slice.call(categoryElements);
+
+            const DeleteCategoryById = function() {
+                const categoryId = this.getAttribute("data-category-id");
+                const categoryContainerUl = document.getElementById(categoryId);
+                const url = "/admin/api/categories/" + categoryId;
+                if (confirm("Are you sure you want to delete this category?")) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        success: function() {
+                            $(categoryContainerUl).fadeOut("fast",
+                                function() {
+                                    this.remove();
+                                });
+                        },
+                        error: function() {
+                            alert("An error has occured while trying to delete the category");
+                        }
+                    });
+                }
+
+               
+            };
+            categoryArray.map(category => category.addEventListener("click", DeleteCategoryById, false));
+
+    </script>
+}
 

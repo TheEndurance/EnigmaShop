@@ -28,6 +28,8 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public ICollection<Category> Categories { get; set; }
 
+        public ICollection<ProductCategory> ProductCategories { get; set; }
+
         public Category(CategoryFormViewModel categoryFormViewModel)
         {
             Id = categoryFormViewModel.Id;
@@ -36,11 +38,13 @@ namespace EnigmaShop.Areas.Admin.Models
             ParentCategoryId = categoryFormViewModel.ParentCategoryId;
             RootCategoryId = categoryFormViewModel.RootCategoryId;
             Categories = new Collection<Category>();
+            ProductCategories = new Collection<ProductCategory>();
         }
 
         public Category()
         {
             Categories = new Collection<Category>();
+            ProductCategories = new Collection<ProductCategory>();
         }
 
     }

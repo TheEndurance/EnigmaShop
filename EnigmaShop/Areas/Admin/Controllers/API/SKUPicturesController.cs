@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using EnigmaShop.Areas.Admin.Models;
 using EnigmaShop.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EnigmaShop.Areas.Admin.Controllers.API
 {
@@ -18,7 +19,7 @@ namespace EnigmaShop.Areas.Admin.Controllers.API
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteSKUPictureById(int id)
         {
-            var skuPicture = Queryable.SingleOrDefault<SKUPicture>(_context.SKUPictures, x => x.Id == id);
+            var skuPicture = await _context.SKUPictures.SingleOrDefaultAsync(x => x.Id == id);
             if (skuPicture == null) return NotFound(id);
 
             _context.SKUPictures.Remove(skuPicture);

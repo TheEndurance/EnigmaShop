@@ -34,7 +34,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 .Include(x => x.SKUPictures)
                 .Include(x => x.SKUOptions)
                 .ThenInclude(x => x.OptionGroup);
-
+            ViewData["Header"] = "SKUs";
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -53,7 +53,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
+            ViewData["Header"] = "SKUs";
             return View(sKU);
         }
 
@@ -204,7 +204,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
+            ViewData["Header"] = "SKUs";
             return View(sKU);
         }
 

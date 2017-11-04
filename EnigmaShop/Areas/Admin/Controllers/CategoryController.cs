@@ -168,7 +168,15 @@ namespace EnigmaShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.SingleOrDefaultAsync(m => m.Id == id);
+            var category = await _context.Categories.Include(x=>x.Categories).ThenInclude(x=>x.Categories).SingleOrDefaultAsync(m => m.Id == id);
+            foreach (var secondaryCategory in category.Categories)
+            {
+                foreach (var tertiaryCategory in secondaryCategory.Categories)
+                {
+                    _context.Categories.Remove(tertiaryCategory);
+                }
+                _context.Categories.Remove(secondaryCategory);
+            }
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

@@ -17,41 +17,41 @@
                     <div class="card-body">
                         <table class="table">
                             <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Primary Category</th>
-                                <th>Categories</th>
-                                <th>SKU Actions</th>
-                                <th>Product Actions</th>
-                            </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Primary Category</th>
+                                    <th>Categories</th>
+                                    <th>SKU Actions</th>
+                                    <th>Product Actions</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Name)
-                                    </td>
-                                    <td>
-                                        @item.ProductCategories.Single(x=>x.Category.ParentCategoryId==null).Category.Name
-                                    </td>
-                                    <td>
-                                        @foreach (var category in item.ProductCategories.OrderBy(y=>y.Order).Select(x => x.Category.Name))
-                                        {
-                                            <span>@category </span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <a asp-action="Create" asp-controller="SKU" asp-route-id="@item.Id">Create SKU</a> |
-                                        <a asp-action="Index" asp-controller="SKU" asp-route-id="@item.Id">View SKU's</a>
-                                    </td>
-                                    <td>
-                                        <a asp-action="Edit" asp-route-id="@item.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> |
-                                        <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info hover-scale" aria-hidden="true"></i></a> |
-                                        <a asp-action="Delete" asp-route-id="@item.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>
-                                    </td>
-                                </tr>
-                            }
+                                @foreach (var item in Model)
+                                {
+                                    <tr id="@item.Id">
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Name)
+                                        </td>
+                                        <td>
+                                            @item.ProductCategories.Single(x => x.Category.ParentCategoryId == null).Category.Name
+                                        </td>
+                                        <td>
+                                            @foreach (var category in item.ProductCategories.OrderBy(y => y.Order).Select(x => x.Category.Name))
+                                            {
+                                                <span>@category </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-action="Create" asp-controller="SKU" asp-route-id="@item.Id">Create SKU</a> |
+                                            <a asp-action="Index" asp-controller="SKU" asp-route-id="@item.Id">View SKU's</a>
+                                        </td>
+                                        <td>
+                                            <a asp-action="Edit" asp-route-id="@item.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> |
+                                            <a asp-action="Details" asp-route-id="@item.Id"><i class="fa fa-info hover-scale" aria-hidden="true"></i></a> |
+                                            <a href="#" class="js-delete-product" data-product-id="@item.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -60,3 +60,35 @@
         </div>
     </div>
 </section>
+
+@section scripts {
+    <script>
+
+        const productElements = document.getElementsByClassName("js-delete-product");
+        const productArray = Array.prototype.slice.call(productElements);
+
+        const DeleteProductById = function () {
+            const productId = this.getAttribute("data-product-id");
+            const productTableRow = document.getElementById(productId);
+            if (confirm("Are you sure you want to delete this product?")) {
+                const url = "/admin/api/products/" + productId;
+                $.ajax({
+                    url: url,
+                    type: "DELETE",
+                    success: function () {
+                        $(productTableRow).fadeOut("fast",
+                            function () {
+                                this.remove();
+                            });
+                    },
+                    error: function () {
+                        alert("An error occured while trying to delete the product");
+                    }
+                });
+            }
+        }
+
+        productArray.map(product => product.addEventListener("click", DeleteProductById, false));
+
+    </script>
+}
