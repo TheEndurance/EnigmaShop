@@ -145,43 +145,6 @@ namespace EnigmaShop.Areas.Admin.Controllers
             return View("CategoryForm",categoryFormViewModel);
         }
 
-        // GET: Admin/Categories/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _context.Categories
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
-        }
-
-        // POST: Admin/Categories/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var category = await _context.Categories.Include(x=>x.Categories).ThenInclude(x=>x.Categories).SingleOrDefaultAsync(m => m.Id == id);
-            foreach (var secondaryCategory in category.Categories)
-            {
-                foreach (var tertiaryCategory in secondaryCategory.Categories)
-                {
-                    _context.Categories.Remove(tertiaryCategory);
-                }
-                _context.Categories.Remove(secondaryCategory);
-            }
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
         private bool CategoryExists(int id)
         {
             return _context.Categories.Any(e => e.Id == id);

@@ -189,35 +189,6 @@ namespace EnigmaShop.Areas.Admin.Controllers
             return View("SKUForm", skuFormViewModel);
         }
 
-        // GET: Admin/SKU/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var sKU = await _context.SKUs
-                .Include(s => s.Product)
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (sKU == null)
-            {
-                return NotFound();
-            }
-            ViewData["Header"] = "SKUs";
-            return View(sKU);
-        }
-
-        // POST: Admin/SKU/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var sKU = await _context.SKUs.SingleOrDefaultAsync(m => m.Id == id);
-            _context.SKUs.Remove(sKU);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
         private bool SKUExists(int id)
         {
