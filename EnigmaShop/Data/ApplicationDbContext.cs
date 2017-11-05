@@ -27,6 +27,7 @@ namespace EnigmaShop.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
             //set the OptionId Foreign key in SKUOption cascade delete to false
             builder.Entity<SKUOption>()
                 .HasOne(x => x.Option)
@@ -39,7 +40,7 @@ namespace EnigmaShop.Data
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //Set the SKUId Foreign key in SKUOption cascade delete to false
+            //When I delete SKUOption from my SKU, delete the SKUOption row
             builder.Entity<SKUOption>()
                 .HasOne(x => x.SKU)
                 .WithMany(x => x.SKUOptions)
@@ -49,7 +50,7 @@ namespace EnigmaShop.Data
             builder.Entity<SKU>()
                 .Property(x => x.IsAvailable)
                 .HasDefaultValue(true);
-            base.OnModelCreating(builder);
+       
 
             //Set the DiscountedPrice on SKU Table default value to 0.00m
 
@@ -66,32 +67,30 @@ namespace EnigmaShop.Data
                 .WithOne(x => x.Product)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            
-            // Don't delete product when deleting product category
+            //*** Entity refers to an object of the product class**//
+            // When I delete product category from my product entity, I want the product category row in DB to be deleted
+            // Foreign key setup
+
             builder.Entity<ProductCategory>()
                 .HasOne(x => x.Product)
                 .WithMany(x=>x.ProductCategories)
                 .HasForeignKey(x=>x.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //Don't delete category when deleting product category
+            // Foreign key setup
             builder.Entity<ProductCategory>()
                 .HasOne(x => x.Category)
-                .WithMany()
-                .HasForeignKey(x=>x.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .WithMany(x => x.ProductCategories)
+                .HasForeignKey(x => x.CategoryId);
 
             // CATEGORY
-
+       
+            //Set the parent FK for category
             builder.Entity<Category>()
                 .HasMany(x => x.Categories)
                 .WithOne(x => x.ParentCategory)
                 .HasForeignKey(x => x.ParentCategoryId);
 
-            builder.Entity<Category>()
-                .HasMany(x=>x.ProductCategories)
-                .WithOne(x => x.Category)
-                .OnDelete(DeleteBehavior.Cascade);
 
 
             // Customize the ASP.NET Identity model and override the defaults if needed.
