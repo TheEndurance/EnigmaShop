@@ -117,7 +117,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <img id="modalImage" src="" data-image-model="" class="col-md-12" />
+                <img id="modalImage" src="" data-image-model="" data-image-id="" class="col-md-12" />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="modalSelectImage" data-dismiss="modal">Select Image</button>
@@ -130,88 +130,84 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
 
 
             /*
-             * Image preview modal
+             * Shows a modal when clicking an image
             */
             const imageElements = document.querySelectorAll(".select-picture");
             const imagesArray = Array.prototype.slice.call(imageElements);
             const modalImage = document.getElementById("modalImage");
 
             const SetImagePreviewModal = function () {
-                modalImage.setAttribute('src', this.getAttribute('src'));
-                modalImage.setAttribute('data-image-model', this.getAttribute('data-image-model'));
-                modalImage.setAttribute("data-image-id", this.getAttribute("id"));
+                modalImage.src = this.src;
+                modalImage.dataset.imageModel = this.dataset.imageModel;
+                modalImage.dataset.imageId = this.id;
                 $("#imagePreviewModal").modal("show");
 
             }
 
-            imagesArray.map(image => image.addEventListener("click", SetImagePreviewModal, false));
-
+            imagesArray.map(image => image.addEventListener("click",SetImagePreviewModal, false));
 
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
 
             /*
-            * Select Image
+            * Modal Select Image button event - Creates a hidden input to send to server containing the image information
             */
 
             const productForm = document.querySelector("#productForm");
             const modalSelectImage = document.querySelector("#modalSelectImage");
-            let currentMainImage = document.querySelector("#MainImage");
-            let currentAltImage = document.querySelector("#AltImage");
 
-
-            const SelectImage = function (image) {
-                const imageId = image.getAttribute("data-image-id");
-                const imageSrc = image.getAttribute('src');
-                const imageModelName = image.getAttribute('data-image-model');
-                const targetInput = document.getElementById(imageModelName);
+            const SelectImage = function(image) {
+                const imageSrc = image.src;
+                const targetInput = document.getElementById(image.dataset.imageModel);
 
                 if (targetInput) {
-                    targetInput.setAttribute('value', imageSrc);
+                    targetInput.value = imageSrc;
                 } else {
                     const hiddenInput = document.createElement("input");
-                    hiddenInput.setAttribute("type", "hidden");
-                    hiddenInput.setAttribute("value", imageSrc);
-                    hiddenInput.setAttribute("name", imageModelName);
-                    hiddenInput.setAttribute("id", imageModelName);
-                    hiddenInput.setAttribute("data-image-id", imageId);
+                    hiddenInput.type = "hidden";
+                    hiddenInput.value = imageSrc;
+                    hiddenInput.name = image.dataset.imageModel;
+                    hiddenInput.id = image.dataset.imageModel;
                     productForm.appendChild(hiddenInput);
                 }
             }
 
-
-            modalSelectImage.addEventListener("click", function () {
-                SelectImage(document.querySelector("#modalImage"));
-            }, false);
+            modalSelectImage.addEventListener("click",
+                function() {
+                    SelectImage(document.querySelector("#modalImage"));
+                },
+                false);
 
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
             /*
-            * Selected Image Css
+            * Set selected CSS for the selected image
             */
 
-            const ToggleSelectedImageCss = function (selectedImage, cssClass) {
-                const imageModelName = selectedImage.getAttribute("data-image-model");
-                const imageId = selectedImage.getAttribute("data-image-id");
-                const imgArray = Array.prototype.slice.call(document.querySelectorAll('[data-image-model="' + imageModelName + '"]'));
+            const ToggleSelectedImageCss = function(selectedImage, cssClass) {
+                const imageId = selectedImage.dataset.imageId;
+                
+                const imgArray =
+                    Array.prototype.slice.call(
+                        document.querySelectorAll(`[data-image-model="${selectedImage.dataset.imageModel}"]`));
                 const currentlySelectedImage = imgArray.find(image => image.classList.contains(cssClass));
                 if (currentlySelectedImage) {
                     currentlySelectedImage.classList.remove(cssClass);
-                } 
+                }
                 const theImage = document.getElementById(imageId);
                 theImage.classList.add(cssClass);
-                
+
             };
 
-            modalSelectImage.addEventListener("click", function () {
-                ToggleSelectedImageCss(document.querySelector("#modalImage"), "selected-picture");
-            }, false);
+            modalSelectImage.addEventListener("click",function() {
+                    ToggleSelectedImageCss(document.querySelector("#modalImage"), "selected-picture");
+                },false);
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -221,7 +217,7 @@
             const primaryCategory = document.getElementById("PrimaryCategoryId");
             const secondaryCategory = document.getElementById("SecondaryCategoryId");
 
-            const GetCategorySelectList = function (selectedGroupId, targetSelectId) {
+            const GetCategorySelectList = function(selectedGroupId, targetSelectId) {
                 if (isNaN(selectedGroupId)) {
                     return;
                 }
@@ -229,23 +225,24 @@
                 $.ajax({
                     url: url,
                     type: "GET",
-                    success: function (categories) {
+                    success: function(categories) {
                         const markup = `<option value="">Select a category</option>
-                                ${categories.map(category => `<option value="${category.id}">${category.name}</option>`)}`;
+                                ${categories.map(
+                            category => `<option value="${category.id}">${category.name}</option>`)}`;
                         document.querySelector("form #" + targetSelectId).innerHTML = markup;
                     },
-                    error: function () {
+                    error: function() {
                         alert("An error occured retrieving categories for the selected category group.");
                     }
                 });
             }
 
             primaryCategory.addEventListener("blur",
-                function () { GetCategorySelectList(this.value, "SecondaryCategoryId") },
+                function() { GetCategorySelectList(this.value, "SecondaryCategoryId") },
                 false);
 
             secondaryCategory.addEventListener("blur",
-                function () { GetCategorySelectList(this.value, "TertiaryCategoryId") },
+                function() { GetCategorySelectList(this.value, "TertiaryCategoryId") },
                 false);
 
             //////////////////////////////////////////////////////////////////////////////////////////////////

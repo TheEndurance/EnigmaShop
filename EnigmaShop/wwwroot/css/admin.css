@@ -14,7 +14,7 @@
 }
 
 .delete-picture-box:hover > img {
-    -ms-opacity: 0.8;+
+    -ms-opacity: 0.8;
     opacity: 0.8;
 }
 
@@ -53,4 +53,7 @@
     width: 150px;
     padding: 0.2rem;
    
+}
+.category-ul {
+    list-style: none;
 }
