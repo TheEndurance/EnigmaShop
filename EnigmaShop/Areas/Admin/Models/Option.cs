@@ -21,11 +21,5 @@ namespace EnigmaShop.Areas.Admin.Models
         [ForeignKey(nameof(OptionGroupId))]
         public OptionGroup OptionGroup { get; set; }
 
-        public ICollection<SKUOption> SKUOptions { get; set; }
-
-        public Option()
-        {
-            SKUOptions = new Collection<SKUOption>();
-        }
     }
 }

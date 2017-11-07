@@ -23,6 +23,13 @@
     cursor: pointer;
 }
 
+.select-picture {
+    cursor:pointer;
+}
+
+.selected-picture {
+    border: 5px solid #503ce9;
+}
 
 .image-hover-scale:hover {
     -ms-transform: scale(2.0);
@@ -47,10 +54,3 @@
     padding: 0.2rem;
    
 }
-
-/* Category Area */
-
-.category-ul {
-    list-style: none;
-}
-

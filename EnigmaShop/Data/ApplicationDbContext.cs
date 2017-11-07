@@ -31,19 +31,22 @@ namespace EnigmaShop.Data
             //set the OptionId Foreign key in SKUOption cascade delete to false
             builder.Entity<SKUOption>()
                 .HasOne(x => x.Option)
-                .WithMany(x => x.SKUOptions)
+                .WithMany()
+                .HasForeignKey(x => x.OptionId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             //Set the OptionGroupId Foreign key in SKUOption cascade delete to false
             builder.Entity<SKUOption>()
                 .HasOne(x => x.OptionGroup)
                 .WithMany()
+                .HasForeignKey(x => x.OptionGroupId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             //When I delete SKUOption from my SKU, delete the SKUOption row
             builder.Entity<SKUOption>()
                 .HasOne(x => x.SKU)
                 .WithMany(x => x.SKUOptions)
+                .HasForeignKey(x=>x.SKUId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             //Set the IsAvaiable bool on SKU table default value to true

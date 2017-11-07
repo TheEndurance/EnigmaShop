@@ -20,6 +20,10 @@ namespace EnigmaShop.Areas.Admin.Models
         [StringLength(80)]
         public string Name { get; set; }
 
+        public string MainImage { get; set; }
+
+        public string AltImage { get; set; }
+
         public ICollection<SKU> SKUs { get; set; }
 
         public ICollection<ProductCategory> ProductCategories { get; set; }
@@ -35,6 +39,8 @@ namespace EnigmaShop.Areas.Admin.Models
             SKUs = new Collection<SKU>();
             Id = productFormViewModel.Id;
             Name = productFormViewModel.Name;
+            MainImage = productFormViewModel.MainImage;
+            AltImage = productFormViewModel.AltImage;
             Description = productFormViewModel.Description;
             AddProductCategories(productFormViewModel);
         }
@@ -44,6 +50,8 @@ namespace EnigmaShop.Areas.Admin.Models
             Name = productFormViewModel.Name;
             Description = productFormViewModel.Description;
             AddProductCategories(productFormViewModel);
+            MainImage = productFormViewModel.MainImage;
+            AltImage = productFormViewModel.AltImage;
         }
 
         private void AddProductCategories(ProductFormViewModel productFormViewModel)

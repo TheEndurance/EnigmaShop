@@ -1,0 +1,50 @@
+﻿@model EnigmaShop.ViewModels.ShopViewModel
+
+<div class="row">
+    <div class="col-lg-4">
+        @foreach (var category in Model.Categories)
+        {
+            <ul class="category-ul">
+                <li>
+                    @category.Name
+                </li>
+                <li>
+                    @foreach (var secondaryCat in category.Categories)
+                    {
+                        <ul class="category-ul">
+                            <li>
+                                @secondaryCat.Name
+                            </li>
+                            <li>
+                                @foreach (var tertiaryCat in secondaryCat.Categories)
+                                {
+                                    <ul class="category-ul">
+                                        <li>
+                                            @tertiaryCat.Name
+                                        </li>
+                                    </ul>
+                                }
+                            </li>
+                        </ul>
+                    }
+
+                </li>
+            </ul>
+        }
+    </div>
+    <div class="col-lg-8">
+        <div class="row">
+            @foreach (var product in Model.Products)
+            {
+                <div class="col-lg-4 card">
+                    <div class="card-header">
+                        @product.Name
+                    </div>
+                    <div class="card-body">
+                        
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

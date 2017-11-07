@@ -5,6 +5,7 @@
     ViewData["Title"] = "Edit Product";
 }
 
+
 <section class="forms">
     <div class="container-fluid">
         <div class="row">
@@ -14,7 +15,7 @@
                         <h3 class="h4">Edit Product</h3>
                     </div>
                     <div class="card-body">
-                        <form class="form-horizontal" asp-action="Edit">
+                        <form class="form-horizontal" asp-action="Edit" id="productForm">
                             <div asp-validation-summary="All" class="text-danger"></div>
                             <input type="hidden" asp-for="Id" />
                             <div class="form-group row">
@@ -32,7 +33,7 @@
                                     <span asp-validation-for="Description" class="text-danger"></span>
                                 </div>
                             </div>
-                            <<div class="line"></div>
+                            <div class="line"></div>
                             <div class="form-group row">
                                 <label asp-for="PrimaryCategoryId" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
@@ -61,6 +62,32 @@
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
+                                <label asp-for="MainImage" class="form-control-label col-sm-3"></label>
+                                <div class="col-sm-9">
+                                    @foreach (var sku in Model.SKUs)
+                                    {
+                                        foreach (var skuPicture in sku.SKUPictures)
+                                        {
+                                            <img id="main_@skuPicture.Id" src="@skuPicture.ImageUrl" data-image-model="MainImage" class="sku-list-picture select-picture" />
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <label asp-for="AltImage" class="form-control-label col-sm-3"></label>
+                                <div class="col-sm-9">
+                                    @foreach (var sku in Model.SKUs)
+                                    {
+                                        foreach (var skuPicture in sku.SKUPictures)
+                                        {
+                                            <img id="alt_@skuPicture.Id" src="@skuPicture.ImageUrl" data-image-model="AltImage" class="sku-list-picture select-picture" />
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
                                 <div class="col-sm-3"></div>
                                 <div class="col-sm-9">
                                     <input type="submit" value="Edit" class="btn btn-primary" />
@@ -78,23 +105,133 @@
 
 </section>
 
+
+<!-- Modal -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Image Preview</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="modalImage" src="" data-image-model="" class="col-md-12" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="modalSelectImage" data-dismiss="modal">Select Image</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $(document).ready(function () {
 
-            function GetCategorySelectList(selectedGroupId, targetSelectId) {
+
+            /*
+             * Image preview modal
+            */
+            const imageElements = document.querySelectorAll(".select-picture");
+            const imagesArray = Array.prototype.slice.call(imageElements);
+            const modalImage = document.getElementById("modalImage");
+
+            const SetImagePreviewModal = function () {
+                modalImage.setAttribute('src', this.getAttribute('src'));
+                modalImage.setAttribute('data-image-model', this.getAttribute('data-image-model'));
+                modalImage.setAttribute("data-image-id", this.getAttribute("id"));
+                $("#imagePreviewModal").modal("show");
+
+            }
+
+            imagesArray.map(image => image.addEventListener("click", SetImagePreviewModal, false));
+
+
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+
+            /*
+            * Select Image
+            */
+
+            const productForm = document.querySelector("#productForm");
+            const modalSelectImage = document.querySelector("#modalSelectImage");
+            let currentMainImage = document.querySelector("#MainImage");
+            let currentAltImage = document.querySelector("#AltImage");
+
+
+            const SelectImage = function (image) {
+                const imageId = image.getAttribute("data-image-id");
+                const imageSrc = image.getAttribute('src');
+                const imageModelName = image.getAttribute('data-image-model');
+                const targetInput = document.getElementById(imageModelName);
+
+                if (targetInput) {
+                    targetInput.setAttribute('value', imageSrc);
+                } else {
+                    const hiddenInput = document.createElement("input");
+                    hiddenInput.setAttribute("type", "hidden");
+                    hiddenInput.setAttribute("value", imageSrc);
+                    hiddenInput.setAttribute("name", imageModelName);
+                    hiddenInput.setAttribute("id", imageModelName);
+                    hiddenInput.setAttribute("data-image-id", imageId);
+                    productForm.appendChild(hiddenInput);
+                }
+            }
+
+
+            modalSelectImage.addEventListener("click", function () {
+                SelectImage(document.querySelector("#modalImage"));
+            }, false);
+
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+            /*
+            * Selected Image Css
+            */
+
+            const ToggleSelectedImageCss = function (selectedImage, cssClass) {
+                const imageModelName = selectedImage.getAttribute("data-image-model");
+                const imageId = selectedImage.getAttribute("data-image-id");
+                const imgArray = Array.prototype.slice.call(document.querySelectorAll('[data-image-model="' + imageModelName + '"]'));
+                const currentlySelectedImage = imgArray.find(image => image.classList.contains(cssClass));
+                if (currentlySelectedImage) {
+                    currentlySelectedImage.classList.remove(cssClass);
+                } 
+                const theImage = document.getElementById(imageId);
+                theImage.classList.add(cssClass);
+                
+            };
+
+            modalSelectImage.addEventListener("click", function () {
+                ToggleSelectedImageCss(document.querySelector("#modalImage"), "selected-picture");
+            }, false);
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////
+
+            /*
+            * Gets the categories from API
+            */
+            const primaryCategory = document.getElementById("PrimaryCategoryId");
+            const secondaryCategory = document.getElementById("SecondaryCategoryId");
+
+            const GetCategorySelectList = function (selectedGroupId, targetSelectId) {
                 if (isNaN(selectedGroupId)) {
                     return;
                 }
-                var url = "/admin/api/categories/" + selectedGroupId;
+                const url = "/admin/api/categories/" + selectedGroupId;
                 $.ajax({
                     url: url,
                     type: "GET",
                     success: function (categories) {
-                        var markup = `<option value="">Select a category</option>
-                                        ${categories.map(category => `<option value="${category.id}">${category.name}</option>`)}
-                                      `;
+                        const markup = `<option value="">Select a category</option>
+                                ${categories.map(category => `<option value="${category.id}">${category.name}</option>`)}`;
                         document.querySelector("form #" + targetSelectId).innerHTML = markup;
                     },
                     error: function () {
@@ -102,9 +239,6 @@
                     }
                 });
             }
-
-            var primaryCategory = document.getElementById("PrimaryCategoryId");
-            var secondaryCategory = document.getElementById("SecondaryCategoryId");
 
             primaryCategory.addEventListener("blur",
                 function () { GetCategorySelectList(this.value, "SecondaryCategoryId") },
@@ -114,6 +248,7 @@
                 function () { GetCategorySelectList(this.value, "TertiaryCategoryId") },
                 false);
 
+            //////////////////////////////////////////////////////////////////////////////////////////////////
         });
     </script>
 }

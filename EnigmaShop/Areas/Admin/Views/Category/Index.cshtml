@@ -7,7 +7,7 @@
 <section>
     <div class="container-fluid">
         <div class="row">
-            <a asp-action="Create" class="btn btn-outline-primary">Create new primary category</a>
+            <p><a asp-action="Create" class="btn btn-outline-primary">Create new primary category</a></p>
         </div>
         <div class="row">
             <div class="col-md-12">
@@ -24,7 +24,6 @@
                                 <a asp-action="Edit" asp-controller="Category" asp-route-id="@item.Id"><i class="fa fa-pencil-square-o hover-scale" aria-hidden="true"></i></a> |
                                 <a href="#" class="js-delete-category" data-category-id="@item.Id"><i class="fa fa-trash-o hover-scale" aria-hidden="true"></i></a>    
                             </div>
-
                         </li>
                         <li>
 

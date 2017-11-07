@@ -92,7 +92,12 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.Include(x=>x.ProductCategories).SingleOrDefaultAsync(m => m.Id == id);
+            var product = await _context.Products
+                .Include(x=>x.ProductCategories)
+                .Include(x=>x.SKUs)
+                .ThenInclude(x=>x.SKUPictures)
+                .SingleOrDefaultAsync(m => m.Id == id);
+
             if (product == null)
             {
                 return NotFound();
@@ -128,7 +133,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.Include(x=>x.ProductCategories).SingleOrDefaultAsync(x => x.Id == productFormViewModel.Id);
+            var product = await _context.Products.Include(x=>x.ProductCategories).Include(x=>x.SKUs).ThenInclude(x=>x.SKUPictures).SingleOrDefaultAsync(x => x.Id == productFormViewModel.Id);
             if (product == null) return NotFound();
                
             if (ModelState.IsValid)
