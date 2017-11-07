@@ -1,3 +1,7 @@
 ﻿.category-ul {
     list-style: none;
 }
+.product {
+    height:20rem;
+    width:14rem;
+}

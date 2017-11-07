@@ -25,14 +25,15 @@ namespace EnigmaShop.Controllers
             if (rootCategoryId == 0) return NotFound();
 
             var categories = await _context.Categories
-                .Where(x => x.RootCategoryId == rootCategoryId)
-                .Include(x=>x.Categories)
-                .ThenInclude(x=>x.Categories)
-                .ToListAsync();
+                .Include(x => x.Categories)
+                .ThenInclude(x => x.Categories)
+                .SingleOrDefaultAsync(x => x.RootCategoryId == rootCategoryId && x.ParentCategoryId==null);
+                
+         
 
             IQueryable<Product> products = _context.Products
-                .Include(x=>x.SKUs)
-                .ThenInclude(x=>x.SKUPictures)
+                .Include(x=>x.AltSKUPicture)
+                .Include(x=>x.MainSKUPicture)
                 .Include(x => x.ProductCategories)
                 .ThenInclude(x => x.Category);
 

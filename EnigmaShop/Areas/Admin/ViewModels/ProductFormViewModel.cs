@@ -31,10 +31,10 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         public int? TertiaryCategoryId { get; set; }
 
         [DisplayName("Primary Image")]
-        public string MainImage { get; set; }
+        public int? MainSKUId { get; set; }
 
         [DisplayName("Secondary Image")]
-        public string AltImage { get; set; }
+        public int? AltSKUId { get; set; }
 
         public SelectList PrimaryCategoryList{ get; set; }
 
@@ -53,8 +53,8 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             Description = product.Description;
             ProductCategories = product.ProductCategories;
             SKUs = product.SKUs;
-            MainImage = product.MainImage;
-            AltImage = product.AltImage;
+            MainSKUId = product.MainSKUId;
+            AltSKUId = product.AltSKUId;
 
             if (product.ProductCategories == null) return;
 

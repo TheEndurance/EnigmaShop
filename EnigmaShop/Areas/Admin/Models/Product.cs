@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EnigmaShop.Areas.Admin.ViewModels;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -20,9 +21,15 @@ namespace EnigmaShop.Areas.Admin.Models
         [StringLength(80)]
         public string Name { get; set; }
 
-        public string MainImage { get; set; }
+        [ForeignKey("MainSKUId")]
+        public SKUPicture MainSKUPicture { get; set; }
 
-        public string AltImage { get; set; }
+        [ForeignKey("AltSKUId")]
+        public SKUPicture AltSKUPicture { get; set; }
+
+        public int? MainSKUId { get; set; }
+
+        public int? AltSKUId { get; set; }
 
         public ICollection<SKU> SKUs { get; set; }
 
@@ -39,8 +46,8 @@ namespace EnigmaShop.Areas.Admin.Models
             SKUs = new Collection<SKU>();
             Id = productFormViewModel.Id;
             Name = productFormViewModel.Name;
-            MainImage = productFormViewModel.MainImage;
-            AltImage = productFormViewModel.AltImage;
+            MainSKUId = productFormViewModel.MainSKUId;
+            AltSKUId = productFormViewModel.AltSKUId;
             Description = productFormViewModel.Description;
             AddProductCategories(productFormViewModel);
         }
@@ -50,8 +57,8 @@ namespace EnigmaShop.Areas.Admin.Models
             Name = productFormViewModel.Name;
             Description = productFormViewModel.Description;
             AddProductCategories(productFormViewModel);
-            MainImage = productFormViewModel.MainImage;
-            AltImage = productFormViewModel.AltImage;
+            MainSKUId = productFormViewModel.MainSKUId;
+            AltSKUId = productFormViewModel.AltSKUId;
         }
 
         private void AddProductCategories(ProductFormViewModel productFormViewModel)

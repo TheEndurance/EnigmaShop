@@ -18,6 +18,8 @@
                         <form class="form-horizontal" asp-action="Edit" id="productForm">
                             <div asp-validation-summary="All" class="text-danger"></div>
                             <input type="hidden" asp-for="Id" />
+                            <input type="hidden" asp-for="MainSKUId" />
+                            <input type="hidden" asp-for="AltSKUId" />
                             <div class="form-group row">
                                 <label asp-for="Name" class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
@@ -62,26 +64,26 @@
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
-                                <label asp-for="MainImage" class="form-control-label col-sm-3"></label>
+                                <label asp-for="MainSKUId" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
                                     @foreach (var sku in Model.SKUs)
                                     {
                                         foreach (var skuPicture in sku.SKUPictures)
                                         {
-                                            <img id="main_@skuPicture.Id" src="@skuPicture.ImageUrl" data-image-model="MainImage" class="sku-list-picture select-picture" />
+                                            <img id="main_@skuPicture.Id" src="@skuPicture.ImageUrl" data-sku-id="@skuPicture.Id" data-image-model="MainSKUId" class="sku-list-picture select-picture @(Model.MainSKUId==skuPicture.Id ? "selected-picture" : "")" />
                                         }
                                     }
                                 </div>
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
-                                <label asp-for="AltImage" class="form-control-label col-sm-3"></label>
+                                <label asp-for="AltSKUId" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
                                     @foreach (var sku in Model.SKUs)
                                     {
                                         foreach (var skuPicture in sku.SKUPictures)
                                         {
-                                            <img id="alt_@skuPicture.Id" src="@skuPicture.ImageUrl" data-image-model="AltImage" class="sku-list-picture select-picture" />
+                                            <img id="alt_@skuPicture.Id" src="@skuPicture.ImageUrl" data-sku-id="@skuPicture.Id" data-image-model="AltSKUId" class="sku-list-picture select-picture @(Model.AltSKUId==skuPicture.Id ? "selected-picture" : "")" />
                                         }
                                     }
                                 </div>
@@ -117,7 +119,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <img id="modalImage" src="" data-image-model="" data-image-id="" class="col-md-12" />
+                <img id="modalImage" src="" data-image-model="" data-sku-id="" data-image-id="" class="col-md-12" />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="modalSelectImage" data-dismiss="modal">Select Image</button>
@@ -144,6 +146,7 @@
                 modalImage.src = this.src;
                 modalImage.dataset.imageModel = this.dataset.imageModel;
                 modalImage.dataset.imageId = this.id;
+                modalImage.dataset.skuId = this.dataset.skuId;
                 $("#imagePreviewModal").modal("show");
 
             }
@@ -161,15 +164,14 @@
             const modalSelectImage = document.querySelector("#modalSelectImage");
 
             const SelectImage = function(image) {
-                const imageSrc = image.src;
                 const targetInput = document.getElementById(image.dataset.imageModel);
 
                 if (targetInput) {
-                    targetInput.value = imageSrc;
+                    targetInput.value = image.dataset.skuId;
                 } else {
                     const hiddenInput = document.createElement("input");
                     hiddenInput.type = "hidden";
-                    hiddenInput.value = imageSrc;
+                    hiddenInput.value = image.dataset.skuId;
                     hiddenInput.name = image.dataset.imageModel;
                     hiddenInput.id = image.dataset.imageModel;
                     productForm.appendChild(hiddenInput);
@@ -190,9 +192,9 @@
             * Set selected CSS for the selected image
             */
 
-            const ToggleSelectedImageCss = function(selectedImage, cssClass) {
+            const ToggleSelectedImageCss = function (selectedImage, cssClass) {
+
                 const imageId = selectedImage.dataset.imageId;
-                
                 const imgArray =
                     Array.prototype.slice.call(
                         document.querySelectorAll(`[data-image-model="${selectedImage.dataset.imageModel}"]`));
