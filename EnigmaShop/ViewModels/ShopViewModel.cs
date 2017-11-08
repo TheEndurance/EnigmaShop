@@ -10,5 +10,7 @@ namespace EnigmaShop.ViewModels
     {
         public IEnumerable<Product> Products { get; set; }
         public Category Categories { get; set; }
+        public string CategoryQueryString { get; set; }
+        public string OptionQueryString { get; set; }
     }
 }

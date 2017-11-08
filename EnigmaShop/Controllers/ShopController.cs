@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,33 +20,93 @@ namespace EnigmaShop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Products(string[] category,string[] option,int? offset)
+        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] option, int? offset)
         {
-            int rootCategoryId = _context.Categories.SingleOrDefault(x => x.Name == category[0]).Id;
+            string categoryQueryString = "?";
+            string optionQueryString = string.Empty;
+            int rootCategoryId = _context.Categories.SingleOrDefault(x => x.Name == primaryCat).Id;
             if (rootCategoryId == 0) return NotFound();
 
+            // Categories
             var categories = await _context.Categories
                 .Include(x => x.Categories)
                 .ThenInclude(x => x.Categories)
-                .SingleOrDefaultAsync(x => x.RootCategoryId == rootCategoryId && x.ParentCategoryId==null);
-                
-         
+                .SingleOrDefaultAsync(x => x.RootCategoryId == rootCategoryId && x.ParentCategoryId == null);
 
-            IQueryable<Product> products = _context.Products
-                .Include(x=>x.AltSKUPicture)
-                .Include(x=>x.MainSKUPicture)
-                .Include(x => x.ProductCategories)
-                .ThenInclude(x => x.Category);
+            // Products
+            IQueryable<Product> products = null;
+            IEnumerable<Product> productsList = new List<Product>();
 
-            foreach (var cat in category)
+            //Filter by options if there are any
+            if (option.Any(x => x.HasValue))
             {
-                products = products.Where(x => x.ProductCategories.Select(y => y.Category.Name).Contains(cat));
+                int[] optionIds = option.Cast<int>().ToArray();
+                IQueryable<SKU> skus = null;
+                //find all skus with this option id
+                foreach (int optionId in optionIds)
+                {
+                    skus = _context.SKUs
+                        .Include(x => x.Product)
+                        .Include(x => x.Product.AltSKUPicture)
+                        .Include(x => x.Product.MainSKUPicture)
+                        .Include(x => x.SKUOptions)
+                        .Where(x => x.SKUOptions.Any(y => y.OptionId == optionId));
+
+                    optionQueryString += $"&option={optionId}";
+                }
+
+
+                //if there are any skus found
+                if (skus != null)
+                {
+                    //convert the skus into product
+                    products = skus.Select(x => new Product
+                    {
+                        Id = x.Product.Id,
+                        Name = x.Product.Name,
+                        Description = x.Product.Description,
+                        AltSKUId = x.Product.AltSKUId,
+                        MainSKUId = x.Product.MainSKUId,
+                        MainSKUPicture = x.Product.MainSKUPicture,
+                        AltSKUPicture = x.Product.AltSKUPicture,
+                        ProductCategories = x.Product.ProductCategories
+                    });
+                }
+
             }
 
+            //if products haven't been intialized through option filtering
+            if (products == null)
+            {
 
-            var shopViewModel = new ShopViewModel();
-            shopViewModel.Products = await products.ToListAsync();
-            shopViewModel.Categories = categories;
+                products = _context.Products
+                    .Include(x => x.MainSKUPicture)
+                    .Include(x => x.AltSKUPicture);
+            }
+
+            //category filtering 
+
+            products = products
+                .Where(x => x.ProductCategories.Select(y => y.Category.Name).Contains(primaryCat));
+            categoryQueryString += $"primaryCat={primaryCat}";
+
+            if (secondaryCat != null)
+            {
+                products = products.Where(x =>
+                    x.ProductCategories.Select(y => y.Category.Name).Contains(secondaryCat));
+                categoryQueryString += $"&secondaryCat={secondaryCat}";
+            }
+
+            //create product list from product query
+            productsList = await products.ToListAsync();
+
+            var shopViewModel = new ShopViewModel
+            {
+                Products = productsList,
+                Categories = categories,
+                CategoryQueryString = categoryQueryString,
+                OptionQueryString = optionQueryString
+            };
             return View(shopViewModel);
         }
     }
