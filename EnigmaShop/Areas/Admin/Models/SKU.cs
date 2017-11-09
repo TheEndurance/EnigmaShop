@@ -45,11 +45,15 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public HashSet<SKUOption> SKUOptions { get; set; }
 
+        public ICollection<SKUSize> SKUSizes { get; set; }
+
         public ICollection<SKUPicture> SKUPictures { get; set; }
 
         public SKU()
         {
             SKUOptions = new HashSet<SKUOption>();
+            SKUSizes = new Collection<SKUSize>();
+            SKUPictures = new Collection<SKUPicture>();
         }
 
         public SKU(SKUFormViewModel skuFormViewModel)
@@ -63,6 +67,7 @@ namespace EnigmaShop.Areas.Admin.Models
             IsDiscounted = skuFormViewModel.IsDiscounted;
             Stock = skuFormViewModel.Stock;
             SKUOptions = new HashSet<SKUOption>();
+            SKUSizes = new Collection<SKUSize>();
             SKUPictures = new Collection<SKUPicture>();
         }
 

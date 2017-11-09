@@ -80,7 +80,7 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         {
             get
             {
-                Expression<Func<SKUController, Task<IActionResult>>> create = gc => gc.Create(null);
+                Expression<Func<SKUController, Task<IActionResult>>> create = gc => gc.Create(0);
                 Expression<Func<SKUController,Task<IActionResult>>> edit = gc => gc.Edit(null);
                 var action = (Id == 0) ? create : edit;
                 string methodName = (action.Body as MethodCallExpression)?.Method.Name;

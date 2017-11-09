@@ -27,15 +27,22 @@ namespace EnigmaShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/SKU
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? id)
         {
-            var applicationDbContext = _context.SKUs
-                .Include(s => s.Product)
+            IQueryable<SKU> skus = _context.SKUs;
+
+            if (id.HasValue)
+            {
+                skus = skus.Where(x => x.ProductId == (int) id);
+            }
+
+            skus = skus.Include(s => s.Product)
                 .Include(x => x.SKUPictures)
                 .Include(x => x.SKUOptions)
                 .ThenInclude(x => x.OptionGroup);
+
             ViewData["Header"] = "SKUs";
-            return View(await applicationDbContext.ToListAsync());
+            return View(await skus.ToListAsync());
         }
 
         // GET: Admin/SKU/Details/5
@@ -58,7 +65,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/SKU/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int? id)
         {
             var skuFormViewModel = new SKUFormViewModel
             {
@@ -77,7 +84,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,OptionIds,Files")] SKUFormViewModel skuFormViewModel)
         {
-
+ 
             if (skuFormViewModel.OptionIds.Any(optId => optId == null))
             {
                 ModelState.AddModelError("OptionIds", "Option select fields are required");
