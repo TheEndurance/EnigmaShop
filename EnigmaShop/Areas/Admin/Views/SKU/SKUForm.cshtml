@@ -10,7 +10,7 @@
                     <div class="card-header d-flex align-items-center">SKUs</div>
                     <div class="card-body">
                         <form asp-action="@Model.Action" enctype="multipart/form-data">
-
+                            <input type="hidden" asp-for="Id"/>
                             <div asp-validation-summary="All" class="text-danger"></div>
                             <br />
 

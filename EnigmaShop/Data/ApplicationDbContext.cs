@@ -19,7 +19,6 @@ namespace EnigmaShop.Data
         public DbSet<SKUPicture> SKUPictures { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
-        public DbSet<Size> Sizes { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -50,21 +49,6 @@ namespace EnigmaShop.Data
                 .HasForeignKey(x=>x.SKUId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //SKU Sizes
-            //When we delete a SKUSize child from a SKU entity, delete the corresponding SKUSize Row instead of setting it to null
-            builder.Entity<SKUSize>()
-                .HasOne(x => x.SKU)
-                .WithMany(x => x.SKUSizes)
-                .HasForeignKey(x => x.SKUId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            //If we delete a SKUSize from a Size entity, don't delete the SKUSize row, because we won't be deleting SKUSize entities
-            //from Size entities
-            builder.Entity<SKUSize>()
-                .HasOne(x => x.Size)
-                .WithMany()
-                .HasForeignKey(x => x.SizeId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             //Set the IsAvaiable bool on SKU table default value to true
             builder.Entity<SKU>()
@@ -78,6 +62,15 @@ namespace EnigmaShop.Data
                 .Property(x => x.DiscountedPrice)
                 .HasDefaultValue(0.00m);
 
+
+            // **
+            // PRODUCT 
+            // **
+
+            builder.Entity<Product>()
+                .HasOne(x => x.PrimaryOptionGroup)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
 
             // **
             // PRODUCT CATEGORY

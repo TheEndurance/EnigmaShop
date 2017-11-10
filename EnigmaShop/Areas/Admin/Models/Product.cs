@@ -31,6 +31,16 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public int? AltSKUId { get; set; }
 
+        [ForeignKey("PrimaryOptionGroupId")]
+        public OptionGroup PrimaryOptionGroup { get; set; }
+
+        [ForeignKey("SecondaryOptionGroupId")]
+        public OptionGroup SecondaryOptionGroup { get; set; }
+
+        public int PrimaryOptionGroupId { get; set; }
+
+        public int SecondaryOptionGroupId { get; set; }
+
         public ICollection<SKU> SKUs { get; set; }
 
         public ICollection<ProductCategory> ProductCategories { get; set; }

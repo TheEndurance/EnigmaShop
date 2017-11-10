@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171110032436_Size_RemoveTable")]
+    partial class Size_RemoveTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,19 +90,11 @@ namespace EnigmaShop.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(80);
 
-                    b.Property<int>("PrimaryOptionGroupId");
-
-                    b.Property<int>("SecondaryOptionGroupId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AltSKUId");
 
                     b.HasIndex("MainSKUId");
-
-                    b.HasIndex("PrimaryOptionGroupId");
-
-                    b.HasIndex("SecondaryOptionGroupId");
 
                     b.ToTable("Products");
                 });
@@ -378,16 +371,6 @@ namespace EnigmaShop.Data.Migrations
                     b.HasOne("EnigmaShop.Areas.Admin.Models.SKUPicture", "MainSKUPicture")
                         .WithMany()
                         .HasForeignKey("MainSKUId");
-
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.OptionGroup", "PrimaryOptionGroup")
-                        .WithMany()
-                        .HasForeignKey("PrimaryOptionGroupId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.OptionGroup", "SecondaryOptionGroup")
-                        .WithMany()
-                        .HasForeignKey("SecondaryOptionGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.ProductCategory", b =>
