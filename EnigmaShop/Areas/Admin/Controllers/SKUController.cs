@@ -79,7 +79,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                     .ThenInclude(x=>x.Options)
                     .SingleOrDefaultAsync(x => x.Id == (int)id);
 
-                skuFormViewModel.PrimaryOptionList = product.OptionGroup.Options;
+                skuFormViewModel.OptionList = product.OptionGroup.Options;
           
             }
 
