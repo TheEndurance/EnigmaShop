@@ -49,8 +49,8 @@ namespace EnigmaShop.Controllers
                         .Include(x => x.Product)
                         .Include(x => x.Product.AltSKUPicture)
                         .Include(x => x.Product.MainSKUPicture)
-                        .Include(x => x.SKUOptions)
-                        .Where(x => x.SKUOptions.Any(y => y.OptionId == optionId));
+                        .Include(x => x.Option)
+                        .Where(x => x.Option.Id==optionId);
 
                     optionQueryString += $"&option={optionId}";
                 }

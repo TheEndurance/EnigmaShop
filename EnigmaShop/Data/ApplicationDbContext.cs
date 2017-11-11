@@ -13,12 +13,15 @@ namespace EnigmaShop.Data
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<SKU> SKUs { get; set; }
-        public DbSet<SKUOption> SKUOptions { get; set; }
         public DbSet<Option> Options { get; set; }
         public DbSet<OptionGroup> OptionGroups { get; set; }
         public DbSet<SKUPicture> SKUPictures { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
+        public DbSet<Size> Sizes { get; set; }
+        public DbSet<SizeGroup> SizeGroups { get; set; }
+        public DbSet<SKUSize> SKUSizes { get; set; }
+
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -28,28 +31,6 @@ namespace EnigmaShop.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            //set the OptionId Foreign key in SKUOption cascade delete to false
-            builder.Entity<SKUOption>()
-                .HasOne(x => x.Option)
-                .WithMany()
-                .HasForeignKey(x => x.OptionId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            //Set the OptionGroupId Foreign key in SKUOption cascade delete to false
-            builder.Entity<SKUOption>()
-                .HasOne(x => x.OptionGroup)
-                .WithMany()
-                .HasForeignKey(x => x.OptionGroupId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            //When I delete SKUOption from my SKU, delete the SKUOption row
-            builder.Entity<SKUOption>()
-                .HasOne(x => x.SKU)
-                .WithMany(x => x.SKUOptions)
-                .HasForeignKey(x=>x.SKUId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-
             //Set the IsAvaiable bool on SKU table default value to true
             builder.Entity<SKU>()
                 .Property(x => x.IsAvailable)
@@ -62,15 +43,16 @@ namespace EnigmaShop.Data
                 .Property(x => x.DiscountedPrice)
                 .HasDefaultValue(0.00m);
 
+            builder.Entity<SKU>()
+                .HasOne(x => x.Option)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
 
             // **
             // PRODUCT 
             // **
 
-            builder.Entity<Product>()
-                .HasOne(x => x.PrimaryOptionGroup)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
+       
 
             // **
             // PRODUCT CATEGORY
@@ -105,6 +87,11 @@ namespace EnigmaShop.Data
                 .HasForeignKey(x => x.ParentCategoryId);
 
 
+            //SKU Size
+            builder.Entity<SKUSize>()
+                .HasOne(x => x.Size)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.

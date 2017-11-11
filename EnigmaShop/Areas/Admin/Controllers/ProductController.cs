@@ -57,7 +57,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
         {
             var productForm = new ProductFormViewModel
             {
-                PrimaryCategoryList = new SelectList(await _context.Categories.Where(x=>x.ParentCategoryId==null).ToListAsync(),"Id","Name")
+                PrimaryCategoryList = new SelectList(await _context.Categories.Where(x=>x.ParentCategoryId==null).ToListAsync(),"Id","Name"),
+                OptionGroupList = new SelectList(await _context.OptionGroups.ToListAsync(),"Id","Name")
             };
             ViewData["Header"] = "Products";
 
@@ -69,7 +70,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description,Name,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId")] ProductFormViewModel productFormViewModel)
+        public async Task<IActionResult> Create([Bind("Id,Description,Name,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId,PrimaryOptionGroupId,SecondaryOptionGroupId")] ProductFormViewModel productFormViewModel)
         {
             if (ModelState.IsValid)
             {

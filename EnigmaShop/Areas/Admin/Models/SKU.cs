@@ -32,7 +32,6 @@ namespace EnigmaShop.Areas.Admin.Models
         [DisplayName("Discounted Price")]
         public decimal DiscountedPrice { get; set; }
 
-
         [Required]
         [DisplayName("Available")]
         public bool IsAvailable { get; set; }
@@ -40,17 +39,18 @@ namespace EnigmaShop.Areas.Admin.Models
         [DisplayName("Discounted")]
         public bool IsDiscounted { get; set; }
 
-        [Required]
-        public int Stock { get; set; }
+        [ForeignKey(nameof(OptionId))]
+        public Option Option { get; set; }
 
-        public HashSet<SKUOption> SKUOptions { get; set; }
+        public int OptionId { get; set; }
 
         public ICollection<SKUPicture> SKUPictures { get; set; }
+        public ICollection<SKUSize> SKUSizes { get; set; }
 
         public SKU()
         {
-            SKUOptions = new HashSet<SKUOption>();
             SKUPictures = new Collection<SKUPicture>();
+            SKUSizes = new Collection<SKUSize>();
         }
 
         public SKU(SKUFormViewModel skuFormViewModel)
@@ -62,9 +62,8 @@ namespace EnigmaShop.Areas.Admin.Models
             DiscountedPrice = skuFormViewModel.DiscountedPrice;
             IsAvailable = skuFormViewModel.IsAvailable;
             IsDiscounted = skuFormViewModel.IsDiscounted;
-            Stock = skuFormViewModel.Stock;
-            SKUOptions = new HashSet<SKUOption>();
             SKUPictures = new Collection<SKUPicture>();
+            SKUSizes = new Collection<SKUSize>();
         }
 
         public void EditSKU(SKUFormViewModel skuFormViewModel,ApplicationDbContext applicationDbContext)
@@ -74,39 +73,12 @@ namespace EnigmaShop.Areas.Admin.Models
             DiscountedPrice = skuFormViewModel.DiscountedPrice;
             IsAvailable = skuFormViewModel.IsAvailable;
             IsDiscounted = skuFormViewModel.IsDiscounted;
-            Stock = skuFormViewModel.Stock;
         }
 
-        public async Task UpdateSKUOptions(SKUFormViewModel skuFormViewModel, ApplicationDbContext applicationDbContext)
+
+        public async Task UpdateSKUSizes()
         {
-            if (skuFormViewModel.OptionIds.Length > 0)
-            {
-                foreach (var optionId in skuFormViewModel.OptionIds)
-                {
-                    if (optionId == null) continue; // if no option was selected
-
-                    int optId = (int)optionId;
-
-                    var option = await applicationDbContext.Options.Include(x => x.OptionGroup)
-                        .SingleOrDefaultAsync(x => x.Id == optId); // get the option from database using optId
-
-                    var optionGroupId = option?.OptionGroupId ?? -1; //check the option's OptionGroupId
-
-                    var skuOpt = SKUOptions.FirstOrDefault(x => x.OptionGroupId== optionGroupId); //use the OptionGroupId to see if this sku has any SKUOptions with that OptionGroupId
-
-                    //check if this sku has this sku option
-                    if (skuOpt != null) // this sku has this sku option (so we just need to edit it)
-                    {
-                            skuOpt.OptionId = optId;   
-                    }
-                    else // this sku does not have this sku option (so we must add it)
-                    {
-                        if (option == null) continue; //some error occured and this option could not be found
-
-                        AddSKUOption(option);
-                    }
-                }
-            }
+            
         }
 
         public async Task UpdateSKUPictures(IList<IFormFile> files, IHostingEnvironment environment)
@@ -134,14 +106,13 @@ namespace EnigmaShop.Areas.Admin.Models
             }
         }
 
-        public void AddSKUOption(Option option)
+        public void AddSKUSize(int sizeId, int stock)
         {
-            SKUOptions.Add(new SKUOption
+            SKUSizes.Add(new SKUSize
             {
                 SKU = this,
-                OptionGroup = option.OptionGroup,
-                Option = option
-
+                SizeId = sizeId,
+                Stock = stock
             });
         }
 

@@ -37,24 +37,22 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         [DisplayName("Is this SKU Discounted?")]
         public bool IsDiscounted { get; set; }
 
-        [Required]
-        public int Stock { get; set; }
-
-
         public SelectList ProductList { get; set; }
 
-        public IEnumerable<OptionGroup> OptionGroups { get; set; }
+        public IEnumerable<Option> OptionList { get; set; }
 
-        public int?[] OptionIds { get; set; }
+        public IEnumerable<Size> SizeList { get; set; }
+
+        public int OptionId { get; set; }
+
+        public int[] SizeIds { get; set; }
+
+        public int[] Stock { get; set; }
 
         [DisplayName("Add new SKU Images")]
         public List<IFormFile> Files { get; set; }
 
-        public HashSet<SKUOption> SKUOptions { get; set; }
-
         public ICollection<SKUPicture> SKUPictures { get; set; }
-
-
 
         public SKUFormViewModel(SKU sku)
         {
@@ -65,14 +63,11 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             DiscountedPrice = sku.DiscountedPrice;
             IsAvailable = sku.IsAvailable;
             IsDiscounted = sku.IsDiscounted;
-            Stock = sku.Stock;
-            SKUOptions = sku.SKUOptions;
             SKUPictures = sku.SKUPictures;
         }
 
         public SKUFormViewModel()
         {
-            SKUOptions = new HashSet<SKUOption>();
             SKUPictures = new Collection<SKUPicture>();
         }
 

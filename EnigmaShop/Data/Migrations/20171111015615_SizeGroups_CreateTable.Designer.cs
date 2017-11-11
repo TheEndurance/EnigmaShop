@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171111015615_SizeGroups_CreateTable")]
+    partial class SizeGroups_CreateTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,26 +206,6 @@ namespace EnigmaShop.Data.Migrations
                     b.HasIndex("SKUId");
 
                     b.ToTable("SKUPictures");
-                });
-
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUSize", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("SKUId");
-
-                    b.Property<int>("SizeId");
-
-                    b.Property<int>("Stock");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SKUId");
-
-                    b.HasIndex("SizeId");
-
-                    b.ToTable("SKUSizes");
                 });
 
             modelBuilder.Entity("EnigmaShop.Models.ApplicationUser", b =>
@@ -462,19 +443,6 @@ namespace EnigmaShop.Data.Migrations
                         .WithMany("SKUPictures")
                         .HasForeignKey("SKUId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUSize", b =>
-                {
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.SKU", "SKU")
-                        .WithMany()
-                        .HasForeignKey("SKUId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.Size", "Size")
-                        .WithMany()
-                        .HasForeignKey("SizeId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

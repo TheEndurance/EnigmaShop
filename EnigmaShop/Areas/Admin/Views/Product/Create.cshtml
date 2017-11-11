@@ -30,10 +30,19 @@
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
-                                <label asp-for="PrimaryCategoryId" class="form-control-label col-sm-3"></label>
+                                <label asp-for="OptionGroupId" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
-                                    <select asp-for="PrimaryCategoryId" class="form-control" asp-items="Model.PrimaryCategoryList">
-                                        <option>Select a category </option>
+                                    <select asp-for="OptionGroupId" class="form-control" asp-items="Model.OptionGroupList">
+                                        <option value="">Select a primary option group </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <label asp-for="SizeGroupId" class="form-control-label col-sm-3"></label>
+                                <div class="col-sm-9">
+                                    <select asp-for="SizeGroupId" class="form-control" asp-items="Model.SizeGroupList">
+                                        <option value="">Optional secondary option group </option>
                                     </select>
                                 </div>
                             </div>
