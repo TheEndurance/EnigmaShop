@@ -60,6 +60,7 @@ namespace EnigmaShop.Areas.Admin.Models
             AltSKUId = productFormViewModel.AltSKUId;
             Description = productFormViewModel.Description;
             OptionGroupId = productFormViewModel.OptionGroupId;
+            SizeGroupId = productFormViewModel.SizeGroupId;
 
             AddProductCategories(productFormViewModel);
         }

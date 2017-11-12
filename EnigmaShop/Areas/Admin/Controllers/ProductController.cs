@@ -58,7 +58,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
             var productForm = new ProductFormViewModel
             {
                 PrimaryCategoryList = new SelectList(await _context.Categories.Where(x=>x.ParentCategoryId==null).ToListAsync(),"Id","Name"),
-                OptionGroupList = new SelectList(await _context.OptionGroups.ToListAsync(),"Id","Name")
+                OptionGroupList = new SelectList(await _context.OptionGroups.ToListAsync(),"Id","Name"),
+                SizeGroupList = new SelectList(await _context.SizeGroups.ToListAsync(),"Id","Name")
             };
             ViewData["Header"] = "Products";
 
@@ -70,7 +71,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description,Name,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId,PrimaryOptionGroupId,SecondaryOptionGroupId")] ProductFormViewModel productFormViewModel)
+        public async Task<IActionResult> Create([Bind("Id,Description,Name,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId,OptionGroupId,SizeGroupId")] ProductFormViewModel productFormViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -81,6 +82,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
             }
             productFormViewModel.PrimaryCategoryList =
                 new SelectList(await _context.Categories.Where(x=>x.ParentCategoryId==null).ToListAsync(), "Id", "Name");
+            productFormViewModel.OptionGroupList = new SelectList(await _context.OptionGroups.ToListAsync(), "Id", "Name");
+            productFormViewModel.SizeGroupList = new SelectList(await _context.SizeGroups.ToListAsync(), "Id", "Name");
             ViewData["Header"] = "Products";
             return View(productFormViewModel);
         }
@@ -97,6 +100,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 .Include(x=>x.MainSKUPicture)
                 .Include(x=>x.AltSKUPicture)
                 .Include(x=>x.ProductCategories)
+                .Include(x=>x.OptionGroup)
+                .Include(x=>x.SizeGroup)
                 .Include(x=>x.SKUs)
                 .ThenInclude(x=>x.SKUPictures)
                 .SingleOrDefaultAsync(m => m.Id == id);
@@ -116,10 +121,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 await _context.Categories.Where(x => x.ParentCategoryId == productFormViewModel.SecondaryCategoryId)
                     .ToListAsync(), "Id", "Name");
 
-            //TODO:
-            //productFormViewModel.CategoryList = new SelectList(await _context.Categories
-            //    .Where(x => x.CategoryGroupId == product.CategoryGroupId)
-            //    .ToListAsync(),"Id","Type",product.CategoryId);
+
             ViewData["Header"] = "Products";
             return View(productFormViewModel);
         }

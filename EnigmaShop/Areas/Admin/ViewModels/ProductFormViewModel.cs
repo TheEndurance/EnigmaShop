@@ -36,8 +36,12 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         [DisplayName("Secondary Image")]
         public int? AltSKUId { get; set; }
 
+        public OptionGroup OptionGroup { get; set; }
+
         [DisplayName("SKU Option")]
         public int OptionGroupId { get; set; }
+
+        public SizeGroup SizeGroup { get; set; }
 
         [DisplayName("SKU Sizing")]
         public int SizeGroupId { get; set; }
@@ -66,6 +70,9 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             MainSKUId = product.MainSKUId;
             AltSKUId = product.AltSKUId;
             OptionGroupId = product.OptionGroupId;
+            SizeGroupId = product.SizeGroupId;
+            OptionGroup = product.OptionGroup;
+            SizeGroup = product.SizeGroup;
 
             if (product.ProductCategories == null) return;
 
