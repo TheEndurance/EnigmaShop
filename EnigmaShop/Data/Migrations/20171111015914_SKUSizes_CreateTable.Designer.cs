@@ -208,7 +208,7 @@ namespace EnigmaShop.Data.Migrations
                     b.ToTable("SKUPictures");
                 });
 
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUSize", b =>
+            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUOption", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -465,7 +465,7 @@ namespace EnigmaShop.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUSize", b =>
+            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUOption", b =>
                 {
                     b.HasOne("EnigmaShop.Areas.Admin.Models.SKU", "SKU")
                         .WithMany()

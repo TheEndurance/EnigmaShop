@@ -10,7 +10,7 @@ namespace EnigmaShop.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "SKUSize");
+                name: "SKUOption");
 
             migrationBuilder.DropTable(
                 name: "Sizes");
@@ -33,7 +33,7 @@ namespace EnigmaShop.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SKUSize",
+                name: "SKUOption",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -61,12 +61,12 @@ namespace EnigmaShop.Data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_SKUSize_SKUId",
-                table: "SKUSize",
+                table: "SKUOption",
                 column: "SKUId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SKUSize_SizeId",
-                table: "SKUSize",
+                table: "SKUOption",
                 column: "SizeId");
         }
     }

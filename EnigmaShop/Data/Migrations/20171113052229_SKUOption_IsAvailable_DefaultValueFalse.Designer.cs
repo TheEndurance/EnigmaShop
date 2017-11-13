@@ -11,8 +11,8 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20171109190314_SKUSize_CreateTable")]
-    partial class SKUSize_CreateTable
+    [Migration("20171113052229_SKUOption_IsAvailable_DefaultValueFalse")]
+    partial class SKUOption_IsAvailable_DefaultValueFalse
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -90,11 +90,19 @@ namespace EnigmaShop.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(80);
 
+                    b.Property<int>("OptionGroupId");
+
+                    b.Property<int>("SizeGroupId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AltSKUId");
 
                     b.HasIndex("MainSKUId");
+
+                    b.HasIndex("OptionGroupId");
+
+                    b.HasIndex("SizeGroupId");
 
                     b.ToTable("Products");
                 });
@@ -125,13 +133,30 @@ namespace EnigmaShop.Data.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<int>("Sorting");
+                    b.Property<int>("SizeGroupId");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SizeGroupId");
+
                     b.ToTable("Sizes");
+                });
+
+            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SizeGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SizeGroups");
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKU", b =>
@@ -139,23 +164,13 @@ namespace EnigmaShop.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<decimal>("DiscountedPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(0.00m);
-
-                    b.Property<bool>("IsAvailable")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsDiscounted");
-
-                    b.Property<decimal>("Price");
+                    b.Property<int>("OptionId");
 
                     b.Property<int>("ProductId");
 
-                    b.Property<int>("Stock");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("OptionId");
 
                     b.HasIndex("ProductId");
 
@@ -167,21 +182,27 @@ namespace EnigmaShop.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("OptionGroupId");
+                    b.Property<decimal>("DiscountedPrice");
 
-                    b.Property<int>("OptionId");
+                    b.Property<bool>("IsAvailable");
+
+                    b.Property<bool>("IsDiscounted");
+
+                    b.Property<decimal>("Price");
 
                     b.Property<int>("SKUId");
 
+                    b.Property<int>("SizeId");
+
+                    b.Property<int>("Stock");
+
                     b.HasKey("Id");
-
-                    b.HasIndex("OptionGroupId");
-
-                    b.HasIndex("OptionId");
 
                     b.HasIndex("SKUId");
 
-                    b.ToTable("SKUOptions");
+                    b.HasIndex("SizeId");
+
+                    b.ToTable("SKUSizes");
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUPicture", b =>
@@ -201,26 +222,6 @@ namespace EnigmaShop.Data.Migrations
                     b.HasIndex("SKUId");
 
                     b.ToTable("SKUPictures");
-                });
-
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUOption", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("SKUId");
-
-                    b.Property<int>("SizeId");
-
-                    b.Property<int>("Stock");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SKUId");
-
-                    b.HasIndex("SizeId");
-
-                    b.ToTable("SKUOption");
                 });
 
             modelBuilder.Entity("EnigmaShop.Models.ApplicationUser", b =>
@@ -406,6 +407,16 @@ namespace EnigmaShop.Data.Migrations
                     b.HasOne("EnigmaShop.Areas.Admin.Models.SKUPicture", "MainSKUPicture")
                         .WithMany()
                         .HasForeignKey("MainSKUId");
+
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.OptionGroup", "OptionGroup")
+                        .WithMany()
+                        .HasForeignKey("OptionGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.SizeGroup", "SizeGroup")
+                        .WithMany()
+                        .HasForeignKey("SizeGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.ProductCategory", b =>
@@ -421,8 +432,21 @@ namespace EnigmaShop.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.Size", b =>
+                {
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.SizeGroup", "SizeGroup")
+                        .WithMany("Sizes")
+                        .HasForeignKey("SizeGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKU", b =>
                 {
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.Option", "Option")
+                        .WithMany()
+                        .HasForeignKey("OptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("EnigmaShop.Areas.Admin.Models.Product", "Product")
                         .WithMany("SKUs")
                         .HasForeignKey("ProductId")
@@ -431,20 +455,15 @@ namespace EnigmaShop.Data.Migrations
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUOption", b =>
                 {
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.OptionGroup", "OptionGroup")
-                        .WithMany()
-                        .HasForeignKey("OptionGroupId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.Option", "Option")
-                        .WithMany()
-                        .HasForeignKey("OptionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("EnigmaShop.Areas.Admin.Models.SKU", "SKU")
                         .WithMany("SKUOptions")
                         .HasForeignKey("SKUId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.Size", "Size")
+                        .WithMany()
+                        .HasForeignKey("SizeId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUPicture", b =>
@@ -452,19 +471,6 @@ namespace EnigmaShop.Data.Migrations
                     b.HasOne("EnigmaShop.Areas.Admin.Models.SKU", "SKU")
                         .WithMany("SKUPictures")
                         .HasForeignKey("SKUId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUOption", b =>
-                {
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.SKU", "SKU")
-                        .WithMany("SKUSizes")
-                        .HasForeignKey("SKUId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.Size", "Size")
-                        .WithMany()
-                        .HasForeignKey("SizeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EnigmaShop.Areas.Admin.Models
 {
-    public class SKUSize
+    public class SKUOption
     {
         public int Id { get; set; }
 
@@ -21,6 +21,16 @@ namespace EnigmaShop.Areas.Admin.Models
         public int SizeId { get; set; }
 
         public int Stock { get; set; }
+
+        public decimal Price { get; set; }
+
+        public decimal DiscountedPrice { get; set; }
+
+        public bool IsAvailable { get; set; }
+
+        public bool IsDiscounted { get; set; }
+
+
 
     }
 }

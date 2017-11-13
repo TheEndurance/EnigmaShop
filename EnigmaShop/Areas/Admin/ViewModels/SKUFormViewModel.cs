@@ -24,21 +24,6 @@ namespace EnigmaShop.Areas.Admin.ViewModels
 
         public Product Product { get; set; }
 
-        [Required]
-        public decimal Price { get; set; }
-        
-        [DisplayName("Discounted Price")]
-        public decimal DiscountedPrice { get; set; }
-
-        [Required]
-        [DisplayName("Is this SKU Available?")]
-        public bool IsAvailable { get; set; }
-
-        [DisplayName("Is this SKU Discounted?")]
-        public bool IsDiscounted { get; set; }
-
-        public SelectList ProductList { get; set; }
-
         public IEnumerable<Option> OptionList { get; set; }
 
         public IEnumerable<Size> SizeList { get; set; }
@@ -47,6 +32,14 @@ namespace EnigmaShop.Areas.Admin.ViewModels
 
         public int[] SizeIds { get; set; }
 
+        public decimal[] Price { get; set; }
+
+        public decimal[] DiscountedPrice { get; set; }
+
+        public bool[] IsAvailable { get; set; }
+
+        public bool[] IsDiscounted { get; set; }
+
         public int[] Stock { get; set; }
 
         [DisplayName("Add new SKU Images")]
@@ -54,21 +47,21 @@ namespace EnigmaShop.Areas.Admin.ViewModels
 
         public ICollection<SKUPicture> SKUPictures { get; set; }
 
+        public ICollection<SKUOption> SKUOptions  { get; set; }
+
         public SKUFormViewModel(SKU sku)
         {
             Id = sku.Id;
             ProductId = sku.ProductId;
             Product = sku.Product;
-            Price = sku.Price;
-            DiscountedPrice = sku.DiscountedPrice;
-            IsAvailable = sku.IsAvailable;
-            IsDiscounted = sku.IsDiscounted;
             SKUPictures = sku.SKUPictures;
+            SKUOptions = sku.SKUOptions;
         }
 
         public SKUFormViewModel()
         {
             SKUPictures = new Collection<SKUPicture>();
+            SKUOptions = new Collection<SKUOption>();
         }
 
         public string Action

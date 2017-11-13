@@ -20,7 +20,7 @@ namespace EnigmaShop.Data
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<SizeGroup> SizeGroups { get; set; }
-        public DbSet<SKUSize> SKUSizes { get; set; }
+        public DbSet<SKUOption> SKUSizes { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -31,18 +31,10 @@ namespace EnigmaShop.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            //Set the IsAvaiable bool on SKU table default value to true
-            builder.Entity<SKU>()
-                .Property(x => x.IsAvailable)
-                .HasDefaultValue(true);
-       
-
-            //Set the DiscountedPrice on SKU Table default value to 0.00m
-
-            builder.Entity<SKU>()
-                .Property(x => x.DiscountedPrice)
-                .HasDefaultValue(0.00m);
-
+   
+            // **
+            // SKU
+            // **
             builder.Entity<SKU>()
                 .HasOne(x => x.Option)
                 .WithMany()
@@ -86,9 +78,11 @@ namespace EnigmaShop.Data
                 .WithOne(x => x.ParentCategory)
                 .HasForeignKey(x => x.ParentCategoryId);
 
-
-            //SKU Size
-            builder.Entity<SKUSize>()
+            
+            // **
+            // SKU Option
+            // **
+            builder.Entity<SKUOption>()
                 .HasOne(x => x.Size)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);

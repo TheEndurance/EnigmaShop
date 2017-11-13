@@ -26,31 +26,19 @@ namespace EnigmaShop.Areas.Admin.Models
         [ForeignKey(nameof(ProductId))]
         public Product Product { get; set; }
 
-        [Required]
-        public decimal Price { get; set; }
-
-        [DisplayName("Discounted Price")]
-        public decimal DiscountedPrice { get; set; }
-
-        [Required]
-        [DisplayName("Available")]
-        public bool IsAvailable { get; set; }
-
-        [DisplayName("Discounted")]
-        public bool IsDiscounted { get; set; }
-
         [ForeignKey(nameof(OptionId))]
         public Option Option { get; set; }
 
         public int OptionId { get; set; }
 
         public ICollection<SKUPicture> SKUPictures { get; set; }
-        public ICollection<SKUSize> SKUSizes { get; set; }
+
+        public ICollection<SKUOption> SKUOptions { get; set; }
 
         public SKU()
         {
             SKUPictures = new Collection<SKUPicture>();
-            SKUSizes = new Collection<SKUSize>();
+            SKUOptions = new Collection<SKUOption>();
         }
 
         public SKU(SKUFormViewModel skuFormViewModel)
@@ -58,25 +46,17 @@ namespace EnigmaShop.Areas.Admin.Models
             Id = skuFormViewModel.Id;
             ProductId = skuFormViewModel.ProductId;
             Product = skuFormViewModel.Product;
-            Price = skuFormViewModel.Price;
-            DiscountedPrice = skuFormViewModel.DiscountedPrice;
-            IsAvailable = skuFormViewModel.IsAvailable;
-            IsDiscounted = skuFormViewModel.IsDiscounted;
             SKUPictures = new Collection<SKUPicture>();
-            SKUSizes = new Collection<SKUSize>();
+            SKUOptions = new Collection<SKUOption>();
         }
 
         public void EditSKU(SKUFormViewModel skuFormViewModel,ApplicationDbContext applicationDbContext)
         {
             ProductId = skuFormViewModel.ProductId;
-            Price = skuFormViewModel.Price;
-            DiscountedPrice = skuFormViewModel.DiscountedPrice;
-            IsAvailable = skuFormViewModel.IsAvailable;
-            IsDiscounted = skuFormViewModel.IsDiscounted;
         }
 
 
-        public async Task UpdateSKUSizes()
+        public async Task UpdateSKUOptions()
         {
             
         }
@@ -108,7 +88,7 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public void AddSKUSize(int sizeId, int stock)
         {
-            SKUSizes.Add(new SKUSize
+            SKUOptions.Add(new SKUOption
             {
                 SKU = this,
                 SizeId = sizeId,

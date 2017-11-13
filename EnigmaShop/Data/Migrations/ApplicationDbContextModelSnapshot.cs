@@ -163,19 +163,7 @@ namespace EnigmaShop.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<decimal>("DiscountedPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(0.00m);
-
-                    b.Property<bool>("IsAvailable")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsDiscounted");
-
                     b.Property<int>("OptionId");
-
-                    b.Property<decimal>("Price");
 
                     b.Property<int>("ProductId");
 
@@ -186,6 +174,34 @@ namespace EnigmaShop.Data.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("SKUs");
+                });
+
+            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<decimal>("DiscountedPrice");
+
+                    b.Property<bool>("IsAvailable");
+
+                    b.Property<bool>("IsDiscounted");
+
+                    b.Property<decimal>("Price");
+
+                    b.Property<int>("SKUId");
+
+                    b.Property<int>("SizeId");
+
+                    b.Property<int>("Stock");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SKUId");
+
+                    b.HasIndex("SizeId");
+
+                    b.ToTable("SKUSizes");
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUPicture", b =>
@@ -205,26 +221,6 @@ namespace EnigmaShop.Data.Migrations
                     b.HasIndex("SKUId");
 
                     b.ToTable("SKUPictures");
-                });
-
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUSize", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("SKUId");
-
-                    b.Property<int>("SizeId");
-
-                    b.Property<int>("Stock");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SKUId");
-
-                    b.HasIndex("SizeId");
-
-                    b.ToTable("SKUSizes");
                 });
 
             modelBuilder.Entity("EnigmaShop.Models.ApplicationUser", b =>
@@ -438,7 +434,7 @@ namespace EnigmaShop.Data.Migrations
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.Size", b =>
                 {
                     b.HasOne("EnigmaShop.Areas.Admin.Models.SizeGroup", "SizeGroup")
-                        .WithMany()
+                        .WithMany("Sizes")
                         .HasForeignKey("SizeGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -456,18 +452,10 @@ namespace EnigmaShop.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUPicture", b =>
+            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUOption", b =>
                 {
                     b.HasOne("EnigmaShop.Areas.Admin.Models.SKU", "SKU")
-                        .WithMany("SKUPictures")
-                        .HasForeignKey("SKUId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUSize", b =>
-                {
-                    b.HasOne("EnigmaShop.Areas.Admin.Models.SKU", "SKU")
-                        .WithMany()
+                        .WithMany("SKUOptions")
                         .HasForeignKey("SKUId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -475,6 +463,14 @@ namespace EnigmaShop.Data.Migrations
                         .WithMany()
                         .HasForeignKey("SizeId")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUPicture", b =>
+                {
+                    b.HasOne("EnigmaShop.Areas.Admin.Models.SKU", "SKU")
+                        .WithMany("SKUPictures")
+                        .HasForeignKey("SKUId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -19,19 +19,7 @@
                                     @Html.DisplayNameFor(model => model.Product)
                                 </th>
                                 <th>
-                                    @Html.DisplayNameFor(model => model.Price)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.DiscountedPrice)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.IsAvailable)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.IsDiscounted)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.Stock)
+                                    @Html.DisplayNameFor(model => model.Option)
                                 </th>
                                 <th>SKU Options</th>
                                 <th>Images</th>
@@ -46,25 +34,13 @@
                                         @Html.DisplayFor(modelItem => item.Product.Name)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.Price)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.DiscountedPrice)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.IsAvailable)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.IsDiscounted)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Stock)
+                                        @Html.DisplayFor(modelItem => item.Product.OptionGroup.Name) : @Html.DisplayFor(modelItem => item.Option.Name)
                                     </td>
                                     <td>
                                         @foreach (var option in item.SKUOptions)
                                         {
                                             <ul class="list-unstyled">
-                                                @option.OptionGroup.Name
+                                                @option.Size.Name : $@option.Price : @option.Stock
                                             </ul>
                                         }
                                     </td>
