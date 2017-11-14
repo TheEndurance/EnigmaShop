@@ -26,5 +26,23 @@ namespace EnigmaShop.Areas.Admin.Controllers.API
             await _context.SaveChangesAsync();
             return Ok(id);
         }
+
+        [HttpPut("{SKUPictures}")]
+        public async Task<IActionResult> ReorderSKUPictures(int[] SKUPictures)
+        {
+            int order = 0;
+            if (SKUPictures == null) return BadRequest("Null values sent");
+            foreach (var skuPictureId in SKUPictures)
+            {
+                var skuPicture = await _context.SKUPictures.SingleOrDefaultAsync(x => x.Id == skuPictureId);
+                if (skuPicture!= null)
+                {
+                    skuPicture.Sorting = order;
+                }
+                order++;
+            }
+            await _context.SaveChangesAsync();
+            return Ok(SKUPictures);
+        }
     }
 }

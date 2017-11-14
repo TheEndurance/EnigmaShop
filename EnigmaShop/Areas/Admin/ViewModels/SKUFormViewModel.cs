@@ -28,6 +28,7 @@ namespace EnigmaShop.Areas.Admin.ViewModels
 
         public IEnumerable<Size> SizeList { get; set; }
 
+        [DisplayName("Primary SKU Option")]
         public int OptionId { get; set; }
 
         [DisplayName("Add new SKU Images")]

@@ -150,7 +150,6 @@ namespace EnigmaShop.Areas.Admin.Controllers
 
             var sku = await _context.SKUs
                 .Include(x=>x.Product)
-                .Include(x => x.SKUPictures)
                 .Include(x=>x.SKUOptions)
                 .ThenInclude(x=>x.Size)
                 .SingleOrDefaultAsync(m => m.Id == id);
@@ -161,6 +160,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
             }
 
             var skuFormViewModel = new SKUFormViewModel(sku);
+            skuFormViewModel.SKUPictures = await _context.SKUPictures.Where(x => x.SKUId == sku.Id)
+                .OrderBy(x => x.Sorting).ToListAsync();
             skuFormViewModel.OptionList =
                 await _context.Options.Where(x => x.OptionGroupId == sku.Product.OptionGroupId).ToListAsync();
             ViewData["Header"] = "SKUs";
@@ -223,9 +224,14 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            skuFormViewModel.OptionList =
-                await _context.Options.Where(x => x.OptionGroupId == sku.Product.OptionGroupId).ToListAsync();
-            skuFormViewModel.Product = await _context.Products.SingleOrDefaultAsync(x => x.Id == sku.Product.Id);
+            skuFormViewModel = new SKUFormViewModel(sku)
+            {
+                SKUPictures = await _context.SKUPictures.Where(x=>x.SKUId==sku.Id).OrderBy(x=>x.Sorting).ToListAsync(),
+                OptionList =
+                    await _context.Options.Where(x => x.OptionGroupId == sku.Product.OptionGroupId).ToListAsync(),
+                Product = await _context.Products.SingleOrDefaultAsync(x => x.Id == sku.Product.Id)
+            };
+
             ViewData["Header"] = "SKUs";
             return View("SKUForm", skuFormViewModel);
         }

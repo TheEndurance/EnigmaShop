@@ -58,36 +58,36 @@
                                             @for (int i = 0; i < Model.SKUOptions.Count; i++)
                                             {
                                                 <tr>
-                                                    <input asp-for="@Model.SKUOptions[i].Id" type="hidden"/>
+                                                    <input asp-for="@Model.SKUOptions[i].Id" type="hidden" />
                                                     <input asp-for="@Model.SKUOptions[i].SKUId" type="hidden" />
                                                     <td>
-                                                        <input asp-for="@Model.SKUOptions[i].SizeId" type="hidden"/>
-                                                        <input type="hidden" asp-for="@Model.SKUOptions[i].SizeId"/>
+                                                        <input asp-for="@Model.SKUOptions[i].SizeId" type="hidden" />
+                                                        <input type="hidden" asp-for="@Model.SKUOptions[i].SizeId" />
 
                                                         <p>@Model.SKUOptions[i].Size.Name</p>
                                                     </td>
                                                     <td>
                                                         <div class="i-checks">
-                                                            <input asp-for="@Model.SKUOptions[i].IsAvailable" class="checkbox-template"/>
+                                                            <input asp-for="@Model.SKUOptions[i].IsAvailable" class="checkbox-template" />
                                                             <span asp-validation-for="@Model.SKUOptions[i].IsAvailable" class="text-danger"></span>
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <input asp-for="@Model.SKUOptions[i].Price" class="form-control"/>
+                                                        <input asp-for="@Model.SKUOptions[i].Price" class="form-control" />
                                                         <span asp-validation-for="@Model.SKUOptions[i].Price" class="text-danger"></span>
                                                     </td>
                                                     <td>
                                                         <div class="i-checks">
-                                                            <input asp-for="@Model.SKUOptions[i].IsDiscounted" class="checkbox-template"/>
+                                                            <input asp-for="@Model.SKUOptions[i].IsDiscounted" class="checkbox-template" />
                                                             <span asp-validation-for="@Model.SKUOptions[i].IsDiscounted" class="text-danger"></span>
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <input asp-for="@Model.SKUOptions[i].DiscountedPrice" class="form-control"/>
+                                                        <input asp-for="@Model.SKUOptions[i].DiscountedPrice" class="form-control" />
                                                         <span asp-validation-for="@Model.SKUOptions[i].DiscountedPrice" class="text-danger"></span>
                                                     </td>
                                                     <td>
-                                                        <input asp-for="@Model.SKUOptions[i].Stock" class="form-control"/>
+                                                        <input asp-for="@Model.SKUOptions[i].Stock" class="form-control" />
                                                         <span asp-validation-for="@Model.SKUOptions[i].Stock" class="text-danger"></span>
                                                     </td>
                                                 </tr>
@@ -96,23 +96,6 @@
                                     </table>
                                 </div>
                             </div>
-
-
-                            @*<div class="form-group row">
-                                    <label class="form-control-label col-md-3">Availability and Discount</label>
-                                    <div class="col-md-9">
-                                        <div class="i-checks">
-                                            <input asp-for="IsDiscounted" class="checkbox-template" />
-                                            <label asp-for="IsDiscounted"></label>
-                                        </div>
-                                        <div class="i-checks">
-                                            <input asp-for="IsAvailable" class="checkbox-template" />
-                                            <label asp-for="IsAvailable"></label>
-                                        </div>
-                                    </div>
-                                </div>*@
-
-
                             @if (Model.SKUId != 0) //We are editing an existing SKU
                             {
                                 <div class="line"></div>
@@ -120,14 +103,18 @@
                                     <label class="form-control-label col-sm-3">Current SKU Images</label>
                                     <div class="col-sm-9">
                                         <div class="row">
-                                            @foreach (var skuPicture in Model.SKUPictures)
-                                            {
-                                                <div id="@skuPicture.Id" class="col-sm-2 delete-picture-box">
-                                                    <img src="@skuPicture.ImageUrl" class="img-fluid img-thumbnail" title="@skuPicture.ImageUrl" />
-                                                    <a class="js-delete-picture" data-sku-picture-id="@skuPicture.Id"><i class="fa fa-times delete-picture-icon" aria-hidden="true"></i></a>
-                                                </div>
+                                            <ul id="sortable" class="list-inline">
+                                                @foreach (var skuPicture in Model.SKUPictures)
+                                                {
+                                                    <li id="SKUPictures_@skuPicture.Id" class="mx-1 list-inline-item delete-picture-box">
+                                                        <img src="@skuPicture.ImageUrl" class="sku-list-picture img-thumbnail" title="@skuPicture.ImageUrl" />
+                                                        <div class="d-block">
+                                                        <a class="js-delete-picture" data-sku-picture-id="@skuPicture.Id"><i class="fa fa-times delete-picture-icon" aria-hidden="true"></i></a>
+                                                        </div>
+                                                    </li>
 
-                                            }
+                                                }
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -164,6 +151,7 @@
     </div>
 </section>
 @section Scripts {
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="~/lib/bootbox.js/bootbox.js"></script>
     <script>
 
@@ -187,10 +175,10 @@
                     return alert(file.name + " is not an image");
                 } // else...
 
-                var reader = new FileReader();
+                const reader = new FileReader();
 
                 reader.addEventListener("load", function () {
-                    var image = new Image();
+                    const image = new Image();
                     image.className = "sku-add-picture image-hover-enlarge";
                     image.title = file.name;
                     image.src = this.result;
@@ -203,18 +191,20 @@
 
         }
         document.querySelector('#Files').addEventListener("change", previewImages, false);
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         // ** Delete Images ** //
+
         $(".js-delete-picture").click(function () {
-            var skuPictureId = $(this).attr('data-sku-picture-id');
-            var url = "/admin/api/SKUPictures/" + skuPictureId;
+            const skuPictureId = $(this).attr('data-sku-picture-id');
+            const url = `/admin/api/SKUPictures/${skuPictureId}`;
             $.ajax({
                 url: url,
                 type: "DELETE",
                 success: function () {
-                    $("#" + skuPictureId + ".delete-picture-box").fadeOut("fast",
+                    $(`#${skuPictureId}.delete-picture-box`).fadeOut("fast",
                         function () {
                             this.remove();
                         });
@@ -225,7 +215,30 @@
             });
         });
 
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        // ** Reorder Images ** //
+
+        const SortImageList = function () {
+            const skuPictures = $("#sortable").sortable("serialize");
+            const url = "/admin/api/SKUPictures";
+            $.ajax({
+                url: url,
+                type: "PUT",
+                data: skuPictures
+
+            });
+        }
+
+        $("#sortable").sortable({
+            update: SortImageList,
+            placeholder: "ui-state-highlight"
+        });
+        $("#sortable").disableSelection();
+
+
 
     </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

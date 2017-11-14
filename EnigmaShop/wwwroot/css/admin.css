@@ -49,11 +49,19 @@
 }
 
 .sku-list-picture {
-    height: 150px;
-    width: 150px;
+    height: 200px;
+    width: 168px;
     padding: 0.2rem;
    
 }
 .category-ul {
     list-style: none;
+}
+.ui-state-highlight {
+    width:170px;
+    height:200px;
+    border: 2px dashed #503ce9;
+}
+#sortable > li {
+    float:left;
 }
