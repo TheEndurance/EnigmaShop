@@ -33,32 +33,42 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public ICollection<SKUPicture> SKUPictures { get; set; }
 
-        public ICollection<SKUOption> SKUOptions { get; set; }
+        public IList<SKUOption> SKUOptions { get; set; }
 
         public SKU()
         {
             SKUPictures = new Collection<SKUPicture>();
-            SKUOptions = new Collection<SKUOption>();
+            SKUOptions = new List<SKUOption>();
         }
 
         public SKU(SKUFormViewModel skuFormViewModel)
         {
-            Id = skuFormViewModel.Id;
+            Id = skuFormViewModel.SKUId;
             ProductId = skuFormViewModel.ProductId;
             Product = skuFormViewModel.Product;
+            OptionId = skuFormViewModel.OptionId;
             SKUPictures = new Collection<SKUPicture>();
-            SKUOptions = new Collection<SKUOption>();
+            SKUOptions = new List<SKUOption>();
         }
 
-        public void EditSKU(SKUFormViewModel skuFormViewModel,ApplicationDbContext applicationDbContext)
+        public void EditSKU(SKUFormViewModel skuFormViewModel)
         {
-            ProductId = skuFormViewModel.ProductId;
+            OptionId = skuFormViewModel.OptionId;
         }
 
 
-        public async Task UpdateSKUOptions()
+        public async Task UpdateSKUOptions(SKUFormViewModel skuFormViewModel, ApplicationDbContext context)
         {
-            
+            foreach (var skuOption in skuFormViewModel.SKUOptions)
+            {
+                if (skuOption.Id > 0)
+                {
+                    var skuOptionInDb = SKUOptions.Single(x => x.Id == skuOption.Id);
+                    context.Entry(skuOptionInDb).CurrentValues.SetValues(skuOption);
+                    context.Entry(skuOptionInDb).State = EntityState.Modified;
+                }
+            }
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateSKUPictures(IList<IFormFile> files, IHostingEnvironment environment)
@@ -86,17 +96,7 @@ namespace EnigmaShop.Areas.Admin.Models
             }
         }
 
-        public void AddSKUSize(int sizeId, int stock)
-        {
-            SKUOptions.Add(new SKUOption
-            {
-                SKU = this,
-                SizeId = sizeId,
-                Stock = stock
-            });
-        }
-
-        public void AddSKUPicture(string imageUrl,int sorting)
+        private void AddSKUPicture(string imageUrl,int sorting)
         {
             SKUPictures.Add(new SKUPicture
             {

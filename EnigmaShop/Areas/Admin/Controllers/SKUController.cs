@@ -44,9 +44,10 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 .ThenInclude(x => x.OptionGroup)
                 .Include(x => x.SKUOptions)
                 .ThenInclude(x => x.Size);
-                
+
 
             ViewData["Header"] = "SKUs";
+            ViewBag.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
             return View(await skus.ToListAsync());
         }
 
@@ -71,26 +72,30 @@ namespace EnigmaShop.Areas.Admin.Controllers
 
         // GET: Admin/SKU/Create
         public async Task<IActionResult> Create(int id)
+
         {
             var product = await _context.Products
-                .Include(x=>x.SizeGroup)
-                .ThenInclude(x=>x.Sizes)
+                .Include(x => x.SizeGroup)
+                .ThenInclude(x => x.Sizes)
                 .SingleOrDefaultAsync(x => x.Id == (int)id);
 
             var skuFormViewModel = new SKUFormViewModel
             {
                 Product = product,
-                OptionList = await _context.Options.Where(x=>x.OptionGroupId==product.OptionGroupId).ToListAsync(),
-                SizeList = await _context.Sizes.Where(x=>x.SizeGroupId==product.SizeGroupId).ToListAsync()
-            };
+                ProductId = product.Id,
+                OptionList = await _context.Options.Where(x => x.OptionGroupId == product.OptionGroupId).ToListAsync(),
+                SizeList = await _context.Sizes.Where(x => x.SizeGroupId == product.SizeGroupId).ToListAsync(),
+
+        };
             foreach (var size in product.SizeGroup.Sizes)
             {
                 skuFormViewModel.SKUOptions.Add(new SKUOption
                 {
-                    SizeId=4
+                    Size = size,
+                    SizeId = size.Id
                 });
             }
-            
+
             ViewData["Header"] = "SKUs";
             return View("SKUForm", skuFormViewModel);
         }
@@ -100,7 +105,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,ImageUrl,OptionId,Files,SizeIds,Stock")] SKUFormViewModel skuFormViewModel)
+        public async Task<IActionResult> Create([Bind("SKUId,ProductId,ImageUrl,OptionId,Files,SKUOptions")] SKUFormViewModel skuFormViewModel)
         {
 
             //TODO Validate SKU Size has been entered
@@ -111,7 +116,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 //create new SKU
                 var sku = new SKU(skuFormViewModel);
 
-                //Add SKU Sizes
+                //Add SKU Options
+                sku.SKUOptions = skuFormViewModel.SKUOptions;
 
                 //Add SKU Pictures
                 await sku.UpdateSKUPictures(skuFormViewModel.Files, _environment);
@@ -123,8 +129,13 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            //skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
-            // TODO Option Group for sku
+            var product = await _context.Products.Include(x => x.SizeGroup)
+                .ThenInclude(x => x.Sizes)
+                .SingleOrDefaultAsync(x => x.Id == skuFormViewModel.ProductId);
+            skuFormViewModel.Product = product;
+            skuFormViewModel.OptionList =
+                await _context.Options.Where(x => x.OptionGroupId == product.OptionGroupId).ToListAsync();
+            skuFormViewModel.SizeList = await _context.Sizes.Where(x => x.SizeGroupId == product.SizeGroupId).ToListAsync();
             ViewData["Header"] = "SKUs";
             return View("SKUForm", skuFormViewModel);
         }
@@ -137,8 +148,12 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            //TODO Include SizeGroup
-            var sku = await _context.SKUs.Include(x => x.SKUPictures).SingleOrDefaultAsync(m => m.Id == id);
+            var sku = await _context.SKUs
+                .Include(x=>x.Product)
+                .Include(x => x.SKUPictures)
+                .Include(x=>x.SKUOptions)
+                .ThenInclude(x=>x.Size)
+                .SingleOrDefaultAsync(m => m.Id == id);
 
             if (sku == null)
             {
@@ -146,8 +161,8 @@ namespace EnigmaShop.Areas.Admin.Controllers
             }
 
             var skuFormViewModel = new SKUFormViewModel(sku);
-            //skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
-            // TODO Option Group for sku
+            skuFormViewModel.OptionList =
+                await _context.Options.Where(x => x.OptionGroupId == sku.Product.OptionGroupId).ToListAsync();
             ViewData["Header"] = "SKUs";
             return View("SKUForm", skuFormViewModel);
         }
@@ -157,16 +172,20 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ProductId,Price,DiscountedPrice,IsAvailable,IsDiscounted,Stock,ImageUrl,SizeIds,Files")] SKUFormViewModel skuFormViewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("SKUId,ImageUrl,SKUOptions,OptionId,Files")] SKUFormViewModel skuFormViewModel)
         {
 
-            if (id != skuFormViewModel.Id)
+            if (id != skuFormViewModel.SKUId)
             {
                 return NotFound();
             }
 
             //TODO Include SKUOption
-            var sku = await _context.SKUs.Include(x => x.SKUPictures).SingleOrDefaultAsync(x => x.Id == skuFormViewModel.Id);
+
+            var sku = await _context.SKUs
+                .Include(x=>x.SKUOptions)
+                .Include(x => x.SKUPictures)
+                .SingleOrDefaultAsync(x => x.Id == skuFormViewModel.SKUId);
 
             if (sku == null) return NotFound();
 
@@ -177,9 +196,10 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 try
                 {
                     //edit SKU properties
-                    sku.EditSKU(skuFormViewModel, _context);
+                    sku.EditSKU(skuFormViewModel);
 
-                    //Update sku sizes
+                    ////Update sku options
+                    await sku.UpdateSKUOptions(skuFormViewModel, _context);
 
                     //Update sku pictures
                     await sku.UpdateSKUPictures(skuFormViewModel.Files, _environment);
@@ -191,7 +211,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SKUExists(skuFormViewModel.Id))
+                    if (!SKUExists(skuFormViewModel.SKUId))
                     {
                         return NotFound();
                     }
@@ -202,8 +222,10 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //skuFormViewModel.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
-            // TODO Option Group for sku
+
+            skuFormViewModel.OptionList =
+                await _context.Options.Where(x => x.OptionGroupId == sku.Product.OptionGroupId).ToListAsync();
+            skuFormViewModel.Product = await _context.Products.SingleOrDefaultAsync(x => x.Id == sku.Product.Id);
             ViewData["Header"] = "SKUs";
             return View("SKUForm", skuFormViewModel);
         }

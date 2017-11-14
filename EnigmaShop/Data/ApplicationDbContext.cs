@@ -20,7 +20,7 @@ namespace EnigmaShop.Data
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<SizeGroup> SizeGroups { get; set; }
-        public DbSet<SKUOption> SKUSizes { get; set; }
+        public DbSet<SKUOption> SKUOptions { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -86,6 +86,14 @@ namespace EnigmaShop.Data
                 .HasOne(x => x.Size)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<SKUOption>()
+                .Property(x => x.Price)
+                .HasDefaultValue(0.00m);
+
+            builder.Entity<SKUOption>()
+                .Property(x => x.DiscountedPrice)
+                .HasDefaultValue(0.00m);
 
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.

@@ -17,7 +17,7 @@ namespace EnigmaShop.Areas.Admin.ViewModels
 {
     public class SKUFormViewModel
     {
-        public int Id { get; set; }
+        public int SKUId { get; set; }
 
         [Required]
         public int ProductId { get; set; }
@@ -30,32 +30,21 @@ namespace EnigmaShop.Areas.Admin.ViewModels
 
         public int OptionId { get; set; }
 
-        public int[] SizeIds { get; set; }
-
-        public decimal[] Price { get; set; }
-
-        public decimal[] DiscountedPrice { get; set; }
-
-        public bool[] IsAvailable { get; set; }
-
-        public bool[] IsDiscounted { get; set; }
-
-        public int[] Stock { get; set; }
-
         [DisplayName("Add new SKU Images")]
         public List<IFormFile> Files { get; set; }
 
         public ICollection<SKUPicture> SKUPictures { get; set; }
 
-        public ICollection<SKUOption> SKUOptions  { get; set; }
+        public IList<SKUOption> SKUOptions  { get; set; }
 
         public SKUFormViewModel(SKU sku)
         {
-            Id = sku.Id;
+            SKUId = sku.Id;
+            OptionId = sku.OptionId;
             ProductId = sku.ProductId;
             Product = sku.Product;
             SKUPictures = sku.SKUPictures;
-            SKUOptions = sku.SKUOptions;
+            SKUOptions = sku.SKUOptions.ToList();
         }
 
         public SKUFormViewModel()
@@ -70,7 +59,7 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             {
                 Expression<Func<SKUController, Task<IActionResult>>> create = gc => gc.Create(0);
                 Expression<Func<SKUController,Task<IActionResult>>> edit = gc => gc.Edit(null);
-                var action = (Id == 0) ? create : edit;
+                var action = (SKUId == 0) ? create : edit;
                 string methodName = (action.Body as MethodCallExpression)?.Method.Name;
                 return methodName;
             }

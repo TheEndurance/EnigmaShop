@@ -5,7 +5,27 @@
 <section>
     <div class="container-fluid">
         <div class="row">
-            <p><a asp-action="Create" class="btn btn-outline-primary">Create New</a></p>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">Create New SKUs</div>
+                    <div class="card-body">
+                        <form asp-action="Create" asp-controller="SKU" method="get">
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <select name="Id" class="form-control" asp-items="ViewBag.ProductList"></select>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <input type="submit" class="btn btn-outline-primary" value="Create New"/>
+                                </div>
+                            </div>
+                        
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
@@ -40,7 +60,7 @@
                                         @foreach (var option in item.SKUOptions)
                                         {
                                             <ul class="list-unstyled">
-                                                @option.Size.Name : $@option.Price : @option.Stock
+                                                @option.Size.Name : $@option.Price : Stock - @option.Stock
                                             </ul>
                                         }
                                     </td>

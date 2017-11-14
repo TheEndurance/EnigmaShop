@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171113185439_SKUOption_Price_SetDefaultValueToZero")]
+    partial class SKUOption_Price_SetDefaultValueToZero
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,7 +206,7 @@ namespace EnigmaShop.Data.Migrations
 
                     b.HasIndex("SizeId");
 
-                    b.ToTable("SKUOptions");
+                    b.ToTable("SKUSizes");
                 });
 
             modelBuilder.Entity("EnigmaShop.Areas.Admin.Models.SKUPicture", b =>
