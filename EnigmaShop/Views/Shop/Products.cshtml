@@ -1,4 +1,5 @@
-﻿@model EnigmaShop.ViewModels.ShopViewModel
+﻿@using Microsoft.AspNetCore.Http
+@model EnigmaShop.ViewModels.ShopViewModel
 
 
 <div class="jumbotron">
@@ -6,6 +7,7 @@
         <h1>
             Shop
         </h1>
+
     </div>
 </div>
 
@@ -21,14 +23,14 @@
                     {
                         <ul class="list-style-none">
                             <li>
-                                <a asp-route-primaryCat="@primaryCat.Name" asp-route-secondaryCat="@secondaryCat.Name" asp-route-option="@Model.OptionQueryString">@secondaryCat.Name</a>
+                                <a asp-route-primaryCat="@primaryCat.Name" asp-route-secondaryCat="@secondaryCat.Name">@secondaryCat.Name</a>
                             </li>
                             <li>
                                 @foreach (var tertiaryCat in secondaryCat.Categories)
                                 {
                                     <ul class="list-style-none">
                                         <li>
-                                            <a asp-route-primaryCat="@primaryCat.Name" asp-route-secondaryCat="@tertiaryCat.Name" asp-route-option="@Model.OptionQueryString">@tertiaryCat.Name</a>
+                                            <a asp-route-primaryCat="@primaryCat.Name" asp-route-secondaryCat="@tertiaryCat.Name">@tertiaryCat.Name</a>
                                         </li>
                                     </ul>
                                 }
@@ -40,12 +42,17 @@
             <div class="options mt-5">
                 @foreach (var optionGroup in Model.OptionGroups)
                 {
+
                     <h4 class="d-block">@optionGroup.Name</h4>
                     <ul class="list-style-none">
                         @foreach (var option in optionGroup.Options)
                         {
                             <li>
-                                @option.Name
+                                <label class="custom-control custom-checkbox">
+                                    <input type="checkbox" data-option-id="@option.Id" class="js-option-checkbox custom-control-input" @(Model.OptionIds.Contains(option.Id) ? "checked" : "")>
+                                    <span class="custom-control-indicator"></span>
+                                    <span class="custom-control-description">@option.Name</span>
+                                </label>
                             </li>
                         }
                     </ul>
@@ -59,7 +66,11 @@
                         @foreach (var size in sizeGroup.Sizes)
                         {
                             <li>
-                                @size.Name
+                                <label class="custom-control custom-checkbox">
+                                    <input type="checkbox" data-size-id="@size.Id" class="js-size-checkbox custom-control-input" @(Model.SizeIds.Contains(size.Id) ? "checked" : "")>
+                                    <span class="custom-control-indicator"></span>
+                                    <span class="custom-control-description">@size.Name</span>
+                                </label>
                             </li>
                         }
                     </ul>
@@ -69,7 +80,7 @@
         <div class="col-lg-8">
             <div class="row">
                 @foreach (var product in Model.Products)
-            {
+                {
                     <div class="col-lg-4 m-2">
                         <div class="d-flex flex-column">
                             @if (product.MainSKUPicture != null)
@@ -92,3 +103,97 @@
         </div>
     </div>
 </div>
+@section scripts{
+    <script>
+
+        //javascript way to parse query string
+        @*const parser = new DOMParser;
+        const dom = (parser.parseFromString("@(Model.CategoryQueryString)", 'text/html'));
+        const categoryQueryString = dom.body.textContent;*@
+
+
+        //asp.net way uses System.Web.HttpUtility.JavaScriptStringEncode(Model.CategoryQueryString)
+
+        /*
+        * Initialize URL and get Query strings
+        */
+        let url =
+            `@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}?")`;
+
+        const primaryCategory = "@Model.PrimaryCategory";
+        const secondaryCategory = "@Model.SecondaryCategory";
+        const optionCheckboxes = document.querySelectorAll(".js-option-checkbox");
+        const sizeCheckboxes = document.querySelectorAll(".js-size-checkbox");
+
+        if (primaryCategory.length > 0) {
+            url += `primaryCat=${primaryCategory}`;
+        }
+        if (secondaryCategory.length > 0) {
+            url += `&secondaryCat=${secondaryCategory}`;
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        /*
+        * Gets the currently checked option checkboxes and returns a string (QueryString)
+        */
+        const GetOptionUrl = function () {
+            let checkedOptions = [];
+
+            optionCheckboxes.forEach(function (checkbox) {
+                if (checkbox.checked) {
+                    checkedOptions.push(checkbox.dataset.optionId);
+                }
+            });
+
+            let optionQueryString = "";
+            for (let i = 0; i < checkedOptions.length; i++) {
+                optionQueryString += `&options=${checkedOptions[i]}`;
+            }
+            return optionQueryString;
+        };
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /*
+        * Gets the currently checked size checkboxes and returns a string (QueryString)
+        */
+        const GetSizeUrl = function () {
+            let checkedSizes = [];
+
+            sizeCheckboxes.forEach(function (checkbox) {
+                if (checkbox.checked) {
+                    checkedSizes.push(checkbox.dataset.sizeId);
+                }
+            });
+
+            let sizeQueryString = "";
+            for (let i = 0; i < checkedSizes.length; i++) {
+                sizeQueryString += `&sizes=${checkedSizes[i]}`;
+            }
+            return sizeQueryString;
+        };
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        /*
+        * Updates browsers Href with a new URL
+        */
+        const UpdateHref = function() {
+            const optionQueryString = GetOptionUrl();
+            const sizeQueryString = GetSizeUrl();
+            window.location.href = `${url}${optionQueryString}${sizeQueryString}`;
+        };
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        //EVENT LISTENERS
+
+        optionCheckboxes.forEach(checkbox => checkbox.addEventListener("change", UpdateHref, false));
+        sizeCheckboxes.forEach(checkbox => checkbox.addEventListener("change", UpdateHref, false));
+
+
+    </script>
+}

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EnigmaShop.Areas.Admin.Models;
 using EnigmaShop.Data;
@@ -25,6 +26,24 @@ namespace EnigmaShop.Areas.Admin.Controllers.API
             _context.SKUPictures.Remove(skuPicture);
             await _context.SaveChangesAsync();
             return Ok(id);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> ReorderSKUPictures(int[] SKUPictures)
+        {
+            int order = 0;
+            if (SKUPictures == null) return BadRequest("Null values sent");
+            foreach (var skuPictureId in SKUPictures)
+            {
+                var skuPicture = await _context.SKUPictures.SingleOrDefaultAsync(x => x.Id == skuPictureId);
+                if (skuPicture != null)
+                {
+                    skuPicture.Sorting = order;
+                }
+                order++;
+            }
+            await _context.SaveChangesAsync();
+            return Ok(SKUPictures);
         }
 
     }

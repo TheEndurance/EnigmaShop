@@ -156,7 +156,6 @@
     <script>
 
 
-
         // ** Preview Images ** //
 
         function previewImages() {
@@ -177,19 +176,22 @@
 
                 const reader = new FileReader();
 
-                reader.addEventListener("load", function () {
-                    const image = new Image();
-                    image.className = "sku-add-picture image-hover-enlarge";
-                    image.title = file.name;
-                    image.src = this.result;
-                    preview.appendChild(image);
-                }, false);
+                reader.addEventListener("load",
+                    function() {
+                        const image = new Image();
+                        image.className = "sku-add-picture image-hover-enlarge";
+                        image.title = file.name;
+                        image.src = this.result;
+                        preview.appendChild(image);
+                    },
+                    false);
 
                 reader.readAsDataURL(file);
 
             }
 
         }
+
         document.querySelector('#Files').addEventListener("change", previewImages, false);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,20 +199,20 @@
 
         // ** Delete Images ** //
 
-        $(".js-delete-picture").click(function () {
+        $(".js-delete-picture").click(function() {
             const skuPictureId = $(this).attr('data-sku-picture-id');
             const url = `/admin/api/SKUPictures/${skuPictureId}`;
 
             $.ajax({
                 url: url,
                 type: "delete",
-                success: function () {
+                success: function() {
                     $(`#SKUPictures_${skuPictureId}.delete-picture-box`).fadeOut("fast",
-                        function () {
+                        function() {
                             this.remove();
                         });
                 },
-                error: function () {
+                error: function() {
                     bootbox.alert("Error occured while deleting picture");
                 }
             });
@@ -222,11 +224,12 @@
 
         // ** Reorder Current Images ** //
 
-        const SortImageList = function () {
+        const SortImageList = function() {
             const skuPictures = $("#sortable").sortable("serialize");
-            const url = "/admin/SKUPictures/ReorderSKUPictures";
+            const url = "/admin/api/SKUPictures";
             $.ajax({
                 url: url,
+                traditional: true,
                 type: "PUT",
                 data: skuPictures
             });

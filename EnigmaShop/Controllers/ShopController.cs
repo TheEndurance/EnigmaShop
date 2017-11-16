@@ -20,65 +20,74 @@ namespace EnigmaShop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] option, int?[] size, int? offset)
+        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] options, int?[] sizes, int? offset)
         {
             string categoryQueryString = "?";
             string optionQueryString = string.Empty;
+            string sizeQueryString = string.Empty;
 
-            // Categories
-            IQueryable<Category> categories = _context.Categories.Where(x=>x.ParentCategoryId==null);
+            // INITIALIZE AND SET : Categories
+            IQueryable<Category> categories = _context.Categories.Where(x => x.ParentCategoryId == null);
 
             if (!string.IsNullOrWhiteSpace(primaryCat))
             {
-                categories = categories.Where(x=> x.Name == primaryCat);
+                categories = categories.Where(x => x.Name == primaryCat);
             }
 
             categories = categories.Include(x => x.Categories).ThenInclude(x => x.Categories);
 
             var categoryList = await categories.ToListAsync();
 
-            // Products
+
+            // INITIALIZE : product and sku queries 
             IQueryable<Product> products = null;
             IEnumerable<Product> productsList = new List<Product>();
+            IQueryable<SKU> skus = _context.SKUs
+                .Include(x => x.SKUOptions)
+                .Include(x => x.Product)
+                .Include(x => x.Product.AltSKUPicture)
+                .Include(x => x.Product.MainSKUPicture)
+                .Include(x => x.Option);
 
-            //Filter by options if there are any
-            if (option.Any(x => x.HasValue))
+            //FILTER : SKU by options if there are any
+            if (options.Any(x => x.HasValue))
             {
-                int[] optionIds = option.Cast<int>().ToArray();
-                IQueryable<SKU> skus = null;
+                int[] optionIds = options.Cast<int>().ToArray();
+
                 //find all skus with this option id
-                foreach (int optionId in optionIds)
-                {
-                    skus = _context.SKUs
-                        .Where(x => x.Option.Id == optionId);
+                skus = skus.Where(x => optionIds.Contains(x.OptionId));
+               
+            }
 
-                    optionQueryString += $"&option={optionId}";
-                }
+            //FILTER : SKU by sizes if there are any
+            if (sizes.Any(x=>x.HasValue))
+            {
+                int[] sizeIds = sizes.Cast<int>().ToArray();
 
-                //if there are any skus found
-                if (skus != null)
-                {
-                    skus = skus.Include(x => x.Product)
-                 .Include(x => x.Product.AltSKUPicture)
-                 .Include(x => x.Product.MainSKUPicture)
-                 .Include(x => x.Option);
-                    //convert the skus into product
-                    products = skus.Select(x => new Product
-                    {
-                        Id = x.Product.Id,
-                        Name = x.Product.Name,
-                        Description = x.Product.Description,
-                        AltSKUId = x.Product.AltSKUId,
-                        MainSKUId = x.Product.MainSKUId,
-                        MainSKUPicture = x.Product.MainSKUPicture,
-                        AltSKUPicture = x.Product.AltSKUPicture,
-                        ProductCategories = x.Product.ProductCategories
-                    });
-                }
+                skus = skus.Where(x => x.SKUOptions.Select(y => y.SizeId).Any(f=>sizeIds.Contains(f)));
 
             }
 
-            //if products haven't been intialized through option filtering
+            // CONVERT : Skus to Products
+            if (skus != null)
+            {
+                //convert the skus into product
+                products = skus.Select(x => new Product
+                {
+                    Id = x.Product.Id,
+                    Name = x.Product.Name,
+                    Description = x.Product.Description,
+                    AltSKUId = x.Product.AltSKUId,
+                    MainSKUId = x.Product.MainSKUId,
+                    MainSKUPicture = x.Product.MainSKUPicture,
+                    AltSKUPicture = x.Product.AltSKUPicture,
+                    ProductCategories = x.Product.ProductCategories,
+                    SizeGroupId = x.Product.SizeGroupId,
+                    OptionGroupId = x.Product.OptionGroupId
+                });
+            }
+
+            // INITIALIZE : Product if null
             if (products == null)
             {
                 products = _context.Products
@@ -86,8 +95,7 @@ namespace EnigmaShop.Controllers
                     .Include(x => x.AltSKUPicture);
             }
 
-            //category filtering for products
-
+            //FILTER : Product by category
             products = products
                 .Where(x => x.ProductCategories.Select(y => y.Category.Name).Contains(primaryCat));
             categoryQueryString += $"primaryCat={primaryCat}";
@@ -99,27 +107,32 @@ namespace EnigmaShop.Controllers
                 categoryQueryString += $"&secondaryCat={secondaryCat}";
             }
 
-            //create product list from product query
+            // TO LIST : Product Query tolist
             productsList = await products.ToListAsync();
 
+            // INITIALIZE AND SET : Option groups and options
             //Get the product option groups and options
-            var optionGroupIds = productsList.Select(x => x.OptionGroupId).ToHashSet();
 
             var optionGroupList = await _context.OptionGroups
-                .Where(x => optionGroupIds.Contains(x.Id))
                 .Include(x => x.Options)
+                .Select(o=> new OptionGroup
+                {
+                    Name = o.Name,
+                    Options = o.Options.OrderBy(x=>x.Name)
+                })
                 .ToListAsync();
-            
 
+            //INITIALIZE AND SET : Size groups and sizes
             //Get the product Size groups and sizes
-            var sizeGroupIds = productsList.Select(x => x.SizeGroupId).ToHashSet();
 
             var sizeGroupList = await _context.SizeGroups
-                .Where(x => sizeGroupIds.Contains(x.Id))
                 .Include(x => x.Sizes)
+                .Select(s=>new SizeGroup
+                {
+                    Name = s.Name,
+                    Sizes = s.Sizes.OrderBy(x=>x.Name)
+                })
                 .ToListAsync();
-
-
 
             var shopViewModel = new ShopViewModel
             {
@@ -127,10 +140,10 @@ namespace EnigmaShop.Controllers
                 Categories = categoryList,
                 OptionGroups = optionGroupList,
                 SizeGroups = sizeGroupList,
-                CategoryQueryString = categoryQueryString,
-                OptionQueryString = optionQueryString,
                 PrimaryCategory = primaryCat,
-                SecondaryCategory = secondaryCat
+                SecondaryCategory = secondaryCat,
+                OptionIds = options.Cast<int>().ToArray(),
+                SizeIds = sizes.Cast<int>().ToArray()
             };
             return View(shopViewModel);
         }

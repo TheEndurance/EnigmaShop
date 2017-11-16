@@ -12,10 +12,12 @@ namespace EnigmaShop.ViewModels
         public IEnumerable<Category> Categories { get; set; }
         public IEnumerable<OptionGroup> OptionGroups { get; set; }
         public IEnumerable<SizeGroup> SizeGroups { get; set; }
-        public string CategoryQueryString { get; set; }
-        public string OptionQueryString { get; set; }
+        //public string CategoryQueryString { get; set; }
+        //public string OptionQueryString { get; set; }
         public string PrimaryCategory { get; set; }
         public string SecondaryCategory { get; set; }
-        
+        //public string SizeQueryString { get; set; }
+        public int[] OptionIds { get; set; }
+        public int[] SizeIds { get; set; }
     }
 }

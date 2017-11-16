@@ -15,7 +15,7 @@ namespace EnigmaShop.Areas.Admin.Models
         [StringLength(100)]
         public string Name { get; set; }
 
-        public ICollection<Size> Sizes { get; set; }
+        public IEnumerable<Size> Sizes { get; set; }
 
         public SizeGroup()
         {
