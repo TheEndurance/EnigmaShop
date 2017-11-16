@@ -20,18 +20,22 @@ namespace EnigmaShop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] option, int? offset)
+        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] option, int?[] size, int? offset)
         {
             string categoryQueryString = "?";
             string optionQueryString = string.Empty;
-            int rootCategoryId = _context.Categories.SingleOrDefault(x => x.Name == primaryCat).Id;
-            if (rootCategoryId == 0) return NotFound();
 
             // Categories
-            var categories = await _context.Categories
-                .Include(x => x.Categories)
-                .ThenInclude(x => x.Categories)
-                .SingleOrDefaultAsync(x => x.RootCategoryId == rootCategoryId && x.ParentCategoryId == null);
+            IQueryable<Category> categories = _context.Categories.Where(x=>x.ParentCategoryId==null);
+
+            if (!string.IsNullOrWhiteSpace(primaryCat))
+            {
+                categories = categories.Where(x=> x.Name == primaryCat);
+            }
+
+            categories = categories.Include(x => x.Categories).ThenInclude(x => x.Categories);
+
+            var categoryList = await categories.ToListAsync();
 
             // Products
             IQueryable<Product> products = null;
@@ -46,19 +50,18 @@ namespace EnigmaShop.Controllers
                 foreach (int optionId in optionIds)
                 {
                     skus = _context.SKUs
-                        .Include(x => x.Product)
-                        .Include(x => x.Product.AltSKUPicture)
-                        .Include(x => x.Product.MainSKUPicture)
-                        .Include(x => x.Option)
-                        .Where(x => x.Option.Id==optionId);
+                        .Where(x => x.Option.Id == optionId);
 
                     optionQueryString += $"&option={optionId}";
                 }
 
-
                 //if there are any skus found
                 if (skus != null)
                 {
+                    skus = skus.Include(x => x.Product)
+                 .Include(x => x.Product.AltSKUPicture)
+                 .Include(x => x.Product.MainSKUPicture)
+                 .Include(x => x.Option);
                     //convert the skus into product
                     products = skus.Select(x => new Product
                     {
@@ -78,13 +81,12 @@ namespace EnigmaShop.Controllers
             //if products haven't been intialized through option filtering
             if (products == null)
             {
-
                 products = _context.Products
                     .Include(x => x.MainSKUPicture)
                     .Include(x => x.AltSKUPicture);
             }
 
-            //category filtering 
+            //category filtering for products
 
             products = products
                 .Where(x => x.ProductCategories.Select(y => y.Category.Name).Contains(primaryCat));
@@ -100,12 +102,35 @@ namespace EnigmaShop.Controllers
             //create product list from product query
             productsList = await products.ToListAsync();
 
+            //Get the product option groups and options
+            var optionGroupIds = productsList.Select(x => x.OptionGroupId).ToHashSet();
+
+            var optionGroupList = await _context.OptionGroups
+                .Where(x => optionGroupIds.Contains(x.Id))
+                .Include(x => x.Options)
+                .ToListAsync();
+            
+
+            //Get the product Size groups and sizes
+            var sizeGroupIds = productsList.Select(x => x.SizeGroupId).ToHashSet();
+
+            var sizeGroupList = await _context.SizeGroups
+                .Where(x => sizeGroupIds.Contains(x.Id))
+                .Include(x => x.Sizes)
+                .ToListAsync();
+
+
+
             var shopViewModel = new ShopViewModel
             {
                 Products = productsList,
-                Categories = categories,
+                Categories = categoryList,
+                OptionGroups = optionGroupList,
+                SizeGroups = sizeGroupList,
                 CategoryQueryString = categoryQueryString,
-                OptionQueryString = optionQueryString
+                OptionQueryString = optionQueryString,
+                PrimaryCategory = primaryCat,
+                SecondaryCategory = secondaryCat
             };
             return View(shopViewModel);
         }

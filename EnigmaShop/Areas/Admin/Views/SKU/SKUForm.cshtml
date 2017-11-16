@@ -109,7 +109,7 @@
                                                     <li id="SKUPictures_@skuPicture.Id" class="mx-1 list-inline-item delete-picture-box">
                                                         <img src="@skuPicture.ImageUrl" class="sku-list-picture img-thumbnail" title="@skuPicture.ImageUrl" />
                                                         <div class="d-block">
-                                                        <a class="js-delete-picture" data-sku-picture-id="@skuPicture.Id"><i class="fa fa-times delete-picture-icon" aria-hidden="true"></i></a>
+                                                            <a class="js-delete-picture" data-sku-picture-id="@skuPicture.Id"><i class="fa fa-times delete-picture-icon" aria-hidden="true"></i></a>
                                                         </div>
                                                     </li>
 
@@ -200,11 +200,12 @@
         $(".js-delete-picture").click(function () {
             const skuPictureId = $(this).attr('data-sku-picture-id');
             const url = `/admin/api/SKUPictures/${skuPictureId}`;
+
             $.ajax({
                 url: url,
-                type: "DELETE",
+                type: "delete",
                 success: function () {
-                    $(`#${skuPictureId}.delete-picture-box`).fadeOut("fast",
+                    $(`#SKUPictures_${skuPictureId}.delete-picture-box`).fadeOut("fast",
                         function () {
                             this.remove();
                         });
@@ -219,16 +220,15 @@
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        // ** Reorder Images ** //
+        // ** Reorder Current Images ** //
 
         const SortImageList = function () {
             const skuPictures = $("#sortable").sortable("serialize");
-            const url = "/admin/api/SKUPictures";
+            const url = "/admin/SKUPictures/ReorderSKUPictures";
             $.ajax({
                 url: url,
                 type: "PUT",
                 data: skuPictures
-
             });
         }
 
@@ -238,6 +238,7 @@
         });
         $("#sortable").disableSelection();
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     </script>

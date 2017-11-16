@@ -59,14 +59,28 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public async Task UpdateSKUOptions(SKUFormViewModel skuFormViewModel, ApplicationDbContext context)
         {
+            //A list of skuOptions that are null from the skuFormViewModel which can then be deleted
+            //var skuOptionsToDelete = SKUOptions
+            //    .Select(skuOption => new {skuOption = skuFormViewModel.SKUOptions.SingleOrDefault(i => i.Id == skuOption.Id)})
+            //    .Where(item => item.skuOption == null)
+            //    .Select(item => item.skuOption)
+            //    .ToList();
+
+            //if (skuOptionsToDelete.Any())
+            //{
+            //    foreach (var skuOpt in skuOptionsToDelete)
+            //    {
+            //        context.Entry(skuOpt).State = EntityState.Deleted;
+            //    }
+            //}
+
             foreach (var skuOption in skuFormViewModel.SKUOptions)
             {
-                if (skuOption.Id > 0)
-                {
-                    var skuOptionInDb = SKUOptions.Single(x => x.Id == skuOption.Id);
-                    context.Entry(skuOptionInDb).CurrentValues.SetValues(skuOption);
-                    context.Entry(skuOptionInDb).State = EntityState.Modified;
-                }
+                if (skuOption.Id <= 0) continue;
+
+                var skuOptionInDb = SKUOptions.Single(x => x.Id == skuOption.Id);
+                context.Entry(skuOptionInDb).CurrentValues.SetValues(skuOption);
+                context.Entry(skuOptionInDb).State = EntityState.Modified;
             }
             await context.SaveChangesAsync();
         }

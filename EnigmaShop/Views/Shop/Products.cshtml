@@ -12,24 +12,59 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-4">
-            @foreach (var secondaryCat in Model.Categories.Categories)
-            {
-                <ul class="category-ul">
-                    <li>
-                        <a href="">@secondaryCat.Name</a>
-                    </li>
-                    <li>
-                        @foreach (var tertiaryCat in secondaryCat.Categories)
+            <div class="categories">
+                @foreach (var primaryCat in Model.Categories)
+                {
+                    <h4 class="d-block">@primaryCat.Name</h4>
+
+                    foreach (var secondaryCat in primaryCat.Categories)
+                    {
+                        <ul class="list-style-none">
+                            <li>
+                                <a asp-route-primaryCat="@primaryCat.Name" asp-route-secondaryCat="@secondaryCat.Name" asp-route-option="@Model.OptionQueryString">@secondaryCat.Name</a>
+                            </li>
+                            <li>
+                                @foreach (var tertiaryCat in secondaryCat.Categories)
+                                {
+                                    <ul class="list-style-none">
+                                        <li>
+                                            <a asp-route-primaryCat="@primaryCat.Name" asp-route-secondaryCat="@tertiaryCat.Name" asp-route-option="@Model.OptionQueryString">@tertiaryCat.Name</a>
+                                        </li>
+                                    </ul>
+                                }
+                            </li>
+                        </ul>
+                    }
+                }
+            </div>
+            <div class="options mt-5">
+                @foreach (var optionGroup in Model.OptionGroups)
+                {
+                    <h4 class="d-block">@optionGroup.Name</h4>
+                    <ul class="list-style-none">
+                        @foreach (var option in optionGroup.Options)
                         {
-                            <ul class="category-ul">
-                                <li>
-                                    <a>@tertiaryCat.Name</a>
-                                </li>
-                            </ul>
+                            <li>
+                                @option.Name
+                            </li>
                         }
-                    </li>
-                </ul>
-            }
+                    </ul>
+                }
+            </div>
+            <div class="sizes mt-5">
+                @foreach (var sizeGroup in Model.SizeGroups)
+                {
+                    <h4 class="d-block">@sizeGroup.Name</h4>
+                    <ul class="list-style-none">
+                        @foreach (var size in sizeGroup.Sizes)
+                        {
+                            <li>
+                                @size.Name
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
         </div>
         <div class="col-lg-8">
             <div class="row">
