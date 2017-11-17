@@ -150,7 +150,7 @@
         /*
         * Gets the currently checked option checkboxes and returns a string (QueryString)
         */
-        const GetCheckboxUrl = function(htmlCollectionOfCheckboxes,paramName,dataAttribute) {
+        const GetCheckboxUrl = function(htmlCollectionOfCheckboxes, paramName, dataAttribute) {
             let checked = [];
 
             htmlCollectionOfCheckboxes.forEach(function(checkbox) {
@@ -199,11 +199,43 @@
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
 
+        // Returns a function, that, as long as it continues to be invoked, will not
+        // be triggered. The function will be called after it stops being called for
+        // N milliseconds. If `immediate` is passed, trigger the function on the
+        // leading edge, instead of the trailing.
+        function debounce(func, wait = 700, immediate = true) {
+            var timeout;
+            return function() {
+                var context = this, args = arguments;
+                var later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+
+        const AsyncGetProducts = function () {
+            const url = "";
+            console.log("getting products async");
+            $.ajax({
+            });
+        }
+
+        const AjaxScrollListener = function() {
+            if (window.scrollY + 200 >= (document.body.scrollHeight - window.innerHeight)) {
+                AsyncGetProducts();
+            }
+        }
 
         //EVENT LISTENERS
 
         optionCheckboxes.forEach(checkbox => checkbox.addEventListener("change", UpdateHref, false));
         sizeCheckboxes.forEach(checkbox => checkbox.addEventListener("change", UpdateHref, false));
+        document.addEventListener("scroll", debounce(AjaxScrollListener), false);
 
 
     </script>
