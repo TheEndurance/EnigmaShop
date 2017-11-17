@@ -115,64 +115,76 @@
         //asp.net way uses System.Web.HttpUtility.JavaScriptStringEncode(Model.CategoryQueryString)
 
         /*
-        * Initialize URL and get Query strings
+        * Initialize URL and variables
         */
         let url =
             `@($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}?")`;
 
+        //param names
+        const primaryCategoryParamName = "@Model.PrimaryCategoryParamName";
+        const secondaryCategoryParamName = "@Model.SecondaryCategoryParamName";
+        const optionParamName = "@Model.OptionParamName";
+        const sizeParamName = "@Model.SizeParamName";
+        const countParamName = "@Model.CountParamName";
+        const offsetParamName = "@Model.OffsetParamName";
+
+        // query strings
         const primaryCategory = "@Model.PrimaryCategory";
         const secondaryCategory = "@Model.SecondaryCategory";
+        const count = "@Model.Count";
+        const offset = "@Model.Offset";
+
+        // checkbox html elements
         const optionCheckboxes = document.querySelectorAll(".js-option-checkbox");
         const sizeCheckboxes = document.querySelectorAll(".js-size-checkbox");
 
         if (primaryCategory.length > 0) {
-            url += `primaryCat=${primaryCategory}`;
+            url += `${primaryCategoryParamName}=${primaryCategory}`;
         }
         if (secondaryCategory.length > 0) {
-            url += `&secondaryCat=${secondaryCategory}`;
+            url += `&${secondaryCategoryParamName}=${secondaryCategory}`;
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
         /*
         * Gets the currently checked option checkboxes and returns a string (QueryString)
         */
-        const GetOptionUrl = function () {
-            let checkedOptions = [];
+        const GetCheckboxUrl = function(htmlCollectionOfCheckboxes,paramName,dataAttribute) {
+            let checked = [];
 
-            optionCheckboxes.forEach(function (checkbox) {
+            htmlCollectionOfCheckboxes.forEach(function(checkbox) {
                 if (checkbox.checked) {
-                    checkedOptions.push(checkbox.dataset.optionId);
+                    checked.push(checkbox.getAttribute(dataAttribute));
                 }
             });
 
-            let optionQueryString = "";
-            for (let i = 0; i < checkedOptions.length; i++) {
-                optionQueryString += `&options=${checkedOptions[i]}`;
+            let queryString = "";
+            for (let i = 0; i < checked.length; i++) {
+                queryString += `&${paramName}=${checked[i]}`;
             }
-            return optionQueryString;
+            return queryString;
         };
         ////////////////////////////////////////////////////////////////////////////////////////////////
 
         /*
         * Gets the currently checked size checkboxes and returns a string (QueryString)
         */
-        const GetSizeUrl = function () {
-            let checkedSizes = [];
+        //const GetSizeUrl = function() {
+        //    let checkedSizes = [];
 
-            sizeCheckboxes.forEach(function (checkbox) {
-                if (checkbox.checked) {
-                    checkedSizes.push(checkbox.dataset.sizeId);
-                }
-            });
+        //    sizeCheckboxes.forEach(function(checkbox) {
+        //        if (checkbox.checked) {
+        //            checkedSizes.push(checkbox.dataset.sizeId);
+        //        }
+        //    });
 
-            let sizeQueryString = "";
-            for (let i = 0; i < checkedSizes.length; i++) {
-                sizeQueryString += `&sizes=${checkedSizes[i]}`;
-            }
-            return sizeQueryString;
-        };
+        //    let sizeQueryString = "";
+        //    for (let i = 0; i < checkedSizes.length; i++) {
+        //        sizeQueryString += `&sizes=${checkedSizes[i]}`;
+        //    }
+        //    return sizeQueryString;
+        //};
         ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -180,13 +192,12 @@
         * Updates browsers Href with a new URL
         */
         const UpdateHref = function() {
-            const optionQueryString = GetOptionUrl();
-            const sizeQueryString = GetSizeUrl();
+            const optionQueryString = GetCheckboxUrl(optionCheckboxes, optionParamName, "data-option-id");
+            const sizeQueryString = GetCheckboxUrl(sizeCheckboxes, sizeParamName, "data-size-id");
             window.location.href = `${url}${optionQueryString}${sizeQueryString}`;
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
         //EVENT LISTENERS

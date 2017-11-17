@@ -20,12 +20,8 @@ namespace EnigmaShop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] options, int?[] sizes, int? offset)
+        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] options, int?[] sizes, int? offset = 0,int? count = 10)
         {
-            string categoryQueryString = "?";
-            string optionQueryString = string.Empty;
-            string sizeQueryString = string.Empty;
-
             // INITIALIZE AND SET : Categories
             IQueryable<Category> categories = _context.Categories.Where(x => x.ParentCategoryId == null);
 
@@ -98,17 +94,19 @@ namespace EnigmaShop.Controllers
             //FILTER : Product by category
             products = products
                 .Where(x => x.ProductCategories.Select(y => y.Category.Name).Contains(primaryCat));
-            categoryQueryString += $"primaryCat={primaryCat}";
 
             if (secondaryCat != null)
             {
                 products = products.Where(x =>
                     x.ProductCategories.Select(y => y.Category.Name).Contains(secondaryCat));
-                categoryQueryString += $"&secondaryCat={secondaryCat}";
             }
 
             // TO LIST : Product Query tolist
-            productsList = await products.ToListAsync();
+            productsList = await products
+                .OrderBy(x => x.Name)
+                .Skip(offset.GetValueOrDefault())
+                .Take(count.GetValueOrDefault())
+                .ToListAsync();
 
             // INITIALIZE AND SET : Option groups and options
             //Get the product option groups and options
@@ -142,8 +140,16 @@ namespace EnigmaShop.Controllers
                 SizeGroups = sizeGroupList,
                 PrimaryCategory = primaryCat,
                 SecondaryCategory = secondaryCat,
+                Count = count.GetValueOrDefault(),
+                Offset = offset.GetValueOrDefault(),
                 OptionIds = options.Cast<int>().ToArray(),
-                SizeIds = sizes.Cast<int>().ToArray()
+                SizeIds = sizes.Cast<int>().ToArray(),
+                PrimaryCategoryParamName = nameof(primaryCat),
+                SecondaryCategoryParamName = nameof(secondaryCat),
+                OptionParamName = nameof(options),
+                SizeParamName = nameof(sizes),
+                CountParamName = nameof(count),
+                OffsetParamName = nameof(offset)
             };
             return View(shopViewModel);
         }
