@@ -78,20 +78,12 @@
             </div>
         </div>
         <div class="col-lg-8">
-            <div class="row">
+            <div class="row" id="product-div">
                 @foreach (var product in Model.Products)
-                {
+            {
                     <div class="col-lg-4 m-2">
                         <div class="d-flex flex-column">
-                            @if (product.MainSKUPicture != null)
-                            {
-                                <img src="@product.MainSKUPicture.ImageUrl" data-alt-img="@(product.AltSKUPicture!=null ? product.AltSKUPicture.ImageUrl : "")" class="product" />
-                            }
-                            else
-                            {
-                                <p>No picture</p>
-                            }
-
+                            <img src="@product.MainSKUPicture.ImageUrl" data-alt-img="@product.AltSKUPicture.ImageUrl" class="product" />
                         </div>
 
                         <div class="text-md-center">@product.Name</div>
@@ -125,14 +117,18 @@
         const secondaryCategoryParamName = "@Model.SecondaryCategoryParamName";
         const optionParamName = "@Model.OptionParamName";
         const sizeParamName = "@Model.SizeParamName";
-        const countParamName = "@Model.CountParamName";
-        const offsetParamName = "@Model.OffsetParamName";
+        const pageParamName = "@Model.PageParamName";
+        const perPageParamName = "@Model.PerPageParamName";
+
 
         // query strings
         const primaryCategory = "@Model.PrimaryCategory";
         const secondaryCategory = "@Model.SecondaryCategory";
-        const count = "@Model.Count";
-        const offset = "@Model.Offset";
+
+        //Model values
+        let page = @Model.Page;
+        const perPage = @Model.PerPage;
+
 
         // checkbox html elements
         const optionCheckboxes = document.querySelectorAll(".js-option-checkbox");
@@ -144,6 +140,27 @@
         if (secondaryCategory.length > 0) {
             url += `&${secondaryCategoryParamName}=${secondaryCategory}`;
         }
+
+
+        // Returns a function, that, as long as it continues to be invoked, will not
+        // be triggered. The function will be called after it stops being called for
+        // N milliseconds. If `immediate` is passed, trigger the function on the
+        // leading edge, instead of the trailing.
+        function debounce(func, wait = 400, immediate = false) {
+            var timeout;
+            return function() {
+                var context = this, args = arguments;
+                var later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+
         ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -165,7 +182,36 @@
             }
             return queryString;
         };
+
         ////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /*
+        * Gets the currently checked option checkboxes and returns a string (QueryString)
+        */
+        const GetCategoryUrl = function() {
+            let categoryQueryString = "";
+            if (primaryCategory.length > 0) {
+                categoryQueryString = `${primaryCategoryParamName}=${primaryCategory}`;
+            }
+            if (secondaryCategory.length > 0) {
+                console.log(`${secondaryCategoryParamName}=${secondaryCategoryParamName}`);
+                categoryQueryString += `${secondaryCategoryParamName}=${secondaryCategoryParamName}`;
+            }
+            return categoryQueryString;
+        };
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /*
+       * Get the page and per page url
+       */
+        const GetPageAndPerPageUrl = function() {
+            const pageAndPerPageQueryString = `&${pageParamName}=${page}&${perPageParamName}=${perPage}`;
+            return pageAndPerPageQueryString;
+        };
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
 
         /*
         * Gets the currently checked size checkboxes and returns a string (QueryString)
@@ -199,42 +245,66 @@
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // Returns a function, that, as long as it continues to be invoked, will not
-        // be triggered. The function will be called after it stops being called for
-        // N milliseconds. If `immediate` is passed, trigger the function on the
-        // leading edge, instead of the trailing.
-        function debounce(func, wait = 700, immediate = true) {
-            var timeout;
-            return function() {
-                var context = this, args = arguments;
-                var later = function() {
-                    timeout = null;
-                    if (!immediate) func.apply(context, args);
-                };
-                var callNow = immediate && !timeout;
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-                if (callNow) func.apply(context, args);
-            };
-        };
+        /*
+        * Contains the template for a product
+        */
+        const ProductTemplate = function (product) {
+            return `<div class="col-lg-4 m-2">
+                        <div class="d-flex flex-column">
+                                <img src="${product.mainSKUPicture.imageUrl}" data-alt-img="" class="product" />
+                        </div>
 
-        const AsyncGetProducts = function () {
-            const url = "";
-            console.log("getting products async");
-            $.ajax({
-            });
+                        <div class="text-md-center">${product.name}</div>
+                        <div class="text-md-center">${product.description}</div>
+
+                    </div>`;
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        /*
+        * Calls Ajax request to API to return JSON products
+        */
+        const AsyncGetProducts = function() {
+            let url = "/api/products?";
+            url += GetCategoryUrl();
+            url += GetCheckboxUrl(optionCheckboxes, optionParamName, "data-option-id");
+            url += GetCheckboxUrl(sizeCheckboxes, sizeParamName, "data-size-id");
+            url += GetPageAndPerPageUrl();
+            console.log(`URL : ${url}`);
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function(data) {
+                    page = data.nextPage;
+                    data.products.forEach(product => $("#product-div").append(ProductTemplate(product)));
+                }
+            });
+
+
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /*
+        * Determines if the screen has been scrolled to the bottom, and then calls AsyncGetProducts
+        */
         const AjaxScrollListener = function() {
             if (window.scrollY + 200 >= (document.body.scrollHeight - window.innerHeight)) {
                 AsyncGetProducts();
             }
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
         //EVENT LISTENERS
 
+        //checkboxes
         optionCheckboxes.forEach(checkbox => checkbox.addEventListener("change", UpdateHref, false));
         sizeCheckboxes.forEach(checkbox => checkbox.addEventListener("change", UpdateHref, false));
+
+        //Ajax infinity scroll
         document.addEventListener("scroll", debounce(AjaxScrollListener), false);
 
 

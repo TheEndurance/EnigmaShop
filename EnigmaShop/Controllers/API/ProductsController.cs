@@ -1,39 +1,31 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnigmaShop.Areas.Admin.Models;
 using EnigmaShop.Data;
-using EnigmaShop.ViewModels;
+using EnigmaShop.QueryConstraint;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
+using Newtonsoft.Json;
 
-namespace EnigmaShop.Controllers
+namespace EnigmaShop.Controllers.API
 {
-    public class ShopController : Controller
+
+    [Route("/api/[controller]")]
+    public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public ShopController(ApplicationDbContext context)
+
+        public ProductsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] options, int?[] sizes,int page = 0, int perPage = 10)
+        [HttpGet]
+        public async Task<IActionResult> Products([FromQuery]string primaryCat, [FromQuery]string secondaryCat, [FromQuery]int?[] options,[FromQuery] int?[] sizes, [RequiredQuery]int page, [RequiredQuery]int perPage)
         {
-            // INITIALIZE AND SET : Categories
-            IQueryable<Category> categories = _context.Categories.Where(x => x.ParentCategoryId == null);
-
-            if (!string.IsNullOrWhiteSpace(primaryCat))
-            {
-                categories = categories.Where(x => x.Name == primaryCat);
-            }
-
-            categories = categories.Include(x => x.Categories).ThenInclude(x => x.Categories);
-
-            var categoryList = await categories.ToListAsync();
-
+            if (perPage > 100) return BadRequest("perPage can not exceed 100");
 
             // INITIALIZE : product and sku queries 
             IQueryable<Product> products = null;
@@ -52,15 +44,15 @@ namespace EnigmaShop.Controllers
 
                 //find all skus with this option id
                 skus = skus.Where(x => optionIds.Contains(x.OptionId));
-               
+
             }
 
             //FILTER : SKU by sizes if there are any
-            if (sizes.Any(x=>x.HasValue))
+            if (sizes.Any(x => x.HasValue))
             {
                 int[] sizeIds = sizes.Cast<int>().ToArray();
 
-                skus = skus.Where(x => x.SKUOptions.Select(y => y.SizeId).Any(f=>sizeIds.Contains(f)));
+                skus = skus.Where(x => x.SKUOptions.Select(y => y.SizeId).Any(f => sizeIds.Contains(f)));
 
             }
 
@@ -104,53 +96,16 @@ namespace EnigmaShop.Controllers
             // TO LIST : Product Query tolist
             productsList = await products
                 .OrderBy(x => x.Name)
-                .Take((page+1)*perPage)
+                .Take((page + 1) * perPage)
                 .ToListAsync();
 
-            // INITIALIZE AND SET : Option groups and options
-            //Get the product option groups and options
 
-            var optionGroupList = await _context.OptionGroups
-                .Include(x => x.Options)
-                .Select(o=> new OptionGroup
-                {
-                    Name = o.Name,
-                    Options = o.Options.OrderBy(x=>x.Name)
-                })
-                .ToListAsync();
-
-            //INITIALIZE AND SET : Size groups and sizes
-            //Get the product Size groups and sizes
-
-            var sizeGroupList = await _context.SizeGroups
-                .Include(x => x.Sizes)
-                .Select(s=>new SizeGroup
-                {
-                    Name = s.Name,
-                    Sizes = s.Sizes.OrderBy(x=>x.Name)
-                })
-                .ToListAsync();
-
-            var shopViewModel = new ShopViewModel
+            return new JsonResult(new
             {
-                Products = productsList,
-                Categories = categoryList,
-                OptionGroups = optionGroupList,
-                SizeGroups = sizeGroupList,
-                PrimaryCategory = primaryCat,
-                SecondaryCategory = secondaryCat,
-                Page = page,
-                PerPage = perPage,
-                OptionIds = options.Cast<int>().ToArray(),
-                SizeIds = sizes.Cast<int>().ToArray(),
-                PrimaryCategoryParamName = nameof(primaryCat),
-                SecondaryCategoryParamName = nameof(secondaryCat),
-                OptionParamName = nameof(options),
-                SizeParamName = nameof(sizes),
-                PageParamName = nameof(page),
-                PerPageParamName = nameof(perPage)
-            };
-            return View(shopViewModel);
+                products = productsList,
+                nextPage = page+1
+            });
+
         }
     }
 }

@@ -19,16 +19,17 @@ namespace EnigmaShop.ViewModels
         public string SecondaryCategory { get; set; }
         public int[] OptionIds { get; set; }
         public int[] SizeIds { get; set; }
-        public int Count { get; set; }
-        public int Offset { get; set; }
+        public int Page { get; set; }
+        public int PerPage { get; set; }
 
         //param names
         public string OptionParamName { get; set; }
         public string SizeParamName { get; set; }
         public string PrimaryCategoryParamName { get; set; }
         public string SecondaryCategoryParamName { get; set; }
-        public string CountParamName { get; set; }
-        public string OffsetParamName { get; set; }
+        public string PageParamName { get; set; }
+        public string PerPageParamName { get; set; }
+        
         
     }
 }
