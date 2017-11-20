@@ -25,10 +25,10 @@
                             <li>
                                 <a asp-route-primaryCat="@primaryCat.Name" asp-route-secondaryCat="@secondaryCat.Name">@secondaryCat.Name</a>
                             </li>
-                            <li>
+                            <li >
                                 @foreach (var tertiaryCat in secondaryCat.Categories)
                                 {
-                                    <ul class="list-style-none">
+                                    <ul class="list-style-none" >
                                         <li>
                                             <a asp-route-primaryCat="@primaryCat.Name" asp-route-secondaryCat="@tertiaryCat.Name">@tertiaryCat.Name</a>
                                         </li>
@@ -80,8 +80,8 @@
         <div class="col-lg-8">
             <div class="row" id="product-div">
                 @foreach (var product in Model.Products)
-            {
-                    <div class="col-lg-4 m-2">
+                {
+                    <div class="col-lg-4 p-2">
                         <div class="d-flex flex-column">
                             <img src="@product.MainSKUPicture.ImageUrl" data-alt-img="@product.AltSKUPicture.ImageUrl" class="product" />
                         </div>
@@ -91,6 +91,9 @@
 
                     </div>
                 }
+            </div>
+            <div class="row d-flex justify-content-center" id="ajax-container">
+              
             </div>
         </div>
     </div>
@@ -141,6 +144,35 @@
             url += `&${secondaryCategoryParamName}=${secondaryCategory}`;
         }
 
+
+        /*
+        * AJAX Picture Loader class
+        */
+        class AjaxImageLoader {
+            constructor(imageUrl, containerSelector) {
+                this.imageUrl = imageUrl;
+                this.containerSelector = containerSelector;
+                this.ajaxImage = document.createElement("img");
+                this.initialize();
+        
+            }
+            initialize() {
+                const container = document.querySelector(this.containerSelector);
+                this.ajaxImage.src = this.imageUrl;
+                container.appendChild(this.ajaxImage);
+            }
+            hide() {
+                this.ajaxImage.style.visibility = 'hidden';
+                return this;
+            }
+            show() {
+                this.ajaxImage.style.visibility = 'initial';
+            }
+        }
+
+        const ajaxImageLoader = new AjaxImageLoader("/images/ajax-loader.gif", "#ajax-container");
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Returns a function, that, as long as it continues to be invoked, will not
         // be triggered. The function will be called after it stops being called for
@@ -249,7 +281,7 @@
         * Contains the template for a product
         */
         const ProductTemplate = function (product) {
-            return `<div class="col-lg-4 m-2">
+            return `<div class="col-lg-4 p-2">
                         <div class="d-flex flex-column">
                                 <img src="${product.mainSKUPicture.imageUrl}" data-alt-img="" class="product" />
                         </div>
@@ -272,11 +304,12 @@
             url += GetCheckboxUrl(optionCheckboxes, optionParamName, "data-option-id");
             url += GetCheckboxUrl(sizeCheckboxes, sizeParamName, "data-size-id");
             url += GetPageAndPerPageUrl();
-            console.log(`URL : ${url}`);
+            ajaxImageLoader.show();
             $.ajax({
                 url: url,
                 type: "GET",
-                success: function(data) {
+                success: function (data) {
+                    ajaxImageLoader.hide();
                     page = data.nextPage;
                     data.products.forEach(product => $("#product-div").append(ProductTemplate(product)));
                 }

@@ -156,7 +156,7 @@
             const imagesArray = Array.prototype.slice.call(imageElements);
             const modalImage = document.getElementById("modalImage");
 
-            const SetImagePreviewModal = function () {
+            const SetImagePreviewModal = function() {
                 modalImage.src = this.src;
                 modalImage.dataset.imageModel = this.dataset.imageModel;
                 modalImage.dataset.imageId = this.id;
@@ -165,7 +165,7 @@
 
             }
 
-            imagesArray.map(image => image.addEventListener("click",SetImagePreviewModal, false));
+            imagesArray.map(image => image.addEventListener("click", SetImagePreviewModal, false));
 
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -206,7 +206,7 @@
             * Set selected CSS for the selected image
             */
 
-            const ToggleSelectedImageCss = function (selectedImage, cssClass) {
+            const ToggleSelectedImageCss = function(selectedImage, cssClass) {
 
                 const imageId = selectedImage.dataset.imageId;
                 const imgArray =
@@ -221,9 +221,11 @@
 
             };
 
-            modalSelectImage.addEventListener("click",function() {
+            modalSelectImage.addEventListener("click",
+                function() {
                     ToggleSelectedImageCss(document.querySelector("#modalImage"), "selected-picture");
-                },false);
+                },
+                false);
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -237,7 +239,7 @@
                 if (isNaN(selectedGroupId)) {
                     return;
                 }
-                const url = "/admin/api/categories/" + selectedGroupId;
+                const url = `/admin/api/categories/"${selectedGroupId}`;
                 $.ajax({
                     url: url,
                     type: "GET",
@@ -245,11 +247,12 @@
                         const markup = `<option value="">Select a category</option>
                                 ${categories.map(
                             category => `<option value="${category.id}">${category.name}</option>`)}`;
-                        document.querySelector("form #" + targetSelectId).innerHTML = markup;
+                        document.querySelector(`form #"${targetSelectId}`).innerHTML = markup;
                     },
-                    error: function() {
-                        alert("An error occured retrieving categories for the selected category group.");
-                    }
+                    error:
+                        function() {
+                            alert("An error occured retrieving categories for the selected category group.");
+                        }
                 });
             }
 
@@ -262,6 +265,9 @@
                 false);
 
             //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
         });
     </script>
 }
