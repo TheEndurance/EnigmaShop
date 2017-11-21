@@ -83,7 +83,7 @@
                 {
                     <div class="col-lg-4 p-2">
                         <div class="d-flex flex-column">
-                            <img src="@product.MainSKUPicture.ImageUrl" data-alt-img="@product.AltSKUPicture.ImageUrl" class="product" />
+                            <img src="@product.MainSKUPicture.ImageUrl" data-alt-img="@product.AltSKUPicture.ImageUrl" class="product js-image-flip" />
                         </div>
 
                         <div class="text-md-center">@product.Name</div>
@@ -92,8 +92,7 @@
                     </div>
                 }
             </div>
-            <div class="row d-flex justify-content-center" id="ajax-container">
-              
+            <div class="row d-flex flex-column" id="ajax-container">
             </div>
         </div>
     </div>
@@ -129,7 +128,7 @@
         const secondaryCategory = "@Model.SecondaryCategory";
 
         //Model values
-        let page = @Model.Page;
+        let page = @Model.Page + 1;
         const perPage = @Model.PerPage;
 
 
@@ -150,27 +149,49 @@
         */
         class AjaxImageLoader {
             constructor(imageUrl, containerSelector) {
-                this.imageUrl = imageUrl;
-                this.containerSelector = containerSelector;
+                //ajax Image initialize
                 this.ajaxImage = document.createElement("img");
-                this.initialize();
-        
+                this.ajaxImage.src = imageUrl;
+                this.ajaxImage.style.width = "50px";
+                this.ajaxImage.classList.add("mx-auto");
+
+                //ajax text area
+                this.ajaxText = document.createElement("div");
+                this.ajaxText.classList.add("font-weight-bold");
+                this.ajaxText.setAttribute("role", "alert");
+                this.ajaxText.style.visibility = 'hidden';
+
+                //container append
+                this.container = document.querySelector(containerSelector);
+                this.container.appendChild(this.ajaxImage);
+                this.container.appendChild(this.ajaxText);
             }
-            initialize() {
-                const container = document.querySelector(this.containerSelector);
-                this.ajaxImage.src = this.imageUrl;
-                container.appendChild(this.ajaxImage);
-            }
-            hide() {
+
+            hideAjaxImage() {
                 this.ajaxImage.style.visibility = 'hidden';
-                return this;
             }
-            show() {
+
+            showAjaxImage() {
                 this.ajaxImage.style.visibility = 'initial';
+            }
+
+            showTemporaryAjaxText(message, duration, classArray) {
+                if (this.ajaxText.style.visibility === 'hidden') {
+                    this.ajaxText.textContent = message;
+                    this.ajaxText.style.visibility = 'initial';
+                    classArray.forEach(className => {
+                        this.ajaxText.classList.add(className);
+                    });
+                    setTimeout(() => {
+                            this.ajaxText.style.visibility = 'hidden';
+                        },
+                        duration);
+                }
             }
         }
 
         const ajaxImageLoader = new AjaxImageLoader("/images/ajax-loader.gif", "#ajax-container");
+        ajaxImageLoader.hideAjaxImage();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -226,8 +247,7 @@
                 categoryQueryString = `${primaryCategoryParamName}=${primaryCategory}`;
             }
             if (secondaryCategory.length > 0) {
-                console.log(`${secondaryCategoryParamName}=${secondaryCategoryParamName}`);
-                categoryQueryString += `${secondaryCategoryParamName}=${secondaryCategoryParamName}`;
+                categoryQueryString += `&${secondaryCategoryParamName}=${secondaryCategory}`;
             }
             return categoryQueryString;
         };
@@ -246,27 +266,6 @@
 
 
         /*
-        * Gets the currently checked size checkboxes and returns a string (QueryString)
-        */
-        //const GetSizeUrl = function() {
-        //    let checkedSizes = [];
-
-        //    sizeCheckboxes.forEach(function(checkbox) {
-        //        if (checkbox.checked) {
-        //            checkedSizes.push(checkbox.dataset.sizeId);
-        //        }
-        //    });
-
-        //    let sizeQueryString = "";
-        //    for (let i = 0; i < checkedSizes.length; i++) {
-        //        sizeQueryString += `&sizes=${checkedSizes[i]}`;
-        //    }
-        //    return sizeQueryString;
-        //};
-        ////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        /*
         * Updates browsers Href with a new URL
         */
         const UpdateHref = function() {
@@ -280,10 +279,11 @@
         /*
         * Contains the template for a product
         */
-        const ProductTemplate = function (product) {
+        const ProductTemplate = function(product) {
             return `<div class="col-lg-4 p-2">
                         <div class="d-flex flex-column">
-                                <img src="${product.mainSKUPicture.imageUrl}" data-alt-img="" class="product" />
+                                <img src="${product.mainSKUPicture.imageUrl}" data-alt-img="${product.altSKUPicture
+                .imageUrl}" class="product js-image-flip" />
                         </div>
 
                         <div class="text-md-center">${product.name}</div>
@@ -304,14 +304,21 @@
             url += GetCheckboxUrl(optionCheckboxes, optionParamName, "data-option-id");
             url += GetCheckboxUrl(sizeCheckboxes, sizeParamName, "data-size-id");
             url += GetPageAndPerPageUrl();
-            ajaxImageLoader.show();
+            console.log(url);
+            ajaxImageLoader.showAjaxImage();
             $.ajax({
                 url: url,
                 type: "GET",
-                success: function (data) {
-                    ajaxImageLoader.hide();
-                    page = data.nextPage;
-                    data.products.forEach(product => $("#product-div").append(ProductTemplate(product)));
+                success: function(json) { //data represents a JSON obejct
+                    ajaxImageLoader.hideAjaxImage();
+                    page = json.nextPage;
+                    json.products.forEach(product => $("#product-div").append(ProductTemplate(product)));
+                },
+                error: function(httpResponse) { //data represents a HTTP response, which has a responseJSON 
+                    ajaxImageLoader.hideAjaxImage();
+                    ajaxImageLoader.showTemporaryAjaxText(httpResponse.responseJSON.error,
+                        3000,
+                        ["alert", "alert-warning", "font-weight-bold"]);
                 }
             });
 
@@ -331,6 +338,20 @@
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+        /*
+        * Flips product image to the alternate picture 
+        */
+        const FlipProductImage = function(targetImage) {
+            if (targetImage) {
+                const tempImageUrl = targetImage.src;
+                targetImage.src = targetImage.dataset.altImg;
+                targetImage.dataset.altImg = tempImageUrl;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+
         //EVENT LISTENERS
 
         //checkboxes
@@ -339,6 +360,21 @@
 
         //Ajax infinity scroll
         document.addEventListener("scroll", debounce(AjaxScrollListener), false);
+
+        //product image flip
+        document.querySelector("#product-div").addEventListener("mouseover",
+            function(event) {
+                if (event.target.classList.contains("js-image-flip")) {
+                    FlipProductImage(event.target);
+                }
+            });
+
+        document.querySelector("#product-div").addEventListener("mouseout",
+            function(event) {
+                if (event.target.classList.contains("js-image-flip")) {
+                    FlipProductImage(event.target);
+                }
+            });
 
 
     </script>

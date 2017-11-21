@@ -96,12 +96,14 @@ namespace EnigmaShop.Areas.Admin.Models
                 foreach (var formFile in files)
                 {
                     if (formFile.Length <= 0) continue;
-
-                    var imageUrl = Path.Combine("/uploads/", formFile.FileName);
+                    var guid = Guid.NewGuid();
+                    var extension = Path.GetExtension(formFile.FileName);
+                    string fileName = $"sku_picture_{guid.ToString()}{extension}";
+                    var imageUrl = Path.Combine("/uploads/", fileName);
 
                     if (SKUPictures.Any(x => x.ImageUrl == imageUrl)) continue; //if this image is already saved
                     
-                    using (var fileStream = new FileStream(Path.Combine(uploads, formFile.FileName), FileMode.Create))
+                    using (var fileStream = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
                     {
                         await formFile.CopyToAsync(fileStream);
                     }

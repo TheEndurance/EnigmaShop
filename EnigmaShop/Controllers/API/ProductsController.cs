@@ -25,7 +25,9 @@ namespace EnigmaShop.Controllers.API
         [HttpGet]
         public async Task<IActionResult> Products([FromQuery]string primaryCat, [FromQuery]string secondaryCat, [FromQuery]int?[] options,[FromQuery] int?[] sizes, [RequiredQuery]int page, [RequiredQuery]int perPage)
         {
-            if (perPage > 100) return BadRequest("perPage can not exceed 100");
+            if (page <= 0) return BadRequest("Page can not be equal 0 or less");
+            if (perPage > 50) return BadRequest("perPage can not exceed 50");
+            if (perPage <= 0) return BadRequest("perPage can not equal 0 or less");
 
             // INITIALIZE : product and sku queries 
             IQueryable<Product> products = null;
@@ -96,9 +98,18 @@ namespace EnigmaShop.Controllers.API
             // TO LIST : Product Query tolist
             productsList = await products
                 .OrderBy(x => x.Name)
-                .Take((page + 1) * perPage)
+                .Skip((page-1) * perPage)
+                .Take(page * perPage)
                 .ToListAsync();
 
+            if (!productsList.Any())
+            {
+                return NotFound(new
+                {
+                    error = "There are no more products."
+                });
+
+            }
 
             return new JsonResult(new
             {

@@ -20,8 +20,11 @@ namespace EnigmaShop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] options, int?[] sizes,int page = 0, int perPage = 10)
+        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] options, int?[] sizes,int page = 1, int perPage = 10)
         {
+            page = (page > 0) ? page : 1;
+            perPage = (perPage>50)? 50: perPage;
+
             // INITIALIZE AND SET : Categories
             IQueryable<Category> categories = _context.Categories.Where(x => x.ParentCategoryId == null);
 
@@ -104,7 +107,7 @@ namespace EnigmaShop.Controllers
             // TO LIST : Product Query tolist
             productsList = await products
                 .OrderBy(x => x.Name)
-                .Take((page+1)*perPage)
+                .Take(page*perPage)
                 .ToListAsync();
 
             // INITIALIZE AND SET : Option groups and options
