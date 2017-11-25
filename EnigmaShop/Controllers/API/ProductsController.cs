@@ -23,7 +23,7 @@ namespace EnigmaShop.Controllers.API
         }
 
         [HttpGet]
-        public async Task<IActionResult> Products([FromQuery]string primaryCat, [FromQuery]string secondaryCat, [FromQuery]int?[] options,[FromQuery] int?[] sizes, [RequiredQuery]int page, [RequiredQuery]int perPage)
+        public async Task<IActionResult> Products([FromQuery]string primaryCat, [FromQuery]string secondaryCat, [FromQuery]int?[] options, [FromQuery] int?[] sizes, [RequiredQuery]int page, [RequiredQuery]int perPage)
         {
             if (page <= 0) return BadRequest("Page can not be equal 0 or less");
             if (perPage > 50) return BadRequest("perPage can not exceed 50");
@@ -31,7 +31,6 @@ namespace EnigmaShop.Controllers.API
 
             // INITIALIZE : product and sku queries 
             IQueryable<Product> products = null;
-            IEnumerable<Product> productsList = new List<Product>();
             IQueryable<SKU> skus = _context.SKUs
                 .Include(x => x.SKUOptions)
                 .Include(x => x.Product)
@@ -67,6 +66,7 @@ namespace EnigmaShop.Controllers.API
                     Id = x.Product.Id,
                     Name = x.Product.Name,
                     Description = x.Product.Description,
+                    Price = x.Product.Price,
                     AltSKUId = x.Product.AltSKUId,
                     MainSKUId = x.Product.MainSKUId,
                     MainSKUPicture = x.Product.MainSKUPicture,
@@ -96,11 +96,17 @@ namespace EnigmaShop.Controllers.API
             }
 
             // TO LIST : Product Query tolist
-            productsList = await products
+            var productsList =  products
                 .OrderBy(x => x.Name)
-                .Skip((page-1) * perPage)
-                .Take(page * perPage)
-                .ToListAsync();
+                .GroupBy(x => x.Id)
+                .Select(x => x.First())
+                .ToList();
+
+
+            productsList = productsList.Skip((page - 1) * perPage)
+                .Take(page * perPage).ToList();
+
+
 
             if (!productsList.Any())
             {
@@ -114,7 +120,7 @@ namespace EnigmaShop.Controllers.API
             return new JsonResult(new
             {
                 products = productsList,
-                nextPage = page+1
+                nextPage = page + 1
             });
 
         }

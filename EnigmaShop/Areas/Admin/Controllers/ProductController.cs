@@ -71,7 +71,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description,Name,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId,OptionGroupId,SizeGroupId")] ProductFormViewModel productFormViewModel)
+        public async Task<IActionResult> Create([Bind("Id,Description,Name,Price,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId,OptionGroupId,SizeGroupId")] ProductFormViewModel productFormViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -131,7 +131,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Name,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId,MainSKUId,AltSKUId")] ProductFormViewModel productFormViewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Name,Price,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId,MainSKUId,AltSKUId")] ProductFormViewModel productFormViewModel)
         {
             if (id != productFormViewModel.Id)
             {

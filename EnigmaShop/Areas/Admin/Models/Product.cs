@@ -7,12 +7,14 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EnigmaShop.Areas.Admin.ViewModels;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EnigmaShop.Areas.Admin.Models
 {
     public class Product
     {
+        
         public int Id { get; set; }
 
         public string Description { get; set; }
@@ -20,6 +22,8 @@ namespace EnigmaShop.Areas.Admin.Models
         [Required]
         [StringLength(80)]
         public string Name { get; set; }
+
+        public decimal Price { get; set; }
 
         [ForeignKey("MainSKUId")]
         public SKUPicture MainSKUPicture { get; set; }
@@ -45,6 +49,8 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public ICollection<ProductCategory> ProductCategories { get; set; }
 
+        
+
         public Product()
         {
             SKUs = new Collection<SKU>();
@@ -56,6 +62,7 @@ namespace EnigmaShop.Areas.Admin.Models
             SKUs = new Collection<SKU>();
             Id = productFormViewModel.Id;
             Name = productFormViewModel.Name;
+            Price = productFormViewModel.Price;
             MainSKUId = productFormViewModel.MainSKUId;
             AltSKUId = productFormViewModel.AltSKUId;
             Description = productFormViewModel.Description;
@@ -69,6 +76,7 @@ namespace EnigmaShop.Areas.Admin.Models
         {
             Name = productFormViewModel.Name;
             Description = productFormViewModel.Description;
+            Price = productFormViewModel.Price;
             AddProductCategories(productFormViewModel);
             MainSKUId = productFormViewModel.MainSKUId;
             AltSKUId = productFormViewModel.AltSKUId;

@@ -40,7 +40,6 @@ namespace EnigmaShop.Controllers
 
             // INITIALIZE : product and sku queries 
             IQueryable<Product> products = null;
-            IEnumerable<Product> productsList = new List<Product>();
             IQueryable<SKU> skus = _context.SKUs
                 .Include(x => x.SKUOptions)
                 .Include(x => x.Product)
@@ -76,6 +75,7 @@ namespace EnigmaShop.Controllers
                     Id = x.Product.Id,
                     Name = x.Product.Name,
                     Description = x.Product.Description,
+                    Price = x.Product.Price,
                     AltSKUId = x.Product.AltSKUId,
                     MainSKUId = x.Product.MainSKUId,
                     MainSKUPicture = x.Product.MainSKUPicture,
@@ -91,7 +91,8 @@ namespace EnigmaShop.Controllers
             {
                 products = _context.Products
                     .Include(x => x.MainSKUPicture)
-                    .Include(x => x.AltSKUPicture);
+                    .Include(x => x.AltSKUPicture)
+                    .Distinct();
             }
 
             //FILTER : Product by category
@@ -105,10 +106,16 @@ namespace EnigmaShop.Controllers
             }
 
             // TO LIST : Product Query tolist
-            productsList = await products
+            var productsList = products
                 .OrderBy(x => x.Name)
-                .Take(page*perPage)
-                .ToListAsync();
+                .GroupBy(x => x.Id)
+                .Select(x => x.First())
+                .ToList();
+
+            productsList = productsList
+                .Take(page * perPage)
+                .ToList();
+
 
             // INITIALIZE AND SET : Option groups and options
             //Get the product option groups and options

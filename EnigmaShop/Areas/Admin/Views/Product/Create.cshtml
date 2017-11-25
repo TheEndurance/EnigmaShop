@@ -22,6 +22,14 @@
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
+                                <label asp-for="Price" class="form-control-label col-sm-3"></label>
+                                <div class="col-sm-9">
+                                    <input asp-for="Price" class="form-control" />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
                                 <label asp-for="Description" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
                                     <input asp-for="Description" class="form-control" />

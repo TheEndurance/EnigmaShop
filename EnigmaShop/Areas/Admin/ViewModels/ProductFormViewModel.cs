@@ -21,6 +21,8 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         [StringLength(80)]
         public string Name { get; set; }
 
+        public decimal Price { get; set; }
+
         [DisplayName("Primary Category")]
         public int PrimaryCategoryId { get; set; }
 
@@ -65,6 +67,7 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             Id = product.Id;
             Name = product.Name;
             Description = product.Description;
+            Price = product.Price;
             ProductCategories = product.ProductCategories;
             SKUs = product.SKUs;
             MainSKUId = product.MainSKUId;

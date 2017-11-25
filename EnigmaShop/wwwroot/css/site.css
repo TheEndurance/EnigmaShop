@@ -1,6 +1,7 @@
 ﻿/* Shop - Products */
 .list-style-none {
     list-style: none;
+    padding-left:1rem;
 }
 .product {
     height:20rem;
