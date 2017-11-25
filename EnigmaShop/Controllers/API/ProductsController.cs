@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EnigmaShop.Areas.Admin.Models;
 using EnigmaShop.Data;
 using EnigmaShop.QueryConstraint;
+using EnigmaShop.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -30,13 +31,14 @@ namespace EnigmaShop.Controllers.API
             if (perPage <= 0) return BadRequest("perPage can not equal 0 or less");
 
             // INITIALIZE : product and sku queries 
-            IQueryable<Product> products = null;
             IQueryable<SKU> skus = _context.SKUs
                 .Include(x => x.SKUOptions)
                 .Include(x => x.Product)
+                .Include(x=>x.Product.ProductCategories)
                 .Include(x => x.Product.AltSKUPicture)
                 .Include(x => x.Product.MainSKUPicture)
                 .Include(x => x.Option);
+            IEnumerable<Product> productList = null;
 
             //FILTER : SKU by options if there are any
             if (options.Any(x => x.HasValue))
@@ -57,11 +59,13 @@ namespace EnigmaShop.Controllers.API
 
             }
 
+            var skusList = await skus.ToListAsync();
+
             // CONVERT : Skus to Products
-            if (skus != null)
+            if (skusList.Any())
             {
                 //convert the skus into product
-                products = skus.Select(x => new Product
+                productList = skusList.Select(x => new Product
                 {
                     Id = x.Product.Id,
                     Name = x.Product.Name,
@@ -78,34 +82,32 @@ namespace EnigmaShop.Controllers.API
             }
 
             // INITIALIZE : Product if null
-            if (products == null)
+            if (productList == null)
             {
-                products = _context.Products
+                productList = await _context.Products
                     .Include(x => x.MainSKUPicture)
-                    .Include(x => x.AltSKUPicture);
+                    .Include(x => x.AltSKUPicture)
+                    .ToListAsync();
             }
 
             //FILTER : Product by category
-            products = products
-                .Where(x => x.ProductCategories.Select(y => y.Category.Name).Contains(primaryCat));
+            var primaryCatId = await _context.Categories.SingleOrDefaultAsync(x => x.Name == primaryCat);
+            productList = productList
+                .Where(x => x.ProductCategories.Select(y => y.CategoryId).Contains(primaryCatId.Id));
 
             if (secondaryCat != null)
             {
-                products = products.Where(x =>
-                    x.ProductCategories.Select(y => y.Category.Name).Contains(secondaryCat));
+                var secondaryCatId = await _context.Categories.SingleOrDefaultAsync(x => x.Name == secondaryCat);
+                productList = productList.Where(x =>
+                    x.ProductCategories.Select(y => y.CategoryId).Contains(secondaryCatId.Id));
             }
 
             // TO LIST : Product Query tolist
-            var productsList =  products
+            var productsList = productList
                 .OrderBy(x => x.Name)
-                .GroupBy(x => x.Id)
-                .Select(x => x.First())
-                .ToList();
-
-
-            productsList = productsList.Skip((page - 1) * perPage)
-                .Take(page * perPage).ToList();
-
+                .Distinct(new ProductComparer())
+                .Skip((page - 1) * perPage)
+                .Take(page * perPage);
 
 
             if (!productsList.Any())

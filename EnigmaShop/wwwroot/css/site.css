@@ -4,6 +4,7 @@
     padding-left:1rem;
 }
 .product {
+    cursor:pointer;
     height:20rem;
     width:14rem;
 }
