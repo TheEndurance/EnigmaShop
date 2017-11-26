@@ -59,10 +59,14 @@ namespace EnigmaShop.Controllers.API
             }
 
             //FILTER : Product by category
-            var primaryCategory = await _context.Categories.SingleOrDefaultAsync(x => x.Name == primaryCat);
-            skus = skus.Where(x => x.Product.ProductCategories.Select(y => y.CategoryId).Contains(primaryCategory.Id));
+            if (!string.IsNullOrWhiteSpace(primaryCat))
+            {
+                var primaryCategory = await _context.Categories.SingleOrDefaultAsync(x => x.Name == primaryCat);
+                skus = skus.Where(x => x.Product.ProductCategories.Select(y => y.CategoryId).Contains(primaryCategory.Id));
+            }
 
-            if (secondaryCat != null)
+
+            if (!string.IsNullOrWhiteSpace(secondaryCat))
             {
                 var secondaryCategory = await _context.Categories.SingleOrDefaultAsync(x => x.Name == secondaryCat);
                 skus = skus.Where(x =>

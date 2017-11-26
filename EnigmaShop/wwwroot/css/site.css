@@ -4,10 +4,12 @@
     padding-left:1rem;
 }
 .product {
-    cursor:pointer;
     height:20rem;
     width:14rem;
 }
 #ajax-container {
     padding-top:150px;
+}
+#product-div > a:link {
+    text-decoration:none;
 }

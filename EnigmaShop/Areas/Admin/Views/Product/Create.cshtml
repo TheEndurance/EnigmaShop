@@ -22,14 +22,6 @@
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
-                                <label asp-for="Price" class="form-control-label col-sm-3"></label>
-                                <div class="col-sm-9">
-                                    <input asp-for="Price" class="form-control" />
-                                    <span asp-validation-for="Price" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="line"></div>
-                            <div class="form-group row">
                                 <label asp-for="Description" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
                                     <input asp-for="Description" class="form-control" />
@@ -67,9 +59,7 @@
                             <div class="form-group row">
                                 <label asp-for="SecondaryCategoryId" class="form-control-label col-sm-3"></label>
                                 <div class="col-sm-9">
-                                    <select name="SecondaryCategoryId" class="form-control" id="SecondaryCategoryId">
-                                        
-                                    </select>
+                                    <select name="SecondaryCategoryId" class="form-control" id="SecondaryCategoryId"></select>
                                 </div>
                             </div>
                             <div class="line"></div>
@@ -102,38 +92,37 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        $(document).ready(function () {
-            function GetCategorySelectList(selectedGroupId,targetSelectId) {
-                if (isNaN(selectedGroupId)) {
-                    return;
-                }
-                var url = "/admin/api/categories/" + selectedGroupId;
-                $.ajax({
-                    url: url,
-                    type: "GET",
-                    success: function (categories) {
-                        var markup = `<option>Select a category</option>
+        const primaryCategory = document.getElementById("PrimaryCategoryId");
+        const secondaryCategory = document.getElementById("SecondaryCategoryId");
+
+        function GetCategorySelectList(selectedGroupId, targetSelectId) {
+            if (isNaN(selectedGroupId)) {
+                return;
+            }
+            const url = "/admin/api/categories/" + selectedGroupId;
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (categories) {
+                    const markup = `<option>Select a category</option>
                                         ${categories.map(category => `<option value="${category.id}">${category.name}</option>`)}
                                       `;
-                        document.querySelector("form #" + targetSelectId).innerHTML = markup;
-                    },
-                    error: function() {
-                        alert("An error occured retrieving categories for the selected category group.");
-                    }
-                });
-            }
+                    document.querySelector("form #" + targetSelectId).innerHTML = markup;
+                },
+                error: function () {
+                    alert("An error occured retrieving categories for the selected category group.");
+                }
+            });
+        }
 
-            var primaryCategory = document.getElementById("PrimaryCategoryId");
-            var secondaryCategory = document.getElementById("SecondaryCategoryId");
+        primaryCategory.addEventListener("blur",
+            function () { GetCategorySelectList(this.value, "SecondaryCategoryId") },
+            false);
 
-            primaryCategory.addEventListener("blur",
-                function() { GetCategorySelectList(this.value, "SecondaryCategoryId") },
-                false);
+        secondaryCategory.addEventListener("blur",
+            function () { GetCategorySelectList(this.value, "TertiaryCategoryId") },
+            false);
 
-            secondaryCategory.addEventListener("blur",
-                function() { GetCategorySelectList(this.value, "TertiaryCategoryId") },
-                false);
 
-        });
     </script>
 }

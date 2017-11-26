@@ -18,21 +18,11 @@
                         <form class="form-horizontal" asp-action="Edit" id="productForm">
                             <div asp-validation-summary="All" class="text-danger"></div>
                             <input type="hidden" asp-for="Id" />
-                            <input type="hidden" asp-for="MainSKUId" />
-                            <input type="hidden" asp-for="AltSKUId" />
                             <div class="form-group row">
                                 <label asp-for="Name" class="control-label col-sm-3"></label>
                                 <div class="col-sm-9">
                                     <input asp-for="Name" class="form-control" />
                                     <span asp-validation-for="Name" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="line"></div>
-                            <div class="form-group row">
-                                <label asp-for="Price" class="form-control-label col-sm-3"></label>
-                                <div class="col-sm-9">
-                                    <input asp-for="Price" class="form-control" />
-                                    <span asp-validation-for="Price" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="line"></div>
@@ -86,32 +76,6 @@
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
-                                <label asp-for="MainSKUId" class="form-control-label col-sm-3"></label>
-                                <div class="col-sm-9">
-                                    @foreach (var sku in Model.SKUs)
-                                    {
-                                        foreach (var skuPicture in sku.SKUPictures)
-                                        {
-                                            <img id="main_@skuPicture.Id" src="@skuPicture.ImageUrl" data-sku-id="@skuPicture.Id" data-image-model="MainSKUId" class="sku-list-picture select-picture @(Model.MainSKUId==skuPicture.Id ? "selected-picture" : "")" />
-                                        }
-                                    }
-                                </div>
-                            </div>
-                            <div class="line"></div>
-                            <div class="form-group row">
-                                <label asp-for="AltSKUId" class="form-control-label col-sm-3"></label>
-                                <div class="col-sm-9">
-                                    @foreach (var sku in Model.SKUs)
-                                    {
-                                        foreach (var skuPicture in sku.SKUPictures)
-                                        {
-                                            <img id="alt_@skuPicture.Id" src="@skuPicture.ImageUrl" data-sku-id="@skuPicture.Id" data-image-model="AltSKUId" class="sku-list-picture select-picture @(Model.AltSKUId==skuPicture.Id ? "selected-picture" : "")" />
-                                        }
-                                    }
-                                </div>
-                            </div>
-                            <div class="line"></div>
-                            <div class="form-group row">
                                 <div class="col-sm-3"></div>
                                 <div class="col-sm-9">
                                     <input type="submit" value="Edit" class="btn btn-primary" />
@@ -130,112 +94,11 @@
 </section>
 
 
-<!-- Modal -->
-<div class="modal fade" id="imagePreviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Image Preview</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <img id="modalImage" src="" data-image-model="" data-sku-id="" data-image-id="" class="col-md-12" />
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="modalSelectImage" data-dismiss="modal">Select Image</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $(document).ready(function() {
-
-
-            /*
-             * Shows a modal when clicking an image
-            */
-            const imageElements = document.querySelectorAll(".select-picture");
-            const imagesArray = Array.prototype.slice.call(imageElements);
-            const modalImage = document.getElementById("modalImage");
-
-            const SetImagePreviewModal = function() {
-                modalImage.src = this.src;
-                modalImage.dataset.imageModel = this.dataset.imageModel;
-                modalImage.dataset.imageId = this.id;
-                modalImage.dataset.skuId = this.dataset.skuId;
-                $("#imagePreviewModal").modal("show");
-
-            }
-
-            imagesArray.map(image => image.addEventListener("click", SetImagePreviewModal, false));
-
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////
-
-            /*
-            * Modal Select Image button event - Creates a hidden input to send to server containing the image information
-            */
-
-            const productForm = document.querySelector("#productForm");
-            const modalSelectImage = document.querySelector("#modalSelectImage");
-
-            const SelectImage = function(image) {
-                const targetInput = document.getElementById(image.dataset.imageModel);
-
-                if (targetInput) {
-                    targetInput.value = image.dataset.skuId;
-                } else {
-                    const hiddenInput = document.createElement("input");
-                    hiddenInput.type = "hidden";
-                    hiddenInput.value = image.dataset.skuId;
-                    hiddenInput.name = image.dataset.imageModel;
-                    hiddenInput.id = image.dataset.imageModel;
-                    productForm.appendChild(hiddenInput);
-                }
-            }
-
-            modalSelectImage.addEventListener("click",
-                function() {
-                    SelectImage(document.querySelector("#modalImage"));
-                },
-                false);
-
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-            /*
-            * Set selected CSS for the selected image
-            */
-
-            const ToggleSelectedImageCss = function(selectedImage, cssClass) {
-
-                const imageId = selectedImage.dataset.imageId;
-                const imgArray =
-                    Array.prototype.slice.call(
-                        document.querySelectorAll(`[data-image-model="${selectedImage.dataset.imageModel}"]`));
-                const currentlySelectedImage = imgArray.find(image => image.classList.contains(cssClass));
-                if (currentlySelectedImage) {
-                    currentlySelectedImage.classList.remove(cssClass);
-                }
-                const theImage = document.getElementById(imageId);
-                theImage.classList.add(cssClass);
-
-            };
-
-            modalSelectImage.addEventListener("click",
-                function() {
-                    ToggleSelectedImageCss(document.querySelector("#modalImage"), "selected-picture");
-                },
-                false);
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////
 
             /*
             * Gets the categories from API
@@ -247,7 +110,8 @@
                 if (isNaN(selectedGroupId)) {
                     return;
                 }
-                const url = `/admin/api/categories/"${selectedGroupId}`;
+                console.log(selectedGroupId);
+                const url = `/admin/api/categories/${selectedGroupId}`;
                 $.ajax({
                     url: url,
                     type: "GET",
@@ -255,7 +119,7 @@
                         const markup = `<option value="">Select a category</option>
                                 ${categories.map(
                             category => `<option value="${category.id}">${category.name}</option>`)}`;
-                        document.querySelector(`form #"${targetSelectId}`).innerHTML = markup;
+                        document.querySelector(`form #${targetSelectId}`).innerHTML = markup;
                     },
                     error:
                         function() {

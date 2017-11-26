@@ -67,11 +67,8 @@ namespace EnigmaShop.Areas.Admin.ViewModels
             Id = product.Id;
             Name = product.Name;
             Description = product.Description;
-            Price = product.Price;
             ProductCategories = product.ProductCategories;
             SKUs = product.SKUs;
-            MainSKUId = product.MainSKUId;
-            AltSKUId = product.AltSKUId;
             OptionGroupId = product.OptionGroupId;
             SizeGroupId = product.SizeGroupId;
             OptionGroup = product.OptionGroup;

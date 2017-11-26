@@ -1,0 +1,70 @@
+﻿@using EnigmaShop.ViewModels
+@model SKUDetailViewModel
+
+@{
+    ViewData["Title"] = "Product";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>@Model.Name</h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="d-flex flex-column">
+                        <img style="height: 150px; width: 120px; opacity: 0.5;" class="p-2" src="@Model.FirstSKUPicture.ImageUrl"/>
+                        @foreach (var skuPicture in Model.SKUPictures)
+                        {
+                            <img style="height: 150px; width: 120px;" class="p-2" src="@skuPicture.ImageUrl"/>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <img class="img-fluid" src="@Model.FirstSKUPicture.ImageUrl"/>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex flex-row">
+                
+                <div class="text-center m-2">
+                    @Model.OptionName
+                    <a class="d-block" asp-action="Product" asp-controller="Shop" asp-route-skuId="@Model.Id">
+                        <img src="@Model.FirstSKUPicture.ImageUrl" style="height: 50px; width: 50px;"/>
+                    </a>
+                </div>
+
+                @foreach (var sku in Model.RelatedSKUs)
+                {
+                    <div class="text-center m-2">
+                        @sku.OptionName
+                        <a class="d-block" asp-action="Product" asp-controller="Shop" asp-route-skuId="@sku.SKUId">
+                            <img src="@sku.ImageUrl" style="height: 50px; width: 50px;"/>
+                        </a>
+                    </div>
+
+                }
+            </div>
+            <div class="d-flex flex-row">
+                @foreach (var size in Model.Sizes)
+                {
+                    <div class="text-center m-2" style="height: 50px; width: 50px; background-color: lightblue;">
+                        @size.Name
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Description</h2>
+            <hr/>
+            <p>@Model.Description</p>
+        </div>
+    </div>
+
+</div>

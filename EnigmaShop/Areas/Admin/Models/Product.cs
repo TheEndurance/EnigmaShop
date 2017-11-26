@@ -23,17 +23,6 @@ namespace EnigmaShop.Areas.Admin.Models
         [StringLength(80)]
         public string Name { get; set; }
 
-        public decimal Price { get; set; }
-
-        [ForeignKey("MainSKUId")]
-        public SKUPicture MainSKUPicture { get; set; }
-
-        [ForeignKey("AltSKUId")]
-        public SKUPicture AltSKUPicture { get; set; }
-
-        public int? MainSKUId { get; set; }
-
-        public int? AltSKUId { get; set; }
 
         [ForeignKey(nameof(OptionGroupId))]
         public OptionGroup OptionGroup { get; set; }
@@ -62,9 +51,6 @@ namespace EnigmaShop.Areas.Admin.Models
             SKUs = new Collection<SKU>();
             Id = productFormViewModel.Id;
             Name = productFormViewModel.Name;
-            Price = productFormViewModel.Price;
-            MainSKUId = productFormViewModel.MainSKUId;
-            AltSKUId = productFormViewModel.AltSKUId;
             Description = productFormViewModel.Description;
             OptionGroupId = productFormViewModel.OptionGroupId;
             SizeGroupId = productFormViewModel.SizeGroupId;
@@ -76,10 +62,7 @@ namespace EnigmaShop.Areas.Admin.Models
         {
             Name = productFormViewModel.Name;
             Description = productFormViewModel.Description;
-            Price = productFormViewModel.Price;
             AddProductCategories(productFormViewModel);
-            MainSKUId = productFormViewModel.MainSKUId;
-            AltSKUId = productFormViewModel.AltSKUId;
         }
 
         private void AddProductCategories(ProductFormViewModel productFormViewModel)

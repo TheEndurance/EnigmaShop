@@ -71,7 +71,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description,Name,Price,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId,OptionGroupId,SizeGroupId")] ProductFormViewModel productFormViewModel)
+        public async Task<IActionResult> Create([Bind("Id,Description,Name,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId,OptionGroupId,SizeGroupId")] ProductFormViewModel productFormViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -97,8 +97,6 @@ namespace EnigmaShop.Areas.Admin.Controllers
             }
 
             var product = await _context.Products
-                .Include(x=>x.MainSKUPicture)
-                .Include(x=>x.AltSKUPicture)
                 .Include(x=>x.ProductCategories)
                 .Include(x=>x.OptionGroup)
                 .Include(x=>x.SizeGroup)
@@ -131,14 +129,19 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Name,Price,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId,MainSKUId,AltSKUId")] ProductFormViewModel productFormViewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Description,Name,PrimaryCategoryId,SecondaryCategoryId,TertiaryCategoryId")] ProductFormViewModel productFormViewModel)
         {
             if (id != productFormViewModel.Id)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products.Include(x=>x.ProductCategories).Include(x=>x.SKUs).ThenInclude(x=>x.SKUPictures).SingleOrDefaultAsync(x => x.Id == productFormViewModel.Id);
+            var product = await _context.Products
+                .Include(x=>x.ProductCategories)
+                .Include(x=>x.SKUs)
+                .ThenInclude(x=>x.SKUPictures)
+                .SingleOrDefaultAsync(x => x.Id == productFormViewModel.Id);
+
             if (product == null) return NotFound();
                
             if (ModelState.IsValid)

@@ -25,10 +25,10 @@
                             <li>
                                 <a asp-route-primaryCat="@primaryCat.Name" asp-route-secondaryCat="@secondaryCat.Name">@secondaryCat.Name</a>
                             </li>
-                            <li >
+                            <li>
                                 @foreach (var tertiaryCat in secondaryCat.Categories)
                                 {
-                                    <ul class="list-style-none" >
+                                    <ul class="list-style-none">
                                         <li>
                                             <a asp-route-primaryCat="@primaryCat.Name" asp-route-secondaryCat="@tertiaryCat.Name">@tertiaryCat.Name</a>
                                         </li>
@@ -82,15 +82,15 @@
                 @foreach (var sku in Model.SKUs)
                 {
                     <div class="col-lg-4 p-2">
-                        <div class="d-flex flex-column">
+                        <a class="d-flex flex-column" asp-action="Product" asp-controller="Shop" asp-route-skuId="@sku.Id">
                             <img src="@sku.MainSKUPicture" data-alt-img="@sku.AltSKUPicture" class="product js-image-flip" />
-                        </div>
+                        </a>
 
                         <div class="text-md-center">@sku.Product.Name</div>
                         <div class="text-md-center">@sku.Product.Description</div>
                         <div class="text-md-center">@sku.Price.ToString("C")</div>
-
                     </div>
+
                 }
             </div>
             <div class="row d-flex flex-column" id="ajax-container">
@@ -291,7 +291,7 @@
                         <div class="text-md-center">${product.product.description}</div>
                         <div class="text-md-center">$${product.price}</div>
                     </div>`;
-            
+
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////

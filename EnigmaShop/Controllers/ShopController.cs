@@ -21,7 +21,7 @@ namespace EnigmaShop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] options, int?[] sizes, int page = 1, int perPage = 1)
+        public async Task<IActionResult> Products(string primaryCat, string secondaryCat, int?[] options, int?[] sizes, int page = 1, int perPage = 2)
         {
             page = (page > 0) ? page : 1;
             perPage = (perPage > 50) ? 50 : perPage;
@@ -67,21 +67,27 @@ namespace EnigmaShop.Controllers
             }
 
             //FILTER : Product by category
-            var primaryCategory = await _context.Categories.SingleOrDefaultAsync(x => x.Name == primaryCat);
-            skus = skus.Where(x => x.Product.ProductCategories.Select(y => y.CategoryId).Contains(primaryCategory.Id));
+            if (!string.IsNullOrWhiteSpace(primaryCat))
+            {
+                var primaryCategory = await _context.Categories.SingleOrDefaultAsync(x => x.Name == primaryCat);
+                skus = skus.Where(x => x.Product.ProductCategories.Select(y => y.CategoryId).Contains(primaryCategory.Id));
+            }
+            
 
-            if (secondaryCat != null)
+            if (!string.IsNullOrWhiteSpace(secondaryCat))
             {
                 var secondaryCategory = await _context.Categories.SingleOrDefaultAsync(x => x.Name == secondaryCat);
                 skus = skus.Where(x =>
                     x.Product.ProductCategories.Select(y => y.CategoryId).Contains(secondaryCategory.Id));
             }
 
+            //create skuList
             var skuList = await skus
                 .OrderBy(x=>x.Product.Name)
                 .Take(page*perPage)   
                 .ToListAsync();
 
+            //project into SKU Shop View Models
             var skuShopList = skuList.Select(x => new SKUShopViewModel
             {
                 Id = x.Id,
@@ -137,6 +143,57 @@ namespace EnigmaShop.Controllers
                 PerPageParamName = nameof(perPage)
             };
             return View(shopViewModel);
+        }
+
+        public async Task<IActionResult> Product(int skuId)
+        {
+            var sku = await _context.SKUs
+                .Include(x=>x.Option)
+                .Include(x=>x.Product)
+                .Include(x=>x.SKUOptions)
+                .Include(x=>x.SKUPictures)
+                .SingleOrDefaultAsync(x => x.Id == skuId);
+
+            if (sku == null) return RedirectToAction("Products");
+
+            var sizes = await _context.Sizes
+                .Where(x => x.SizeGroupId == sku.Product.SizeGroupId)
+                .ToListAsync();
+
+            var relatedSKUs = await _context.SKUs
+                .Include(x=>x.Option)
+                .Include(x=>x.SKUPictures)
+                .Where(x => x.ProductId == sku.ProductId && x.Id != sku.Id)
+                .Select(x=>new RelatedSKUsViewModel
+                {
+                    SKUId = x.Id,
+                    OptionName = x.Option.Name,
+                    ImageUrl = x.SKUPictures.FirstOrDefault().ImageUrl
+                })
+                .ToListAsync();
+
+            var optionGroup = await _context.OptionGroups.SingleOrDefaultAsync(x => x.Id == sku.Option.OptionGroupId);
+
+            var skuDetailViewModel = new SKUDetailViewModel
+            {
+                Id = sku.Id,
+                Name = sku.Product.Name,
+                Description = sku.Product.Description,
+                OptionName = sku.Option.Name,
+                SKUOptions = sku.SKUOptions,
+                FirstSKUPicture = sku.SKUPictures.FirstOrDefault(),
+                SKUPictures = sku.SKUPictures.Skip(1).ToList(),
+                Sizes = sizes,
+                RelatedSKUs = relatedSKUs,
+                OptionGroup = optionGroup
+
+            };
+
+           
+
+            return View(skuDetailViewModel);
+
+
         }
 
       
