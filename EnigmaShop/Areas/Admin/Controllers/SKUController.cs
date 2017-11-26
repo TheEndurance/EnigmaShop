@@ -45,10 +45,17 @@ namespace EnigmaShop.Areas.Admin.Controllers
                 .Include(x => x.SKUOptions)
                 .ThenInclude(x => x.Size);
 
+            var skuList = await skus.ToListAsync();
+
+            foreach (var sku in skuList)
+            {
+                sku.SKUPictures = new List<SKUPicture>(sku.SKUPictures.OrderBy(x => x.Sorting));
+            }
+
 
             ViewData["Header"] = "SKUs";
             ViewBag.ProductList = new SelectList(await _context.Products.ToListAsync(), "Id", "Name");
-            return View(await skus.ToListAsync());
+            return View(skuList);
         }
 
         // GET: Admin/SKU/Details/5

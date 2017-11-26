@@ -9,7 +9,7 @@ namespace EnigmaShop.ViewModels
     public class ShopViewModel
     {
         //Models
-        public IEnumerable<Product> Products { get; set; }
+        public IEnumerable<SKUShopViewModel> SKUs { get; set; }
         public IEnumerable<Category> Categories { get; set; }
         public IEnumerable<OptionGroup> OptionGroups { get; set; }
         public IEnumerable<SizeGroup> SizeGroups { get; set; }

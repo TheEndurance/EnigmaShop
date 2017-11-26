@@ -79,16 +79,16 @@
         </div>
         <div class="col-lg-8">
             <div class="row" id="product-div">
-                @foreach (var product in Model.Products)
+                @foreach (var sku in Model.SKUs)
                 {
                     <div class="col-lg-4 p-2">
                         <div class="d-flex flex-column">
-                            <img src="@product.MainSKUPicture.ImageUrl" data-alt-img="@product.AltSKUPicture.ImageUrl" class="product js-image-flip" />
+                            <img src="@sku.MainSKUPicture" data-alt-img="@sku.AltSKUPicture" class="product js-image-flip" />
                         </div>
 
-                        <div class="text-md-center">@product.Name</div>
-                        <div class="text-md-center">@product.Description</div>
-                        <div class="text-md-center">@product.Price.ToString("C")</div>
+                        <div class="text-md-center">@sku.Product.Name</div>
+                        <div class="text-md-center">@sku.Product.Description</div>
+                        <div class="text-md-center">@sku.Price.ToString("C")</div>
 
                     </div>
                 }
@@ -283,14 +283,15 @@
         const ProductTemplate = function(product) {
             return `<div class="col-lg-4 p-2">
                         <div class="d-flex flex-column">
-                                <img src="${product.mainSKUPicture.imageUrl}" data-alt-img="${product.altSKUPicture
-                .imageUrl}" class="product js-image-flip" />
+                                <img src="${product.mainSKUPicture}" data-alt-img="${product.altSKUPicture
+                }" class="product js-image-flip" />
                         </div>
 
-                        <div class="text-md-center">${product.name}</div>
-                        <div class="text-md-center">${product.description}</div>
+                        <div class="text-md-center">${product.product.name}</div>
+                        <div class="text-md-center">${product.product.description}</div>
                         <div class="text-md-center">$${product.price}</div>
                     </div>`;
+            
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -310,7 +311,8 @@
             $.ajax({
                 url: url,
                 type: "GET",
-                success: function(json) { //data represents a JSON obejct
+                success: function (json) { //data represents a JSON obejct
+                    console.log(json);
                     ajaxImageLoader.hideAjaxImage();
                     page = json.nextPage;
                     json.products.forEach(product => $("#product-div").append(ProductTemplate(product)));

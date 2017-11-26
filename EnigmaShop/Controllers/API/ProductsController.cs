@@ -6,6 +6,7 @@ using EnigmaShop.Areas.Admin.Models;
 using EnigmaShop.Data;
 using EnigmaShop.QueryConstraint;
 using EnigmaShop.Utilities;
+using EnigmaShop.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -32,13 +33,11 @@ namespace EnigmaShop.Controllers.API
 
             // INITIALIZE : product and sku queries 
             IQueryable<SKU> skus = _context.SKUs
+                .Include(x => x.SKUPictures)
                 .Include(x => x.SKUOptions)
+                .Include(x => x.Option)
                 .Include(x => x.Product)
-                .Include(x=>x.Product.ProductCategories)
-                .Include(x => x.Product.AltSKUPicture)
-                .Include(x => x.Product.MainSKUPicture)
-                .Include(x => x.Option);
-            IEnumerable<Product> productList = null;
+                .ThenInclude(x => x.ProductCategories);
 
             //FILTER : SKU by options if there are any
             if (options.Any(x => x.HasValue))
@@ -59,58 +58,25 @@ namespace EnigmaShop.Controllers.API
 
             }
 
-            var skusList = await skus.ToListAsync();
-
-            // CONVERT : Skus to Products
-            if (skusList.Any())
-            {
-                //convert the skus into product
-                productList = skusList.Select(x => new Product
-                {
-                    Id = x.Product.Id,
-                    Name = x.Product.Name,
-                    Description = x.Product.Description,
-                    Price = x.Product.Price,
-                    AltSKUId = x.Product.AltSKUId,
-                    MainSKUId = x.Product.MainSKUId,
-                    MainSKUPicture = x.Product.MainSKUPicture,
-                    AltSKUPicture = x.Product.AltSKUPicture,
-                    ProductCategories = x.Product.ProductCategories,
-                    SizeGroupId = x.Product.SizeGroupId,
-                    OptionGroupId = x.Product.OptionGroupId
-                });
-            }
-
-            // INITIALIZE : Product if null
-            if (productList == null)
-            {
-                productList = await _context.Products
-                    .Include(x => x.MainSKUPicture)
-                    .Include(x => x.AltSKUPicture)
-                    .ToListAsync();
-            }
-
             //FILTER : Product by category
-            var primaryCatId = await _context.Categories.SingleOrDefaultAsync(x => x.Name == primaryCat);
-            productList = productList
-                .Where(x => x.ProductCategories.Select(y => y.CategoryId).Contains(primaryCatId.Id));
+            var primaryCategory = await _context.Categories.SingleOrDefaultAsync(x => x.Name == primaryCat);
+            skus = skus.Where(x => x.Product.ProductCategories.Select(y => y.CategoryId).Contains(primaryCategory.Id));
 
             if (secondaryCat != null)
             {
-                var secondaryCatId = await _context.Categories.SingleOrDefaultAsync(x => x.Name == secondaryCat);
-                productList = productList.Where(x =>
-                    x.ProductCategories.Select(y => y.CategoryId).Contains(secondaryCatId.Id));
+                var secondaryCategory = await _context.Categories.SingleOrDefaultAsync(x => x.Name == secondaryCat);
+                skus = skus.Where(x =>
+                    x.Product.ProductCategories.Select(y => y.CategoryId).Contains(secondaryCategory.Id));
             }
 
-            // TO LIST : Product Query tolist
-            var productsList = productList
-                .OrderBy(x => x.Name)
-                .Distinct(new ProductComparer())
-                .Skip((page - 1) * perPage)
-                .Take(page * perPage);
+            var skuList = await skus
+                .OrderBy(x => x.Product.Name)
+                .Skip((page-1)*perPage)
+                .Take(perPage)
+                .ToListAsync();
 
 
-            if (!productsList.Any())
+            if (!skuList.Any())
             {
                 return NotFound(new
                 {
@@ -119,9 +85,20 @@ namespace EnigmaShop.Controllers.API
 
             }
 
+            var skuShopList = skuList.Select(x => new SKUShopViewModel
+            {
+                Id = x.Id,
+                ProductId = x.ProductId,
+                Product = x.Product,
+                MainSKUPicture = x.SKUPictures.OrderBy(y => y.Sorting).Take(1).SingleOrDefault()?.ImageUrl,
+                AltSKUPicture = x.SKUPictures.OrderBy(y => y.Sorting).Skip(1).Take(1).SingleOrDefault()?.ImageUrl,
+                Price = x.SKUOptions.Take(1).SingleOrDefault()?.Price ?? 0.00m
+            });
+
+
             return new JsonResult(new
             {
-                products = productsList,
+                products = skuShopList,
                 nextPage = page + 1
             });
 
