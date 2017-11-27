@@ -13,3 +13,22 @@
 #product-div > a:link {
     text-decoration:none;
 }
+
+
+/* SKU detail view */
+
+.sku-thumbnail {
+    cursor: pointer;
+    height: 150px;
+    width: 120px;
+}
+
+.sku-thumbnail-active {
+    opacity: 0.5;   
+}
+
+.sku-thumbnail-box {
+    width:100%;
+    height:500px;
+    overflow-y:scroll;
+}

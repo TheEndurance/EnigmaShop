@@ -14,17 +14,19 @@
     <div class="row">
         <div class="col-md-6">
             <div class="row">
-                <div class="col-md-4">
-                    <div class="d-flex flex-column">
-                        <img style="height: 150px; width: 120px; opacity: 0.5;" class="p-2" src="@Model.FirstSKUPicture.ImageUrl"/>
+                <!-- Thumbnail pictures-->
+                <div class="col-md-4" style="width:100%;">
+                    <div class="d-flex flex-column sku-thumbnail-box">
+                        <img class="p-2 sku-thumbnail sku-thumbnail-active" data-skuPicture-id="@Model.FirstSKUPicture.Id" src="@Model.FirstSKUPicture.ImageUrl"/>
                         @foreach (var skuPicture in Model.SKUPictures)
                         {
-                            <img style="height: 150px; width: 120px;" class="p-2" src="@skuPicture.ImageUrl"/>
+                            <img class="p-2 sku-thumbnail" data-skuPicture-id="@skuPicture.Id" src="@skuPicture.ImageUrl"/>
                         }
                     </div>
                 </div>
+                <!-- Large picture -->
                 <div class="col-md-8">
-                    <img class="img-fluid" src="@Model.FirstSKUPicture.ImageUrl"/>
+                    <img id="mainSkuPicture" class="img-fluid" data-skuPicture-id="@Model.FirstSKUPicture.Id" src="@Model.FirstSKUPicture.ImageUrl"  />
                 </div>
             </div>
         </div>
@@ -68,3 +70,42 @@
     </div>
 
 </div>
+
+@section scripts {
+    <script>
+
+        /*
+        * Change main picture when clicking on thumbnail images
+        */
+
+        const skuThumbnailImages = document.querySelectorAll(".sku-thumbnail-box > .sku-thumbnail");
+
+        const ChangeMainPicture = function (clickedImage,mainPictureId) {
+            // find the currently selected image
+            const activeImage = document.querySelector(".sku-thumbnail-box > .sku-thumbnail-active");
+
+            //determine if the clicked image is the same as the currently active image
+            if (clickedImage.dataset.skupictureId === activeImage.dataset.skupictureId) {
+                return;
+            }
+            //find main picture element
+            const mainPictureElement = document.getElementById(mainPictureId);
+
+            //change the thumbnail active class
+            activeImage.classList.remove("sku-thumbnail-active");
+            clickedImage.classList.add("sku-thumbnail-active");
+
+            //change the image
+            mainPictureElement.src = clickedImage.src;
+
+            //change sku picture data id
+            mainPictureElement.dataset.skupictureId = clickedImage.dataset.skupictureId;
+        }
+
+        skuThumbnailImages.forEach(function(element) {
+            element.addEventListener("click", function () { ChangeMainPicture(element,"mainSkuPicture")}, false);
+        });
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    </script>
+}
