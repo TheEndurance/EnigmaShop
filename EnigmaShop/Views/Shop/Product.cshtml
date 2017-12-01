@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-md-12">
             <h1>@Model.Name</h1>
-            <hr/>
+            <hr />
         </div>
     </div>
     <div class="row">
@@ -17,26 +17,26 @@
                 <!-- Thumbnail pictures-->
                 <div class="col-md-4" style="width:100%;">
                     <div class="d-flex flex-column sku-thumbnail-box">
-                        <img class="p-2 sku-thumbnail sku-thumbnail-active" data-skuPicture-id="@Model.FirstSKUPicture.Id" src="@Model.FirstSKUPicture.ImageUrl"/>
+                        <img class="p-2 sku-thumbnail sku-thumbnail-active" data-skuPicture-id="@Model.FirstSKUPicture.Id" src="@Model.FirstSKUPicture.ImageUrl" />
                         @foreach (var skuPicture in Model.SKUPictures)
                         {
-                            <img class="p-2 sku-thumbnail" data-skuPicture-id="@skuPicture.Id" src="@skuPicture.ImageUrl"/>
+                            <img class="p-2 sku-thumbnail" data-skuPicture-id="@skuPicture.Id" src="@skuPicture.ImageUrl" />
                         }
                     </div>
                 </div>
                 <!-- Large picture -->
                 <div class="col-md-8">
-                    <img id="mainSkuPicture" class="img-fluid" data-skuPicture-id="@Model.FirstSKUPicture.Id" src="@Model.FirstSKUPicture.ImageUrl"  />
+                    <img id="mainSkuPicture" class="img-fluid" data-skuPicture-id="@Model.FirstSKUPicture.Id" src="@Model.FirstSKUPicture.ImageUrl" />
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="d-flex flex-row">
-                
+                <!-- Other related Skus-->
                 <div class="text-center m-2">
                     @Model.OptionName
                     <a class="d-block" asp-action="Product" asp-controller="Shop" asp-route-skuId="@Model.Id">
-                        <img src="@Model.FirstSKUPicture.ImageUrl" style="height: 50px; width: 50px;"/>
+                        <img src="@Model.FirstSKUPicture.ImageUrl" style="height: 50px; width: 50px;" />
                     </a>
                 </div>
 
@@ -45,26 +45,52 @@
                     <div class="text-center m-2">
                         @sku.OptionName
                         <a class="d-block" asp-action="Product" asp-controller="Shop" asp-route-skuId="@sku.SKUId">
-                            <img src="@sku.ImageUrl" style="height: 50px; width: 50px;"/>
+                            <img src="@sku.ImageUrl" style="height: 50px; width: 50px;" />
                         </a>
                     </div>
 
                 }
             </div>
-            <div class="d-flex flex-row">
-                @foreach (var size in Model.Sizes)
-                {
-                    <div class="text-center m-2" style="height: 50px; width: 50px; background-color: lightblue;">
-                        @size.Name
+            <form asp-controller="ShoppingCart" asp-action="AddToCart">
+                <input id="Id" name="Id" type="hidden" value="@Model.Id" />
+
+                <div class="d-flex flex-row">
+                    <!-- SKU options-->
+                    @for (int i = 0; i < Model.SKUOptions.Count(); i++)
+                    {
+                        <div id="option">
+                            <label class="blue">
+                                <input type="radio" id="@Model.SKUOptions[i].Id" name="Options" value="@Model.SKUOptions[i].Id"
+                                       data-price="@Model.SKUOptions[i].Price"
+                                       @(Model.SKUOptions[i].Stock == 0 || !Model.SKUOptions[i].IsAvailable ? "disabled" : "")
+                                       @(i == Model.FirstAvailableSKUOptionIndex ? "checked" : "")>
+
+                                <span>@Model.SKUOptions[i].Size.Name</span>
+                            </label>
+                        </div>
+                    }
+
+                </div>
+                <div class="d-flex flex-row">
+                    <!-- Price and stock -->
+                    <span>Price: </span>
+                    <div id="price" class="mx-2">
+                        @if (Model.FirstAvailableSKUOptionIndex >= 0)
+                        {
+                            @Model.SKUOptions[Model.FirstAvailableSKUOptionIndex].Price.ToString("C")
+                        }
                     </div>
-                }
-            </div>
+                </div>
+                <div>
+                    <input class="btn btn-primary" type="submit" value="Add to cart"/>
+                </div>
+            </form>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
             <h2>Description</h2>
-            <hr/>
+            <hr />
             <p>@Model.Description</p>
         </div>
     </div>
@@ -80,7 +106,7 @@
 
         const skuThumbnailImages = document.querySelectorAll(".sku-thumbnail-box > .sku-thumbnail");
 
-        const ChangeMainPicture = function (clickedImage,mainPictureId) {
+        const ChangeMainPicture = function(clickedImage, mainPictureId) {
             // find the currently selected image
             const activeImage = document.querySelector(".sku-thumbnail-box > .sku-thumbnail-active");
 
@@ -103,8 +129,32 @@
         }
 
         skuThumbnailImages.forEach(function(element) {
-            element.addEventListener("click", function () { ChangeMainPicture(element,"mainSkuPicture")}, false);
+            element.addEventListener("click", function() { ChangeMainPicture(element, "mainSkuPicture") }, false);
         });
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /*
+        * Update price amount when clicking on different sku options
+        */
+        const skuOptionElements = document.querySelectorAll(`input[name="Options"]`);
+
+        const SetDecimalAmount = function(decimalAmount, targetElementId, prefix="") {
+            const targetElement = document.getElementById(targetElementId);
+            let amount = 0;
+            try {
+                amount = parseFloat(decimalAmount);
+            } catch (exception) {
+                console.log(exception);
+                return;
+            }
+            targetElement.textContent = `${prefix}${amount.toFixed(2)}`;
+        }
+
+
+        skuOptionElements.forEach(element => element.addEventListener("click",
+            function() { SetDecimalAmount(element.dataset.price, "price", "$") }));
+
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     </script>

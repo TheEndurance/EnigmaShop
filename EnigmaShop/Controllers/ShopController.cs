@@ -151,14 +151,11 @@ namespace EnigmaShop.Controllers
                 .Include(x=>x.Option)
                 .Include(x=>x.Product)
                 .Include(x=>x.SKUOptions)
+                .ThenInclude(x=>x.Size)
                 .Include(x=>x.SKUPictures)
                 .SingleOrDefaultAsync(x => x.Id == skuId);
 
             if (sku == null) return RedirectToAction("Products");
-
-            var sizes = await _context.Sizes
-                .Where(x => x.SizeGroupId == sku.Product.SizeGroupId)
-                .ToListAsync();
 
             var relatedSKUs = await _context.SKUs
                 .Include(x=>x.Option)
@@ -174,6 +171,20 @@ namespace EnigmaShop.Controllers
 
             var optionGroup = await _context.OptionGroups.SingleOrDefaultAsync(x => x.Id == sku.Option.OptionGroupId);
 
+
+            //find first available skuOption index
+            int firstAvailableSKUOptionIndex = -1;
+
+            for (int i=0;i<sku.SKUOptions.Count;i++)
+            {
+                if (sku.SKUOptions[i].IsAvailable && sku.SKUOptions[i].Stock > 0)
+                {
+                    firstAvailableSKUOptionIndex = i;
+                    break;
+                }
+            }
+
+
             var skuDetailViewModel = new SKUDetailViewModel
             {
                 Id = sku.Id,
@@ -183,7 +194,7 @@ namespace EnigmaShop.Controllers
                 SKUOptions = sku.SKUOptions,
                 FirstSKUPicture = sku.SKUPictures.FirstOrDefault(),
                 SKUPictures = sku.SKUPictures.Skip(1).ToList(),
-                Sizes = sizes,
+                FirstAvailableSKUOptionIndex = firstAvailableSKUOptionIndex,
                 RelatedSKUs = relatedSKUs,
                 OptionGroup = optionGroup
 

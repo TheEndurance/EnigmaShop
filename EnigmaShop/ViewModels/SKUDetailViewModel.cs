@@ -8,6 +8,7 @@ namespace EnigmaShop.ViewModels
 {
     public class SKUDetailViewModel
     {
+        
         public int Id { get; set; }
 
         public string Name { get; set; }
@@ -16,7 +17,9 @@ namespace EnigmaShop.ViewModels
 
         public string OptionName { get; set; }
 
-        public IEnumerable<SKUOption> SKUOptions { get; set; }
+        public IList<SKUOption> SKUOptions { get; set; }
+
+        public int FirstAvailableSKUOptionIndex { get; set; }
 
         public IEnumerable<Size> Sizes { get; set; }
 
