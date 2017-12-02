@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171202045639_ShoppingCart_AddTable_ShoppingCartItem_AddTable")]
+    partial class ShoppingCart_AddTable_ShoppingCartItem_AddTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -270,14 +271,22 @@ namespace EnigmaShop.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("EnigmaShop.Models.ShoppingCart", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShoppingCarts");
+                });
+
             modelBuilder.Entity("EnigmaShop.Models.ShoppingCartItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("Amount");
-
-                    b.Property<DateTime>("Date");
 
                     b.Property<int>("SKUId");
 
@@ -286,6 +295,8 @@ namespace EnigmaShop.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("SKUId");
+
+                    b.HasIndex("ShoppingCartId");
 
                     b.ToTable("ShoppingCartItems");
                 });
@@ -487,6 +498,10 @@ namespace EnigmaShop.Data.Migrations
                         .WithMany()
                         .HasForeignKey("SKUId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("EnigmaShop.Models.ShoppingCart", "ShoppingCart")
+                        .WithMany("ShoppingCartItems")
+                        .HasForeignKey("ShoppingCartId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

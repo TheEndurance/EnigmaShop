@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171202053344_ShoppingCart_RemoveTable")]
+    partial class ShoppingCart_RemoveTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -276,8 +277,6 @@ namespace EnigmaShop.Data.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("Amount");
-
-                    b.Property<DateTime>("Date");
 
                     b.Property<int>("SKUId");
 

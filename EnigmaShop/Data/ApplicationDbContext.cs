@@ -21,6 +21,7 @@ namespace EnigmaShop.Data
         public DbSet<Size> Sizes { get; set; }
         public DbSet<SizeGroup> SizeGroups { get; set; }
         public DbSet<SKUOption> SKUOptions { get; set; }
+        public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

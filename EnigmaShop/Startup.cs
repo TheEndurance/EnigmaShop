@@ -41,6 +41,8 @@ namespace EnigmaShop
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddSingleton<IHostingEnvironment>(env);
+            services.AddScoped(sp=>ShoppingCart.GetCart(sp));
+
             services.AddMvc()
                 .AddJsonOptions(
                     options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
