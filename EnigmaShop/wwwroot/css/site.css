@@ -1,4 +1,8 @@
-﻿/* Shop - Products */
+﻿body {
+    font-family: sans-serif;
+}
+
+/* Shop - Products */
 .list-style-none {
     list-style: none;
     padding-left: 1rem;
@@ -38,10 +42,6 @@
 
 /* Size radio group */
 
-body {
-    font-family: sans-serif;
-}
-
 #option {
     margin: 4px;
     float: left;
@@ -80,27 +80,16 @@ body {
     color:#b399ff
 }
 
-#option .yellow {
-    background-color: #FFCC00;
-    color: #333;
-}
-
 #option .blue {
     background-color: #00BFFF;
     color: #333;
 }
 
-#option .pink {
-    background-color: #FF99FF;
-    color: #333;
+
+/* Shopping cart */
+
+.shopping-cart-summary-link:hover {
+    text-decoration:none;
 }
 
-#option .green {
-    background-color: #A3D900;
-    color: #333;
-}
 
-#option .purple {
-    background-color: #B399FF;
-    color: #333;
-}

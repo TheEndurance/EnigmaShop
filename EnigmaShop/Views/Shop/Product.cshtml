@@ -52,16 +52,14 @@
                 }
             </div>
             <form asp-controller="ShoppingCart" asp-action="AddToCart">
-                <input id="Id" name="Id" type="hidden" value="@Model.Id" />
-
+                <input id="SKUId" name="SKUId" type="hidden" value="@Model.Id" />
                 <div class="d-flex flex-row">
                     <!-- SKU options-->
                     @for (int i = 0; i < Model.SKUOptions.Count(); i++)
                     {
                         <div id="option">
                             <label class="blue">
-                                <input type="radio" id="@Model.SKUOptions[i].Id" name="Options" value="@Model.SKUOptions[i].Id"
-                                       data-price="@Model.SKUOptions[i].Price"
+                                <input type="radio" id="SKUOptionId" name="SKUOptionId" value="@Model.SKUOptions[i].Id"
                                        @(Model.SKUOptions[i].Stock == 0 || !Model.SKUOptions[i].IsAvailable ? "disabled" : "")
                                        @(i == Model.FirstAvailableSKUOptionIndex ? "checked" : "")>
 
@@ -75,10 +73,11 @@
                     <!-- Price and stock -->
                     <span>Price: </span>
                     <div id="price" class="mx-2">
-                        @if (Model.FirstAvailableSKUOptionIndex >= 0)
+                        @if (Model.IsDiscounted)
                         {
-                            @Model.SKUOptions[Model.FirstAvailableSKUOptionIndex].Price.ToString("C")
+                            <s class="text-red">@Model.Price.ToString("C")</s> <span> @Model.DiscountedPrice.ToString("C")</span>
                         }
+                        <span> @Model.Price.ToString("C")</span>
                     </div>
                 </div>
                 <div>
@@ -131,30 +130,6 @@
         skuThumbnailImages.forEach(function(element) {
             element.addEventListener("click", function() { ChangeMainPicture(element, "mainSkuPicture") }, false);
         });
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /*
-        * Update price amount when clicking on different sku options
-        */
-        const skuOptionElements = document.querySelectorAll(`input[name="Options"]`);
-
-        const SetDecimalAmount = function(decimalAmount, targetElementId, prefix="") {
-            const targetElement = document.getElementById(targetElementId);
-            let amount = 0;
-            try {
-                amount = parseFloat(decimalAmount);
-            } catch (exception) {
-                console.log(exception);
-                return;
-            }
-            targetElement.textContent = `${prefix}${amount.toFixed(2)}`;
-        }
-
-
-        skuOptionElements.forEach(element => element.addEventListener("click",
-            function() { SetDecimalAmount(element.dataset.price, "price", "$") }));
-
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     </script>

@@ -19,6 +19,12 @@ namespace EnigmaShop.Areas.Admin.ViewModels
     {
         public int SKUId { get; set; }
 
+        public decimal Price { get; set; }
+
+        public decimal DiscountedPrice { get; set; }
+
+        public bool IsDiscounted { get; set; }
+
         [Required]
         public int ProductId { get; set; }
 
@@ -41,6 +47,9 @@ namespace EnigmaShop.Areas.Admin.ViewModels
         public SKUFormViewModel(SKU sku)
         {
             SKUId = sku.Id;
+            Price = sku.Price;
+            DiscountedPrice = sku.DiscountedPrice;
+            IsDiscounted = sku.IsDiscounted;
             OptionId = sku.OptionId;
             ProductId = sku.ProductId;
             Product = sku.Product;

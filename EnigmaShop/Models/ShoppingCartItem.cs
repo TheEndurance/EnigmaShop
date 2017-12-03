@@ -18,6 +18,11 @@ namespace EnigmaShop.Models
         [ForeignKey(nameof(SKUId))]
         public SKU SKU{ get; set; }
 
+        public int SKUOptionId { get; set; }
+
+        [ForeignKey(nameof(SKUOptionId))]
+        public SKUOption SKUOption { get; set; }
+
         public int Amount { get; set; }
 
         public DateTime Date { get; set; }

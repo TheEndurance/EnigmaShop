@@ -95,7 +95,7 @@ namespace EnigmaShop.Controllers
                 Product = x.Product,
                 MainSKUPicture = x.SKUPictures.OrderBy(y => y.Sorting).Take(1).SingleOrDefault()?.ImageUrl,
                 AltSKUPicture = x.SKUPictures.OrderBy(y => y.Sorting).Skip(1).Take(1).SingleOrDefault()?.ImageUrl,
-                Price = x.SKUOptions.Take(1).SingleOrDefault()?.Price ?? 0.00m
+                Price = x.Price
             });
 
 
@@ -188,6 +188,9 @@ namespace EnigmaShop.Controllers
             var skuDetailViewModel = new SKUDetailViewModel
             {
                 Id = sku.Id,
+                Price = sku.Price,
+                IsDiscounted = sku.IsDiscounted,
+                DiscountedPrice = sku.DiscountedPrice,
                 Name = sku.Product.Name,
                 Description = sku.Product.Description,
                 OptionName = sku.Option.Name,

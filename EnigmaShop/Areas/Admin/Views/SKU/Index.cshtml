@@ -21,7 +21,6 @@
                                     <input type="submit" class="btn btn-outline-primary" value="Create New"/>
                                 </div>
                             </div>
-                        
                         </form>
                     </div>
                 </div>
@@ -39,6 +38,15 @@
                                     @Html.DisplayNameFor(model => model.Product)
                                 </th>
                                 <th>
+                                    @Html.DisplayNameFor(model => model.Price)
+                                </th> 
+                                <th>
+                                    @Html.DisplayNameFor(model => model.IsDiscounted)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.DiscountedPrice)
+                                </th>
+                                <th>
                                     @Html.DisplayNameFor(model => model.Option)
                                 </th>
                                 <th>SKU Options</th>
@@ -54,13 +62,23 @@
                                         @Html.DisplayFor(modelItem => item.Product.Name)
                                     </td>
                                     <td>
+                                        @Html.DisplayFor(modelItem => item.Price)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.IsDiscounted)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.DiscountedPrice)
+                                    </td>
+                                    
+                                    <td>
                                         @Html.DisplayFor(modelItem => item.Product.OptionGroup.Name) : @Html.DisplayFor(modelItem => item.Option.Name)
                                     </td>
                                     <td>
                                         @foreach (var option in item.SKUOptions)
                                         {
                                             <ul class="list-unstyled">
-                                                @option.Size.Name : $@option.Price : Stock - @option.Stock
+                                                @option.Size.Name : Stock - @option.Stock
                                             </ul>
                                         }
                                     </td>

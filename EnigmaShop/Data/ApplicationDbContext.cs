@@ -88,14 +88,14 @@ namespace EnigmaShop.Data
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<SKUOption>()
-                .Property(x => x.Price)
-                .HasDefaultValue(0.00m);
+            // **
+            // Shopping Cart Items
+            // **
 
-            builder.Entity<SKUOption>()
-                .Property(x => x.DiscountedPrice)
-                .HasDefaultValue(0.00m);
-
+            builder.Entity<ShoppingCartItem>()
+                .HasOne(x => x.SKUOption)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);

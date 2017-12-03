@@ -20,6 +20,13 @@ namespace EnigmaShop.Areas.Admin.Models
     {
         public int Id { get; set; }
 
+        public decimal Price { get; set; }
+
+        public decimal DiscountedPrice { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsDiscounted { get; set; }
+
         [Required]
         public int ProductId { get; set; }
 
@@ -44,6 +51,9 @@ namespace EnigmaShop.Areas.Admin.Models
         public SKU(SKUFormViewModel skuFormViewModel)
         {
             Id = skuFormViewModel.SKUId;
+            Price = skuFormViewModel.Price;
+            IsDiscounted = skuFormViewModel.IsDiscounted;
+            DiscountedPrice = skuFormViewModel.DiscountedPrice;
             ProductId = skuFormViewModel.ProductId;
             Product = skuFormViewModel.Product;
             OptionId = skuFormViewModel.OptionId;
@@ -53,15 +63,17 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public void EditSKU(SKUFormViewModel skuFormViewModel)
         {
+            Price = skuFormViewModel.Price;
+            IsDiscounted = skuFormViewModel.IsDiscounted;
+            DiscountedPrice = skuFormViewModel.DiscountedPrice;
             OptionId = skuFormViewModel.OptionId;
         }
-
 
         public async Task UpdateSKUOptions(SKUFormViewModel skuFormViewModel, ApplicationDbContext context)
         {
             //A list of skuOptions that are null from the skuFormViewModel which can then be deleted
             //var skuOptionsToDelete = SKUOptions
-            //    .Select(skuOption => new {skuOption = skuFormViewModel.SKUOptions.SingleOrDefault(i => i.Id == skuOption.Id)})
+            //    .Select(skuOption => new { skuOption = skuFormViewModel.SKUOptions.SingleOrDefault(i => i.Id == skuOption.Id) })
             //    .Where(item => item.skuOption == null)
             //    .Select(item => item.skuOption)
             //    .ToList();

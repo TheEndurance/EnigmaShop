@@ -11,9 +11,10 @@ using System;
 namespace EnigmaShop.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171202200028_SKU_PriceAndDiscountedPrice_AddColumns")]
+    partial class SKU_PriceAndDiscountedPrice_AddColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,7 +180,17 @@ namespace EnigmaShop.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<decimal>("DiscountedPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(0.00m);
+
                     b.Property<bool>("IsAvailable");
+
+                    b.Property<bool>("IsDiscounted");
+
+                    b.Property<decimal>("Price")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(0.00m);
 
                     b.Property<int>("SKUId");
 

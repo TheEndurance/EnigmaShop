@@ -25,13 +25,8 @@ namespace EnigmaShop.Areas.Admin.Models
 
         public int Stock { get; set; }
 
-        public decimal Price { get; set; }
-
-        public decimal DiscountedPrice { get; set; }
-
         public bool IsAvailable { get; set; }
 
-        public bool IsDiscounted { get; set; }
 
 
 

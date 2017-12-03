@@ -22,6 +22,29 @@
                             </div>
                             <div class="line"></div>
                             <div class="form-group row">
+                                <label asp-for="Price" class="form-control-label col-md-3"></label>
+                                <div class="col-md-9">
+                                    <input asp-for="Price" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <label asp-for="IsDiscounted" class="form-control-label col-md-3"></label>
+                                <div class="col-md-9">
+                                    <div class="i-checks">
+                                        <input asp-for="IsDiscounted" class="checkbox-template" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <div class="form-group row">
+                                <label asp-for="DiscountedPrice" class="form-control-label col-md-3"></label>
+                                <div class="col-md-9">
+                                    <input asp-for="DiscountedPrice" class="form-control" />
+                                </div>
+                            </div>                   
+                            <div class="line"></div>
+                            <div class="form-group row">
                                 <label asp-for="OptionId" class="form-control-label col-md-3"></label>
                                 <div class="col-md-9">
                                     <select asp-for="OptionId" class="form-control" asp-items="@(new SelectList(Model.OptionList,"Id","Name",Model.OptionId))"></select>
@@ -39,15 +62,6 @@
                                                 </th>
                                                 <th>
                                                     SKU Available
-                                                </th>
-                                                <th>
-                                                    Price
-                                                </th>
-                                                <th>
-                                                    SKU Discounted
-                                                </th>
-                                                <th>
-                                                    Discounted Price
                                                 </th>
                                                 <th>
                                                     Stock
@@ -71,20 +85,6 @@
                                                             <input asp-for="@Model.SKUOptions[i].IsAvailable" class="checkbox-template" />
                                                             <span asp-validation-for="@Model.SKUOptions[i].IsAvailable" class="text-danger"></span>
                                                         </div>
-                                                    </td>
-                                                    <td>
-                                                        <input asp-for="@Model.SKUOptions[i].Price" class="form-control" />
-                                                        <span asp-validation-for="@Model.SKUOptions[i].Price" class="text-danger"></span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="i-checks">
-                                                            <input asp-for="@Model.SKUOptions[i].IsDiscounted" class="checkbox-template" />
-                                                            <span asp-validation-for="@Model.SKUOptions[i].IsDiscounted" class="text-danger"></span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <input asp-for="@Model.SKUOptions[i].DiscountedPrice" class="form-control" />
-                                                        <span asp-validation-for="@Model.SKUOptions[i].DiscountedPrice" class="text-danger"></span>
                                                     </td>
                                                     <td>
                                                         <input asp-for="@Model.SKUOptions[i].Stock" class="form-control" />

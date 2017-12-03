@@ -96,7 +96,7 @@ namespace EnigmaShop.Controllers.API
                 Product = x.Product,
                 MainSKUPicture = x.SKUPictures.OrderBy(y => y.Sorting).Take(1).SingleOrDefault()?.ImageUrl,
                 AltSKUPicture = x.SKUPictures.OrderBy(y => y.Sorting).Skip(1).Take(1).SingleOrDefault()?.ImageUrl,
-                Price = x.SKUOptions.Take(1).SingleOrDefault()?.Price ?? 0.00m
+                Price = x.Price
             });
 
 

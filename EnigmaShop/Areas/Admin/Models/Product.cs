@@ -23,7 +23,6 @@ namespace EnigmaShop.Areas.Admin.Models
         [StringLength(80)]
         public string Name { get; set; }
 
-
         [ForeignKey(nameof(OptionGroupId))]
         public OptionGroup OptionGroup { get; set; }
 

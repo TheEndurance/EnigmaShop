@@ -112,7 +112,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SKUId,ProductId,ImageUrl,OptionId,Files,SKUOptions")] SKUFormViewModel skuFormViewModel)
+        public async Task<IActionResult> Create([Bind("SKUId,Price,IsDiscounted,DiscountedPrice,ProductId,ImageUrl,OptionId,Files,SKUOptions")] SKUFormViewModel skuFormViewModel)
         {
 
             //TODO Validate SKU Size has been entered
@@ -180,7 +180,7 @@ namespace EnigmaShop.Areas.Admin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("SKUId,ImageUrl,SKUOptions,OptionId,Files")] SKUFormViewModel skuFormViewModel)
+        public async Task<IActionResult> Edit(int id, [Bind("SKUId,Price,IsDiscounted,DiscountedPrice,ImageUrl,SKUOptions,OptionId,Files")] SKUFormViewModel skuFormViewModel)
         {
 
             if (id != skuFormViewModel.SKUId)
