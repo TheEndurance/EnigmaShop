@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnigmaShop.Data;
 using EnigmaShop.Models;
+using EnigmaShop.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,20 +21,43 @@ namespace EnigmaShop.Controllers
             _shoppingCart = shoppingCart;
         }
 
+        public async Task<IActionResult> Index()
+        {
+            var shoppingCartItems = await _shoppingCart.GetShoppingCartItems();
+            var shoppingCartViewModel = shoppingCartItems.Select(x => new ShoppingCartViewModel
+            {
+                ShoppingCartItem = x,
+                SKUPicture = x.SKU.SKUPictures.FirstOrDefault()
+            }).ToList();
+            ViewData["Title"] = "Shopping Cart Summary";
+            return View(shoppingCartViewModel);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddToCart(int SKUId,int SKUOptionId)
         {
 
             var sku = await _context.SKUs.SingleOrDefaultAsync(x => x.Id == SKUId);
-            if (sku == null) return Content("Error: Invalid SKU can not be added to cart");
+
+            if (sku == null)
+            {
+                TempData["Message"] = "Invalid SKU can not be added to cart";
+                return RedirectToAction("Products", "Shop");
+            }
 
             var skuOption =
                 await _context.SKUOptions.SingleOrDefaultAsync(x => x.Id == SKUOptionId && x.SKUId == SKUId);
-            if (skuOption == null) return Content("Error: Invalid  can not be added to cart");
+            if (skuOption == null)
+            {
+                TempData["Message"] = "Invalid or no size was selected, try again";
+                return RedirectToAction("Product","Shop",new {skuId=SKUId});
+            }
 
-            _shoppingCart.AddToCart(sku, skuOption);
+            await _shoppingCart.AddToCart(sku, skuOption);
 
             return RedirectToAction("Product", "Shop", new {skuId = SKUId});
         }
+
+        
     }
 }

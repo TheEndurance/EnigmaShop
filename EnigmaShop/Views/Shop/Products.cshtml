@@ -282,10 +282,10 @@
         */
         const ProductTemplate = function(product) {
             return `<div class="col-lg-4 p-2">
-                        <div class="d-flex flex-column">
+                        <a class="d-flex flex-column" href="${product.url}" asp-route-skuId="${product.Id}">
                                 <img src="${product.mainSKUPicture}" data-alt-img="${product.altSKUPicture
                 }" class="product js-image-flip" />
-                        </div>
+                        </a>
 
                         <div class="text-md-center">${product.product.name}</div>
                         <div class="text-md-center">${product.product.description}</div>
@@ -311,7 +311,7 @@
             $.ajax({
                 url: url,
                 type: "GET",
-                success: function (json) { //data represents a JSON obejct
+                success: function(json) { //data represents a JSON obejct
                     console.log(json);
                     ajaxImageLoader.hideAjaxImage();
                     page = json.nextPage;

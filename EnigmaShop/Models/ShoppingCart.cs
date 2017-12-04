@@ -28,25 +28,38 @@ namespace EnigmaShop.Models
         public async Task<IList<ShoppingCartItem>> GetShoppingCartItems()
         {
             return ShoppingCartItems ?? (ShoppingCartItems =
-                       await _context.ShoppingCartItems.Where(x => x.ShoppingCartId == CartId).ToListAsync());
+                       await _context.ShoppingCartItems
+                       .Include(x=>x.SKU)
+                       .ThenInclude(x => x.SKUPictures)
+                       .Include(x=>x.SKU.Option)
+                       .Include(x=>x.SKU.Product)
+                       .Include(x=>x.SKUOption)
+                       .ThenInclude(x=>x.Size)
+                       .Where(x => x.ShoppingCartId == CartId)
+                       .ToListAsync());
+        }
+
+        public async Task<int> GetNumberOfCartItems()
+        {
+            return await _context.ShoppingCartItems.CountAsync(x => x.ShoppingCartId == CartId);
         }
 
 
         public static ShoppingCart GetCart(IServiceProvider serviceProvider)
         {
-            var context = serviceProvider.GetService<ApplicationDbContext>();
+            var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
             var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
             string cartId = httpContext?.Request.Cookies[ShoppingCart.ShoppingCartCookieKey] ?? Guid.NewGuid().ToString();
 
             CookieOptions options = new CookieOptions();
             options.Expires = DateTime.Now.AddDays(7);
 
-            httpContext?.Response.Cookies.Append(ShoppingCart.ShoppingCartCookieKey, cartId);
+            httpContext?.Response.Cookies.Append(ShoppingCart.ShoppingCartCookieKey, cartId,options);
 
             return new ShoppingCart(context) {CartId = cartId};
         }
 
-        public async void AddToCart(SKU sku,SKUOption skuOption)
+        public async Task<bool> AddToCart(SKU sku,SKUOption skuOption)
         {
             var shoppingCartItemFromDb = await
                 _context.ShoppingCartItems
@@ -56,8 +69,8 @@ namespace EnigmaShop.Models
             {
                 var shoppingCartItem = new ShoppingCartItem
                 {
-                    SKU = sku,
-                    SKUOption = skuOption,
+                    SKUId = sku.Id,
+                    SKUOptionId = skuOption.Id,
                     Amount = 1,
                     ShoppingCartId = CartId,
                     Date = DateTime.Now
@@ -70,15 +83,16 @@ namespace EnigmaShop.Models
             }
 
             await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async void RemoveFromCart(SKU sku,SKUOption skuOption)
+        public async Task<bool> RemoveFromCart(SKU sku,SKUOption skuOption)
         {
             var shoppingCartItemFromDb =
                 await _context.ShoppingCartItems
                 .SingleOrDefaultAsync(x => x.ShoppingCartId == CartId && x.SKUId == sku.Id && x.SKUOptionId == skuOption.Id);
 
-            if (shoppingCartItemFromDb == null) return;
+            if (shoppingCartItemFromDb == null) return false;
 
             if (shoppingCartItemFromDb.Amount > 1)
             {
@@ -89,17 +103,19 @@ namespace EnigmaShop.Models
                 _context.Remove(shoppingCartItemFromDb);
             }
             await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async void ClearCart()
+        public async Task<bool> ClearCart()
         {
             var shoppingCartItemsFromDb =
                 await GetShoppingCartItems();
 
-            if (!shoppingCartItemsFromDb.Any()) return;
+            if (!shoppingCartItemsFromDb.Any()) return false;
 
             _context.ShoppingCartItems.RemoveRange(shoppingCartItemsFromDb);
             await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<decimal> GetShoppingCartTotal()
@@ -111,8 +127,6 @@ namespace EnigmaShop.Models
                 .Include(x=>x.SKUOption)
                 .ToListAsync();
             
-            
-
             decimal total = 0.00m;
             return total;
         }

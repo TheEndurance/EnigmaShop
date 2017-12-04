@@ -41,15 +41,27 @@
         </div>
     </nav>
 
-    <div>
-        @RenderBody()
-        <hr />
-        <div class="container-fluid">
-            <footer>
-                <p>&copy; 2017 - EnigmaShop</p>
-            </footer>
+<div>
+    <div class="container">
+        <div class="flex-row d-flex">
+            @if (TempData["Message"] != null)
+            {
+                <div class="mt-4 mx-md-auto alert alert-danger" role="alert">
+                    <h4 class="alert-heading">Error</h4>
+                    <span>@TempData["Message"]</span>
+                </div>
+
+            }
         </div>
     </div>
+    @RenderBody()
+    <hr/>
+    <div class="container-fluid">
+        <footer>
+            <p>&copy; 2017 - EnigmaShop</p>
+        </footer>
+    </div>
+</div>
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.min.js"></script>

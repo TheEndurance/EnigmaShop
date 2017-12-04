@@ -19,12 +19,12 @@ namespace EnigmaShop.Components
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var shoppingCartItems = await _shoppingCart.GetShoppingCartItems();
+            var shoppingCartItems = await _shoppingCart.GetNumberOfCartItems();
             var shoppingCartTotal = await _shoppingCart.GetShoppingCartTotal();
 
             var shoppingCartSummaryViewModel = new ShoppingCartSummaryViewModel
             {
-                ShoppingCartItems = shoppingCartItems.Count,
+                ShoppingCartItems = shoppingCartItems,
                 ShoppingCartTotal = shoppingCartTotal
             };
 

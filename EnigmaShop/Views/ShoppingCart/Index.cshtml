@@ -1,0 +1,45 @@
+﻿@model IEnumerable<EnigmaShop.ViewModels.ShoppingCartViewModel>
+<div class="container">
+    <table class="table table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Details</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Product" asp-controller="Shop" asp-route-skuId="@item.ShoppingCartItem.SKUId"><img class="img-thumbnail sku-thumbnail" src="@item.SKUPicture.ImageUrl" /></a>
+                    </td>
+                    <td>
+                        @item.ShoppingCartItem.SKU.Product.Name
+                    </td>
+                    <td>
+                        <p>@item.ShoppingCartItem.SKU.Option.Name</p>
+                        <p>@item.ShoppingCartItem.SKUOption.Size.Name</p>
+                    </td>
+                    <td>
+                        @item.ShoppingCartItem.Amount
+                    </td>
+                    <td>
+                        @if (item.ShoppingCartItem.SKU.IsDiscounted)
+                        {
+                            @item.ShoppingCartItem.SKU.DiscountedPrice.ToString("C")
+                        }
+                        @item.ShoppingCartItem.SKU.Price.ToString("C")
+                    </td>
+                    <td>
+                        TODO : Total price
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
