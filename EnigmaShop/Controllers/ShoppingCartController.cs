@@ -27,7 +27,8 @@ namespace EnigmaShop.Controllers
             var shoppingCartViewModel = shoppingCartItems.Select(x => new ShoppingCartViewModel
             {
                 ShoppingCartItem = x,
-                SKUPicture = x.SKU.SKUPictures.FirstOrDefault()
+                SKUPicture = x.SKU.SKUPictures.FirstOrDefault(),
+                ItemSubTotal = _shoppingCart.CalculateSKUTotal(x.SKU,x.Amount)
             }).ToList();
             ViewData["Title"] = "Shopping Cart Summary";
             return View(shoppingCartViewModel);
@@ -58,6 +59,82 @@ namespace EnigmaShop.Controllers
             return RedirectToAction("Product", "Shop", new {skuId = SKUId});
         }
 
-        
+
+        public async Task<IActionResult> RemoveItemFromCart(int SKUId, int SKUOptionId)
+        {
+            var sku = await _context.SKUs.SingleOrDefaultAsync(x => x.Id == SKUId);
+
+            if (sku == null)
+            {
+                TempData["Message"] = "Invalid SKU can not be added to cart";
+                return RedirectToAction("Products", "Shop");
+            }
+
+            var skuOption =
+                await _context.SKUOptions.SingleOrDefaultAsync(x => x.Id == SKUOptionId && x.SKUId == SKUId);
+            if (skuOption == null)
+            {
+                TempData["Message"] = "Invalid or no size was selected, try again";
+                return RedirectToAction("Product", "Shop", new { skuId = SKUId });
+            }
+
+            await _shoppingCart.RemoveFromCart(sku, skuOption);
+
+            return RedirectToAction("Index");
+
+        }
+
+        public async Task<IActionResult> DecreaseItemQuantity(int SKUId, int SKUOptionId)
+        {
+            var sku = await _context.SKUs.SingleOrDefaultAsync(x => x.Id == SKUId);
+
+            if (sku == null)
+            {
+                TempData["Message"] = "Invalid SKU can not be added to cart";
+                return RedirectToAction("Products", "Shop");
+            }
+
+            var skuOption =
+                await _context.SKUOptions.SingleOrDefaultAsync(x => x.Id == SKUOptionId && x.SKUId == SKUId);
+            if (skuOption == null)
+            {
+                TempData["Message"] = "Invalid or no size was selected, try again";
+                return RedirectToAction("Product", "Shop", new { skuId = SKUId });
+            }
+
+            await _shoppingCart.DecreaseQuantity(sku, skuOption);
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> IncreaseItemQuantity(int SKUId, int SKUOptionId)
+        {
+            var sku = await _context.SKUs.SingleOrDefaultAsync(x => x.Id == SKUId);
+
+            if (sku == null)
+            {
+                TempData["Message"] = "Invalid SKU can not be added to cart";
+                return RedirectToAction("Products", "Shop");
+            }
+
+            var skuOption =
+                await _context.SKUOptions.SingleOrDefaultAsync(x => x.Id == SKUOptionId && x.SKUId == SKUId);
+            if (skuOption == null)
+            {
+                TempData["Message"] = "Invalid or no size was selected, try again";
+                return RedirectToAction("Product", "Shop", new { skuId = SKUId });
+            }
+
+            await _shoppingCart.IncreaseQuantity(sku, skuOption);
+
+            return RedirectToAction("Index");
+        }
+
+        public async  Task<IActionResult> ClearCartItems()
+        {
+            await _shoppingCart.ClearCart();
+
+            return RedirectToAction("Index");
+        }
     }
 }

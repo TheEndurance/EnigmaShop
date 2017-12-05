@@ -11,8 +11,6 @@ namespace EnigmaShop.ViewModels
     {
         public ShoppingCartItem ShoppingCartItem { get; set; }
         public SKUPicture SKUPicture { get; set; }
-
-
-        
+        public decimal ItemSubTotal { get; set; }
     }
 }

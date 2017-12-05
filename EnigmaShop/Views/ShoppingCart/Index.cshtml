@@ -1,7 +1,11 @@
 ﻿@model IEnumerable<EnigmaShop.ViewModels.ShoppingCartViewModel>
 <div class="container">
-    <table class="table table-hover">
-        <thead class="thead-dark">
+    <section class="mt-3">
+        <div class="mb-2">
+        <a asp-action="ClearCartItems" asp-controller="ShoppingCart" class="btn btn-outline-danger">Clear Cart</a>
+        </div>
+        <table class="table table-hover">
+            <thead class="thead-dark">
             <tr>
                 <th scope="col"></th>
                 <th scope="col">Product Name</th>
@@ -9,14 +13,15 @@
                 <th scope="col">Quantity</th>
                 <th scope="col">Price</th>
                 <th scope="col">Total Price</th>
+                <th></th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             @foreach (var item in Model)
             {
                 <tr>
                     <td>
-                        <a asp-action="Product" asp-controller="Shop" asp-route-skuId="@item.ShoppingCartItem.SKUId"><img class="img-thumbnail sku-thumbnail" src="@item.SKUPicture.ImageUrl" /></a>
+                        <a asp-action="Product" asp-controller="Shop" asp-route-skuId="@item.ShoppingCartItem.SKUId"><img class="img-thumbnail sku-thumbnail" src="@item.SKUPicture.ImageUrl"/></a>
                     </td>
                     <td>
                         @item.ShoppingCartItem.SKU.Product.Name
@@ -26,7 +31,15 @@
                         <p>@item.ShoppingCartItem.SKUOption.Size.Name</p>
                     </td>
                     <td>
-                        @item.ShoppingCartItem.Amount
+                        <span>
+                            @item.ShoppingCartItem.Amount
+                        </span>
+                        <a asp-action="DecreaseItemQuantity" asp-controller="ShoppingCart" asp-route-skuId="@item.ShoppingCartItem.SKUId" asp-route-skuOptionId="@item.ShoppingCartItem.SKUOptionId">
+                            <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                        </a>
+                        <a asp-action="IncreaseItemQuantity" asp-controller="ShoppingCart" asp-route-skuId="@item.ShoppingCartItem.SKUId" asp-route-skuOptionId="@item.ShoppingCartItem.SKUOptionId">
+                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                        </a>
                     </td>
                     <td>
                         @if (item.ShoppingCartItem.SKU.IsDiscounted)
@@ -36,10 +49,17 @@
                         @item.ShoppingCartItem.SKU.Price.ToString("C")
                     </td>
                     <td>
-                        TODO : Total price
+                        @item.ItemSubTotal.ToString("C")
+                    </td>
+                    <td>
+
+                        <a asp-action="RemoveItemFromCart" asp-controller="ShoppingCart" asp-route-skuId="@item.ShoppingCartItem.SKUId" asp-route-skuOptionId="@item.ShoppingCartItem.SKUOptionId">
+                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        </a>
                     </td>
                 </tr>
             }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </section>
 </div>

@@ -16,6 +16,8 @@ namespace EnigmaShop.Models
 
         public static readonly string ShoppingCartCookieKey = "ShoppingCart";
 
+        private const decimal TAX_FRACTION = 0.14m;
+
         public string CartId { get; set; }
 
         public IList<ShoppingCartItem> ShoppingCartItems { get; set; }
@@ -29,12 +31,12 @@ namespace EnigmaShop.Models
         {
             return ShoppingCartItems ?? (ShoppingCartItems =
                        await _context.ShoppingCartItems
-                       .Include(x=>x.SKU)
+                       .Include(x => x.SKU)
                        .ThenInclude(x => x.SKUPictures)
-                       .Include(x=>x.SKU.Option)
-                       .Include(x=>x.SKU.Product)
-                       .Include(x=>x.SKUOption)
-                       .ThenInclude(x=>x.Size)
+                       .Include(x => x.SKU.Option)
+                       .Include(x => x.SKU.Product)
+                       .Include(x => x.SKUOption)
+                       .ThenInclude(x => x.Size)
                        .Where(x => x.ShoppingCartId == CartId)
                        .ToListAsync());
         }
@@ -54,12 +56,12 @@ namespace EnigmaShop.Models
             CookieOptions options = new CookieOptions();
             options.Expires = DateTime.Now.AddDays(7);
 
-            httpContext?.Response.Cookies.Append(ShoppingCart.ShoppingCartCookieKey, cartId,options);
+            httpContext?.Response.Cookies.Append(ShoppingCart.ShoppingCartCookieKey, cartId, options);
 
-            return new ShoppingCart(context) {CartId = cartId};
+            return new ShoppingCart(context) { CartId = cartId };
         }
 
-        public async Task<bool> AddToCart(SKU sku,SKUOption skuOption)
+        public async Task<bool> AddToCart(SKU sku, SKUOption skuOption)
         {
             var shoppingCartItemFromDb = await
                 _context.ShoppingCartItems
@@ -67,6 +69,8 @@ namespace EnigmaShop.Models
 
             if (shoppingCartItemFromDb == null)
             {
+                if (skuOption.Stock == 0) return false;
+
                 var shoppingCartItem = new ShoppingCartItem
                 {
                     SKUId = sku.Id,
@@ -79,18 +83,52 @@ namespace EnigmaShop.Models
             }
             else
             {
+                if (shoppingCartItemFromDb.Amount == skuOption.Stock) return false;
+
                 shoppingCartItemFromDb.Amount++;
+
             }
 
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> RemoveFromCart(SKU sku,SKUOption skuOption)
+        public async Task<bool> RemoveFromCart(SKU sku, SKUOption skuOption)
         {
             var shoppingCartItemFromDb =
                 await _context.ShoppingCartItems
                 .SingleOrDefaultAsync(x => x.ShoppingCartId == CartId && x.SKUId == sku.Id && x.SKUOptionId == skuOption.Id);
+
+            if (shoppingCartItemFromDb == null) return false;
+
+            _context.Remove(shoppingCartItemFromDb);
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> IncreaseQuantity(SKU sku, SKUOption skuOption)
+        {
+            var shoppingCartItemFromDb =
+                await _context.ShoppingCartItems
+                    .SingleOrDefaultAsync(x => x.ShoppingCartId == CartId && x.SKUId == sku.Id && x.SKUOptionId == skuOption.Id);
+
+            if (shoppingCartItemFromDb == null) return false;
+
+            if (shoppingCartItemFromDb.Amount == skuOption.Stock) return false;
+
+            shoppingCartItemFromDb.Amount++;
+
+            await _context.SaveChangesAsync();
+            return true;
+
+        }
+
+        public async Task<bool> DecreaseQuantity(SKU sku, SKUOption skuOption)
+        {
+            var shoppingCartItemFromDb =
+                await _context.ShoppingCartItems
+                    .SingleOrDefaultAsync(x => x.ShoppingCartId == CartId && x.SKUId == sku.Id && x.SKUOptionId == skuOption.Id);
 
             if (shoppingCartItemFromDb == null) return false;
 
@@ -102,6 +140,7 @@ namespace EnigmaShop.Models
             {
                 _context.Remove(shoppingCartItemFromDb);
             }
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -123,13 +162,27 @@ namespace EnigmaShop.Models
             var shoppingCartItemsFromDb =
                 await _context.ShoppingCartItems
                 .Where(x => x.ShoppingCartId == CartId)
-                .Include(x=>x.SKU)
-                .Include(x=>x.SKUOption)
+                .Include(x => x.SKU)
+                .Include(x => x.SKUOption)
                 .ToListAsync();
-            
+
             decimal total = 0.00m;
+            foreach (var item in shoppingCartItemsFromDb)
+            {
+                total += CalculateSKUTotal(item.SKU, item.Amount);
+            }
             return total;
         }
 
+        public decimal CalculateSKUTotal(SKU sku, int amount)
+        {
+            decimal skuPrice = (sku.IsDiscounted) ? sku.DiscountedPrice : sku.Price;
+            return (skuPrice * amount);
+        }
+
+        public decimal CalculateTotalTax(decimal shoppingCartTotal)
+        {
+            return shoppingCartTotal * TAX_FRACTION;
+        }
     }
 }
